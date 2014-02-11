@@ -78,7 +78,7 @@ def database_create():
 		return render_template('database_create.html', active='database_create')
 	elif request.method == 'POST':
 	    
-	    	# Get a cursor to the database
+	    # Get a cursor to the database
 		cur = g.db.cursor()
 
 		# Grab the fields
@@ -98,7 +98,7 @@ def database_create():
 		if 'database_desc' in request.form and len(request.form['database_desc']) > 0:
 			description = request.form['database_desc']
 		else:
-			return mysqladm.errors.output_error('Unable to create database', 'You must specify a database description','')
+			return mysqladm.errors.output_error('Unable to create database', 'You must specify a database de   scription','')
 
 		if 'database_owner' in request.form and len(request.form['database_owner']) > 0:
 			owner = request.form['database_owner']
@@ -107,7 +107,7 @@ def database_create():
 
         genpasswd = False
 
-		if 'database_passwd' in request.form and len(request.form['database_passwd']) > 0:
+        if 'database_passwd' in request.form and len(request.form['database_passwd']) > 0:
 			passwd = request.form['database_passwd']
 		else:
 			## Generate a password if one was not sent
