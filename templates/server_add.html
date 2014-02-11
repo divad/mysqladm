@@ -1,0 +1,63 @@
+{% extends "layout.html" %}
+{% block body %}
+
+<h2>Add new server</h2>
+
+<form class="form-horizontal" role="form" method="POST">
+	<input type="hidden" name="_csrf_token" value="{{ csrf_token() }}" />
+	<div class="form-group">
+		<label for="inputHostname" class="col-lg-2 control-label">Hostname</label>
+			<div class="col-lg-10">
+				<input type="text" class="form-control" id="inputHostname" name="server_hostname" {% if hostname %}value="{{ hostname }}" {% endif %}/>
+				<span class="help-block">Fully qualified hostname of the server</span>
+			</div>
+	</div>
+	<div class="form-group">
+		<label for="inputAlias" class="col-lg-2 control-label">Alias</label>
+			<div class="col-lg-10">
+				<input type="text" class="form-control" id="inputAlias" name="server_alias" {% if alias %}value="{{ alias }}" {% endif %}>
+				<span class="help-block">An alias customers will use, should be mysqlNNN.soton.ac.uk, where NNN is the same number as the SRV server number above.
+				</span>
+			</div>
+	</div>
+	<div class="form-group">
+		<label for="inputDescription" class="col-lg-2 control-label">Description</label>
+			<div class="col-lg-10">
+				<input type="text" class="form-control" id="inputDescription" name="server_desc" {% if description %}value="{{ description }}" {% endif %}>
+				<span class="help-block">e.g. MySQL Production Server 3
+				</span>
+			</div>
+	</div>
+	<div class="form-group">
+		<label for="inputStatus" class="col-lg-2 control-label">Status</label>
+			<div class="col-lg-5">
+				<select name="server_state" class="form-control" id="inputStatus">
+					<option value="Production"{% if state and state == "Production" %} selected="selected"{% endif %}>Production</option>
+					<option value="Pre-Production"{% if state and state == "Pre-production" %} selected="selected"{% endif %}>Pre-Production</option>	
+					<option value="Development"{% if state and state == "Development" %} selected="selected"{% endif %}>Development</option>	
+					<option value="Training"{% if state and state == "Training" %} selected="selected"{% endif %}>Training</option>	
+					<option value="Other"{% if state and state == "Other" %} selected="selected"{% endif %}>Other</option>
+				</select>
+
+				<span class="help-block">What sort of databases are hosted on this server?
+				</span>
+			</div>
+	</div>
+
+	<div class="form-group">
+		<label for="inputPassword" class="col-lg-2 control-label">Password</label>
+		<div class="col-lg-10">
+			<input type="password" class="form-control" id="inputPassword" name="server_password" />
+			<span class="help-block">The mysqladm agent password - this is not the root or mysql root password on the server.
+			</span>
+		</div>
+	</div>
+
+	<div class="form-group">
+		<div class="col-lg-offset-2 col-lg-10">
+			<button type="submit" class="btn btn-default">Add Server</button>
+		</div>
+	</div>
+</form>
+
+{% endblock %}

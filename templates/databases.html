@@ -1,0 +1,45 @@
+{% extends "layout.html" %}
+{% block body %}
+
+<h3>Databases</h3>
+
+<script type="text/javascript">
+$(document).ready(function()
+{
+	$(function()
+	{
+		$("#tsort").tablesorter();
+	});
+});
+</script>
+
+<table id="tsort" class="table table-hover table-striped table-condensed">
+	<thead>
+		<tr>
+			<th></th>
+			<th>Name</th>
+			<th>Server</th>
+			<th>Owner</th>
+			<th style="width: 40%">Description</th>
+		</tr>
+	</thead>
+	<tbody>
+{% if rows|length == 0 %}
+		<tr>
+			<td colspan='3'>There are no databases here!</td>
+		</tr>
+{% else %}
+	{% for row in rows %}
+		<tr>
+			<td><a href="{{ row.link }}"><button type="button" class="btn btn-primary btn-sm"><span class="glyphicon glyphicon-cog"></span></button></a></td>
+			<td>{{ row.name }}</td>
+			<td>{{ row.server }}</td>
+			<td>{{ row.owner }}</td>
+			<td>{{ row.description }}</td>
+		</tr>
+	{% endfor %}
+{% endif %}
+	</tbody>
+</table>
+
+{% endblock %}

@@ -1,0 +1,17 @@
+Website:
+
+	add database from server
+	Add database generic
+	Delete database
+	Modify database
+
+	moar stats and shizzle?
+	graphs.
+	server stats overview (per server)
+
+	seperation between 'farm' and 'not farm'??
+
+Scripts
+	Script to run and check for new databases ('statsync')
+	cronjobs 
+	puppet module
