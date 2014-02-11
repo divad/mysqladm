@@ -105,11 +105,14 @@ def database_create():
 		else:
 			return mysqladm.errors.output_error('Unable to create database', 'You must specify a database owner','')
 
+        genpasswd = False
+
 		if 'database_passwd' in request.form and len(request.form['database_passwd']) > 0:
 			passwd = request.form['database_passwd']
 		else:
 			## Generate a password if one was not sent
 			passwd = mysqladm.core.pwgen()
+			   genpasswd = True
 
 		## Try to load the server details
 		server = mysqladm.servers.get_server_by_hostname(hostname)
@@ -147,8 +150,10 @@ def database_create():
 		server_id = cur.lastrowid
 
 		# Notify that we've succeeded
-		## TODO give password to admin...
-		flash('Database instance successfully created', 'alert-success')
+		if genpasswd:
+		    flash("Database instance successfully created with generated password '" + passwd + "'",'alert-success')
+		else:
+		    flash('Database instance successfully created', 'alert-success')
 
 		# redirect to server list
 		return redirect(url_for('server_view',server_name=hostname))
