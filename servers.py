@@ -114,6 +114,7 @@ def server_view(server_name):
 				## Need to put in a zero byte size or similar for databases listed from 'list' but not in stats view which is only run once in a while
 				if db['name'] not in db_sizes:
 					db['size'] = 0
+					db['unsized'] = 1
 				else:
 					db['size'] = db_sizes[db['name']]
 

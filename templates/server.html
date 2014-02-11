@@ -243,7 +243,13 @@ $(document).ready(function()
 						<td>{{ database.name }}</td>
 						<td>{{ database.owner }}</td>
 						<td>{{ database.description }}</td>
-						<td>{{ database.size|filesizeformat}}</td>
+						<td>
+							{% if database.unsized %}
+							Unknown
+							{% else %}
+							{{ database.size|filesizeformat}}
+							{% endfor %}
+						</td>
 					</tr>
 				{% endfor %}
 			{% endif %}
