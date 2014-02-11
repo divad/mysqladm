@@ -77,8 +77,8 @@ def database_create():
 	if request.method == 'GET':
 		return render_template('database_create.html', active='database_create')
 	elif request.method == 'POST':
-	    
-	    # Get a cursor to the database
+		
+		# Get a cursor to the database
 		cur = g.db.cursor()
 
 		# Grab the fields
@@ -105,14 +105,14 @@ def database_create():
 		else:
 			return mysqladm.errors.output_error('Unable to create database', 'You must specify a database owner','')
 
-        genpasswd = False
+		genpasswd = False
 
-        if 'database_passwd' in request.form and len(request.form['database_passwd']) > 0:
+		if 'database_passwd' in request.form and len(request.form['database_passwd']) > 0:
 			passwd = request.form['database_passwd']
 		else:
 			## Generate a password if one was not sent
 			passwd = mysqladm.core.pwgen()
-			   genpasswd = True
+			genpasswd = True
 
 		## Try to load the server details
 		server = mysqladm.servers.get_server_by_hostname(hostname)
@@ -120,9 +120,9 @@ def database_create():
 			return mysqladm.errors.output_error('No such server','I could not find the server you were looking for! ','')
 
 		## Check to make sure a database instance doesn't already exist on the server according to our database
-        existing_db = get_database(name,server['id'])
-        if not existing_db == None:
-           return mysqladm.errors.output_error('Database already exists','There is already a database of that name residing on the selected server ','get_database returned true') 
+		existing_db = get_database(name,server['id'])
+		if not existing_db == None:
+			return mysqladm.errors.output_error('Database already exists','There is already a database of that name residing on the selected server ','get_database returned true') 
  
 		## Talk to the server via HTTPS
 		try:
@@ -133,7 +133,7 @@ def database_create():
 
 			if json_response['status'] != 0:
 				if 'error' in json_response:
-                    return mysqladm.errors.output_error("Unable to create database','The mysql server responded with an error: ' + str(json_response['error']),'core.msg_node error')
+					return mysqladm.errors.output_error("Unable to create database','The mysql server responded with an error: ' + str(json_response['error']),'core.msg_node error')
 				else:
 					return mysqladm.errors.output_error("Unable to create database','The mysql server responded with an error status code: ' + str(json_response['status']),'core.msg_node status no error')
 
@@ -151,9 +151,9 @@ def database_create():
 
 		# Notify that we've succeeded
 		if genpasswd:
-		    flash("Database instance successfully created with generated password '" + passwd + "'",'alert-success')
+			flash("Database instance successfully created with generated password '" + passwd + "'",'alert-success')
 		else:
-		    flash('Database instance successfully created', 'alert-success')
+			flash('Database instance successfully created', 'alert-success')
 
 		# redirect to server list
 		return redirect(url_for('server_view',server_name=hostname))
