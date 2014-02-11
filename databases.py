@@ -133,9 +133,9 @@ def database_create():
 
 			if json_response['status'] != 0:
 				if 'error' in json_response:
-					return mysqladm.errors.output_error("Unable to create database','The mysql server responded with an error: ' + str(json_response['error']),'core.msg_node error')
+					return mysqladm.errors.output_error('Unable to create database','The mysql server responded with an error: ' + str(json_response['error']),'core.msg_node error')
 				else:
-					return mysqladm.errors.output_error("Unable to create database','The mysql server responded with an error status code: ' + str(json_response['status']),'core.msg_node status no error')
+					return mysqladm.errors.output_error('Unable to create database','The mysql server responded with an error status code: ' + str(json_response['status']),'core.msg_node status no error')
 
 		except requests.exceptions.RequestException as e:
 			return mysqladm.errors.output_error('Unable to create database','An error occured when communicating with the MySQL node: ' + str(e),'')	
