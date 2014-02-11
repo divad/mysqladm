@@ -14,8 +14,6 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with mysqladm.  If not, see <http://www.gnu.org/licenses/>.
-#
-# This is a test change with c9.io and bitbucket
 
 from mysqladm import app
 import mysqladm.errors
