@@ -22,6 +22,17 @@ from flask import Flask, request, session, g, redirect, url_for, abort, render_t
 import MySQLdb as mysql
 import requests
 
+
+def get_database(db_name,server_id):
+	## Load the dictionary based cursor
+	cur = g.db.cursor(mysql.cursors.DictCursor)
+
+	## Execute a SQL select
+	cur.execute("SELECT * FROM `databases` WHERE `name` = %s AND `server` = %s", (db_name,server_id))
+
+	## Get results
+	return cur.fetchone()
+
 ################################################################################
 #### LIST DATABASES
 
@@ -66,78 +77,65 @@ def database_create():
 	if request.method == 'GET':
 		return render_template('database_create.html', active='database_create')
 	elif request.method == 'POST':
-		# Set a flag to determine if we'd had an error
-		had_error = 0
+	    
+	    	# Get a cursor to the database
+		cur = g.db.cursor()
 
 		# Grab the fields
+		#### TODO VALIDATE THESE FIELDS
 		if 'server_hostname' in request.form and len(request.form['server_hostname']) > 0:
 			hostname = request.form['server_hostname']
 		else:
-			had_error = 1
-			hostname = ''
-			flash("You must specify a server to create the database on", 'alert-danger')
+			return mysqladm.errors.output_error('Unable to create database', 'You must specify a server to create the database on','')
 
 		if 'database_name' in request.form and len(request.form['database_name']) > 0:
 			name = request.form['database_name']
 		else:
-			had_error = 1
-			alias = ''
-			flash("You must specify a fully qualified server alias", 'alert-danger')
+			return mysqladm.errors.output_error('Unable to create database', 'You must specify a database name','')
 
 		# TODO verify and valdidate field contents are VALID
 
 		if 'database_desc' in request.form and len(request.form['database_desc']) > 0:
 			description = request.form['database_desc']
 		else:
-			had_error = 1
-			description = ''
-			flash("You must specify a description", 'alert-danger')
+			return mysqladm.errors.output_error('Unable to create database', 'You must specify a database description','')
 
 		if 'database_owner' in request.form and len(request.form['database_owner']) > 0:
 			owner = request.form['database_owner']
 		else:
-			had_error = 1
-			state = ''
-			flash("You must specify a database owner", 'alert-danger')
+			return mysqladm.errors.output_error('Unable to create database', 'You must specify a database owner','')
 
 		if 'database_passwd' in request.form and len(request.form['database_passwd']) > 0:
 			passwd = request.form['database_passwd']
 		else:
-			## Generate a password
+			## Generate a password if one was not sent
 			passwd = mysqladm.core.pwgen()
 
-		# If we had an error, just render the server_add page with whatever fields filled in
-		if had_error == 1:
-			# TODO this wont work from popups on the server page now will it...
-			return render_template('database_create.html', active='servers', hostname=hostname, alias=alias, description=description, state=state)
-
-		## Load the server
+		## Try to load the server details
 		server = mysqladm.servers.get_server_by_hostname(hostname)
 		if server == None:
 			return mysqladm.errors.output_error('No such server','I could not find the server you were looking for! ','')
 
-		## TODO check database doesn't already exist HERE
+		## Check to make sure a database instance doesn't already exist on the server according to our database
+        existing_db = get_database(name,server['id'])
+        if not existing_db == None:
+           return mysqladm.errors.output_error('Database already exists','There is already a database of that name residing on the selected server ','get_database returned true') 
  
 		## Talk to the server via HTTPS
 		try:
 			json_response = mysqladm.core.msg_node(server['hostname'],server['password'],'create',name=name, passwd=passwd)
 
 			if 'status' not in json_response:
-				return mysqladm.errors.output_error('Unable to create database', 'The given MySQL node responded with something unexpected: ' + str(json_response), '')
+				return mysqladm.errors.output_error('Unable to create database', 'The mysql server responded with something unexpected: ' + str(json_response), '')
 
 			if json_response['status'] != 0:
 				if 'error' in json_response:
-					flash("Error creating database: " + str(json_response['error']), 'alert-danger')
+                    return mysqladm.errors.output_error("Unable to create database','The mysql server responded with an error: ' + str(json_response['error']),'core.msg_node error')
 				else:
-					flash("Error creating database: " + str(json_response['error']), 'alert-danger')
+					return mysqladm.errors.output_error("Unable to create database','The mysql server responded with an error status code: ' + str(json_response['status']),'core.msg_node status no error')
 
-				#return render_template('server_add.html', active='servers', hostname=hostname, alias=alias, description=description, state=state)
-				
 		except requests.exceptions.RequestException as e:
 			return mysqladm.errors.output_error('Unable to create database','An error occured when communicating with the MySQL node: ' + str(e),'')	
-
-		# Get a cursor to the database
-		cur = g.db.cursor()
 
 		# Create a record of the database in the database (yo dawg)
 		cur.execute('INSERT INTO `databases` (`server`, `name`, `owner`, `description`) VALUES (%s, %s, %s, %s)', (server['id'], name, owner, description))
@@ -149,6 +147,7 @@ def database_create():
 		server_id = cur.lastrowid
 
 		# Notify that we've succeeded
+		## TODO give password to admin...
 		flash('Database instance successfully created', 'alert-success')
 
 		# redirect to server list
