@@ -1,17 +1,20 @@
 Website:
 
-	add database from server
-	Add database generic
+	Add database generic (I think this should be part of the 'farm' functions)
+	Finish view database
 	Delete database
 	Modify database
 
-	moar stats and shizzle?
-	graphs.
-	server stats overview (per server)
+	moar stats and shizzle? graphs.
 
 	seperation between 'farm' and 'not farm'??
+		change DB to classify 'farm' and 'not farm' servers?
+		
+	search!
 
 Scripts
 	Script to run and check for new databases ('statsync')
 	cronjobs 
-	puppet module
+	puppet module for agent
+
+move database to another server? would not be super difficult?

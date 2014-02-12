@@ -1,7 +1,89 @@
 {% extends "layout.html" %}
 {% block body %}
 
+<div class="page-header">
+  <h1>{{ db.name }}</h1>
+</div>
+
+<div class="row">
+	<div class="col-md-4">
+		<div class="panel panel-success panel2k">
+			<div class="panel-heading">
+				<h3 class="panel-title">Information</h3>
+			  </div>
+			  <div class="panel-body">
+				<table class="statable">
+					<tbody>
+						<tr>
+							<td><strong>Version:</strong></td>
+							<td>{{stats.db_version}}</td>
+						</tr>
+						<tr>
+							<td><strong>Data Drive:</strong></td>
+							<td>{{stats.disk_mount_point}}</td>
+						</tr>
+						<tr>
+							<td><strong>Alias:</strong></td>
+							<td>{{server.alias}}</td>
+						</tr>
+						<tr>
+							<td><strong>Environment:</strong> </td>
+							<td>{{server.state}}</td>
+						</tr>
+						<tr>
+							<td><strong>Description:</strong> </td>
+							<td>{{server.desc}}</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+	<div class="col-md-8">
+		<div class="panel panel-info panel2k">
+			<div class="panel-heading">
+				<h3 class="panel-title">Server Status</h3>
+			  </div>
+			  <div class="panel-body">
+				<table class="statable">
+					<tbody>
+						<tr>
+							<td><strong>Server load:</strong></td>
+							<td>a</td>
+						</tr>
+						<tr>
+							<td><strong>MySQL uptime:</strong></td>
+							<td>b</td>
+						</tr>
+						<tr>
+							<td><strong>Disk Capacity:</strong></td>
+							<td>c</td>
+						</tr>
+						<tr>
+							<td><strong>Disk Usage:</strong></td>
+							<td>d</td>
+						</tr>
+						<tr>
+							<td><strong>Disk Free:</strong> </td>
+							<td>e</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+</div>
+
 <h2>Database `{{ db.name }}`</h2>
 <h3>Resides on {{ db.server }}</h3>
+
+<ul>
+	<li>database name</li>
+	<li>server name, link to server</l>i
+	<li>current size of db</li>
+	<li>DELETE</li>
+	<li>Edit owner/description</li>
+	<li>change password</li>
+</u>
 
 {% endblock %}
