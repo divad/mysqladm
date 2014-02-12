@@ -48,6 +48,10 @@ def server_list():
 
 	## Get results
 	rows = cur.fetchall()
+	
+	## Create link for each server 
+	for row in rows:
+		row['link'] = url_for('server_view', server_name=row['hostname'])
 
 	return render_template('servers.html', active='servers',rows=rows)
 	
