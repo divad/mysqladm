@@ -44,17 +44,14 @@ def server_list():
 	cur = g.db.cursor(mysql.cursors.DictCursor)
 
 	## Execute a SQL select
-	cur.execute("SELECT `id`, `hostname`, `alias`, `desc`, `state`, `password` FROM `servers`")
+	#cur.execute("SELECT `id`, `hostname`, `alias`, `desc`, `state`, `password` FROM `servers`")
+	cur.execute("SELECT `servers`.`id` AS `id`, `servers`.`hostname` AS `hostname`, `servers`.`alias` AS `alias`, `servers`.`desc` AS `desc`, `servers`.`state` AS `state`, `servers`.`password` AS `password`, COUNT(`databases`.`id`) AS `databases` FROM `servers` INNER JOIN `databases` ON databases.server = servers.id GROUP BY `servers`.`id`;");
 
 	## Get results
 	rows = cur.fetchall()
-	
-	## count DBs for each server (yes, I could JOIN, no, I'm lazy)
-	for row in rows:
-		cur.execute("SELECT COUNT(*) FROM `databases` WHERE `server` = %s", (row['id']))
-		row['databases'] = cur.fetchone()[1]
 
 	return render_template('servers.html', active='servers',rows=rows)
+	
 	
 ################################################################################
 #### LIST SERVESR
