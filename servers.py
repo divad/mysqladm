@@ -52,7 +52,7 @@ def server_list():
 	## count DBs for each server (yes, I could JOIN, no, I'm lazy)
 	for row in rows:
 		cur.execute("SELECT COUNT(*) FROM `databases` WHERE `server` = %s", (row['id']))
-		row['databases'] = cur.fetchone()
+		row['databases'] = cur.fetchone()[1]
 
 	return render_template('servers.html', active='servers',rows=rows)
 	
