@@ -99,7 +99,7 @@ def server_status():
 		## Add the link to the server
 		row['link'] = url_for('server_view', server_name=row['hostname'])
 
-	return render_template('servers.html', active='server_status',rows=rows)
+	return render_template('server_status.html', active='server_status',rows=rows)
 
 ################################################################################
 #### MANAGE SERVER
