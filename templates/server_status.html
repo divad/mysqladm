@@ -11,6 +11,8 @@
 			<th>Databases</th>
 			<th>Load Average</th>
 			<th>Disk Capacity</th>
+			<th>Disk Usage</th>
+			<th>Disk Free</th>			
 		</tr>
 	</thead>
 	<tbody>
@@ -20,8 +22,9 @@
 			<td>{{ row.hostname }}</td>
 			<td>{{ row.databases }}</td>
 			<td>{{ row.load }}</td>
-			<td>{{ row.state }}</td>
-			<td>{{ row.databases }}</td>
+			<td>{{ row.disk_capacity }}</td>
+			<td>{{ row.disk_usage }}</td>
+			<td>{{ row.disk_free }}</td>
 		</tr>
 		{% endfor %}
 	</tbody>
