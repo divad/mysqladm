@@ -1,0 +1,30 @@
+{% extends "layout.html" %}
+{% block body %}
+
+<h3>Server Status</h3>
+
+<table class="table table-hover table-striped table-condensed table-responsive">
+	<thead>
+		<tr>
+			<th></th>
+			<th>Name</th>
+			<th>Databases</th>
+			<th>Load Average</th>
+			<th>Disk Capacity</th>
+		</tr>
+	</thead>
+	<tbody>
+		{% for row in rows %}
+		<tr>
+			<td><a href="{{ row.link }}"><button type="button" class="btn btn-primary btn-sm"><span class="glyphicon glyphicon-wrench"></span></button></a></td>
+			<td>{{ row.hostname }}</td>
+			<td>{{ row.databases }}</td>
+			<td>{{ row.load }}</td>
+			<td>{{ row.state }}</td>
+			<td>{{ row.databases }}</td>
+		</tr>
+		{% endfor %}
+	</tbody>
+</table>
+
+{% endblock %}
