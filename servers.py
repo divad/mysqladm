@@ -75,10 +75,13 @@ def server_status():
 			if 'status' in json_response:
 				if json_response['status'] == 0 and 'list' in json_response:
 					## ERROR
+					pass
 				else:
 					## error 'Error: JSON Error returned code: ' + str(json_response['status']) + " message: " + json_response['error']
+					pass
 			else:
 				## ERROR row['databases'] = 'Error: Invalid JSON response'
+				pass
 				
 		except requests.exceptions.RequestException as e:
 			#row['databases'] = 'Error: ' + str(e)
