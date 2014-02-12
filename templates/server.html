@@ -245,7 +245,7 @@ $(document).ready(function()
 						<td>{{ database.description }}</td>
 						<td>
 							{% if database.unsized %}
-							Unknown
+							N/A <span class="glyphicon glyphicon-question-sign" data-toggle="tooltip" data-placement="left" title="Size of database not yet calculated by database server - try again later"></span>
 							{% else %}
 							{{ database.size|filesizeformat}}
 							{% endif %}
