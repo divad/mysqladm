@@ -22,6 +22,8 @@ from flask import Flask, request, session, g, redirect, url_for, abort, render_t
 import MySQLdb as mysql
 import requests
 
+################################################################################
+#### UTILITY 
 
 def get_server_by_hostname(hostname):
 	## Load the dictionary based cursor
@@ -46,10 +48,31 @@ def server_list():
 
 	## Get results
 	rows = cur.fetchall()
+	
+	## count DBs for each server (yes, I could JOIN, no, I'm lazy)
+	for row in rows:
+		cur.execute("SELECT COUNT(*) FROM `databases` WHERE `server` = %s", (row['id']))
+		row['databases'] = cur.fetchone()
+
+	return render_template('servers.html', active='servers',rows=rows)
+	
+################################################################################
+#### LIST SERVESR
+
+@app.route('/servers/status')
+def server_status():
+	## Load the dictionary based cursor
+	cur = g.db.cursor(mysql.cursors.DictCursor)
+
+	## Execute a SQL select
+	cur.execute("SELECT `id`, `hostname`, `alias`, `desc`, `state`, `password` FROM `servers`")
+
+	## Get results
+	rows = cur.fetchall()
 
 	## Iterate through each database and get the statistics
 	for row in rows:
-		## TODO something???
+
 		try:
 			json_response = mysqladm.core.msg_node(row['hostname'], row['password'], 'list')
 
