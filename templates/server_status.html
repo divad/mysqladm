@@ -12,7 +12,8 @@
 			<th>Load Average</th>
 			<th>Disk Capacity</th>
 			<th>Disk Usage</th>
-			<th>Disk Free</th>			
+			<th>Disk Free</th>	
+			<th>MySQL Uptime</th>
 		</tr>
 	</thead>
 	<tbody>
@@ -22,9 +23,10 @@
 			<td>{{ row.hostname }}</td>
 			<td>{{ row.databases }}</td>
 			<td>{{ row.load }}</td>
-			<td>{{ row.disk_capacity }}</td>
-			<td>{{ row.disk_usage }}</td>
-			<td>{{ row.disk_free }}</td>
+			<td>{{ row.disk_capacity|filesizeformat }}</td>
+			<td>{{ row.disk_usage|filesizeformat }}</td>
+			<td>{{ row.disk_free|filesizeformat }}</td>
+			<td>{{ row.uptime }}</td>
 		</tr>
 		{% endfor %}
 	</tbody>
