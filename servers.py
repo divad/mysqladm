@@ -85,6 +85,7 @@ def server_status():
 				
 		except requests.exceptions.RequestException as e:
 			#row['databases'] = 'Error: ' + str(e)
+			pass
 			
 		row['load'] = json_response['loadavg_1'] + ' ' + json_response['loadavg_5'] + ' ' + json_response['loadavg_155']
 		row['disk_usage'] = json_response['disk_capacity'] - json_response['disk_free']
