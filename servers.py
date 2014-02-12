@@ -91,7 +91,7 @@ def server_status():
 			#row['databases'] = 'Error: ' + str(e)
 			pass
 			
-		row['load'] = json_response['loadavg_1'] + ' ' + json_response['loadavg_5'] + ' ' + json_response['loadavg_155']
+		row['load'] = json_response['load_avg_1'] + ' ' + json_response['load_avg_5'] + ' ' + json_response['load_avg_15']
 		row['disk_usage'] = json_response['disk_capacity'] - json_response['disk_free']
 		row['disk_capacity'] = json_response['disk_capacity']
 		row['disk_free'] = json_response['disk_free']
