@@ -95,7 +95,7 @@ def server_status():
 		row['disk_usage'] = json_response['disk_capacity'] - json_response['disk_free']
 		row['disk_capacity'] = json_response['disk_capacity']
 		row['disk_free'] = json_response['disk_free']
-		row['uptime'] = json_response['uptime']
+		row['uptime'] = json_response['db_uptime']
 
 		## Add the link to the server
 		row['link'] = url_for('server_view', server_name=row['hostname'])
