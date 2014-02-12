@@ -42,7 +42,7 @@
           </ul>
           <ul class="nav nav-sidebar">
             <li {% if active == 'servers' %} class="active" {% endif %}><a href="{{ url_for('server_list') }}">Server List</a></li>
-            <li {% if active == 'server_status' %} class="active" {% endif %}><a href="{{ url_for('server_list') }}">Server Status</a></li>
+            <li {% if active == 'server_status' %} class="active" {% endif %}><a href="{{ url_for('server_status') }}">Server Status</a></li>
             <li {% if active == 'server_add' %} class="active" {% endif %}><a href="{{ url_for('server_add') }}">Add Server</a></li>
           </ul>
           <ul class="nav nav-sidebar">

@@ -44,7 +44,6 @@ def server_list():
 	cur = g.db.cursor(mysql.cursors.DictCursor)
 
 	## Execute a SQL select
-	#cur.execute("SELECT `id`, `hostname`, `alias`, `desc`, `state`, `password` FROM `servers`")
 	cur.execute("SELECT `servers`.`id` AS `id`, `servers`.`hostname` AS `hostname`, `servers`.`alias` AS `alias`, `servers`.`desc` AS `desc`, `servers`.`state` AS `state`, `servers`.`password` AS `password`, COUNT(`databases`.`id`) AS `databases` FROM `servers` INNER JOIN `databases` ON databases.server = servers.id GROUP BY `servers`.`id`;");
 
 	## Get results
@@ -54,9 +53,9 @@ def server_list():
 	
 	
 ################################################################################
-#### LIST SERVESR
+#### SERVER STATUS
 
-@app.route('/servers/status')
+@app.route('/server_status')
 def server_status():
 	## Load the dictionary based cursor
 	cur = g.db.cursor(mysql.cursors.DictCursor)
@@ -71,17 +70,23 @@ def server_status():
 	for row in rows:
 
 		try:
-			json_response = mysqladm.core.msg_node(row['hostname'], row['password'], 'list')
+			json_response = mysqladm.core.msg_node(row['hostname'], row['password'], 'stats')
 
 			if 'status' in json_response:
 				if json_response['status'] == 0 and 'list' in json_response:
-					row['databases'] = len(json_response['list'])
+					## ERROR
 				else:
-					row['databases'] = 'Error: JSON Error returned code: ' + str(json_response['status']) + " message: " + json_response['error']
+					## error 'Error: JSON Error returned code: ' + str(json_response['status']) + " message: " + json_response['error']
 			else:
-				row['databases'] = 'Error: Invalid JSON response'
+				## ERROR row['databases'] = 'Error: Invalid JSON response'
+				
 		except requests.exceptions.RequestException as e:
-			row['databases'] = 'Error: ' + str(e)
+			#row['databases'] = 'Error: ' + str(e)
+			
+		row['load'] = json_response['loadavg_1'] + ' ' + json_response['loadavg_5'] + ' ' + json_response['loadavg_155']
+		row['disk_usage'] = json_response['disk_capacity'] - json_response['disk_free']
+		row['disk_capacity'] = json_response['disk_capacity']
+		row['disk_free'] = json_response['disk_free']
 
 		## Add the link to the server
 		row['link'] = url_for('server_view', server_name=row['hostname'])
