@@ -26,7 +26,7 @@
 				</table>
 				<ul class="nav nav-pills nav-stacked">
 				  <li><a href="#" data-toggle="modal" data-target="#delete-confirm"><span class="glyphicon glyphicon-trash"></span> Delete Database</a></li>
-				</ul>				
+				</ul>			
 			</div>
 		</div>
 	</div>
@@ -53,7 +53,7 @@
 							</div>
 					</div>
 						<div class="form-group">
-						<label for="inputPassword" class="col-lg-2 control-label">Password</labe>
+						<label for="inputPassword" class="col-lg-2 control-label">Password</label>
 						<div class="col-lg-10">
 							<input type="password" class="form-control" id="inputPassword" name="database_passwd"></input>
 							<span class="help-block">Leave blank if you don't want to change the password</span>
@@ -70,12 +70,5 @@
 		</div>
 	</div>
 </div>
-
-<h2>Database `{{ db.name }}`</h2>
-<h3>Resides on {{ db.server }}</h3>
-
-<ul>
-	<li>change password</li>
-</u>
 
 {% endblock %}
