@@ -53,23 +53,30 @@ def database_list():
 
 	return render_template('databases.html', active='databases', rows=rows)
 
-@app.route('/database/<database_id>')
+################################################################################
+#### VIEW/EDIT DATABASE INSTANCE
+
+@app.route('/database/<database_id>', methods=['GET','POST'])
 @mysqladm.core.login_required
 def database_view(database_id):
-	## Load the dictionary based cursor
-	cur = g.db.cursor(mysql.cursors.DictCursor)
-
-	## Execute a SQL select
-	cur.execute("SELECT `databases`.`id` AS 'id', `servers`.`hostname` AS `server`, `databases`.`name` AS 'name', `databases`.`owner` AS 'owner', `databases`.`description` AS 'description' FROM `databases` LEFT JOIN `servers` ON `servers`.`id` = `databases`.`server` WHERE `databases`.`id` = %s",(database_id))
-
-	## Get results
-	database = cur.fetchone()
-
-	## Return an error if there was no database
-	if database == None:
-		return mysqladm.errors.output_error('No such database','I could not find the database you were looking for! ','')
-
-	return render_template('database.html', active='databases', db=database)
+	if request.method == 'GET':
+		## Load the dictionary based cursor
+		cur = g.db.cursor(mysql.cursors.DictCursor)
+	
+		## Execute a SQL select
+		cur.execute("SELECT `databases`.`id` AS 'id', `servers`.`hostname` AS `server`, `databases`.`name` AS 'name', `databases`.`owner` AS 'owner', `databases`.`description` AS 'description' FROM `databases` LEFT JOIN `servers` ON `servers`.`id` = `databases`.`server` WHERE `databases`.`id` = %s",(database_id))
+	
+		## Get results
+		database = cur.fetchone()
+	
+		## Return an error if there was no database
+		if database == None:
+			return mysqladm.errors.output_error('No such database','I could not find the database you were looking for! ','')
+	
+		return render_template('database.html', active='databases', db=database)
+		
+	elif request.method == 'POST':
+		pass
 
 ################################################################################
 #### CREATE DATABASE
