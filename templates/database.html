@@ -22,19 +22,18 @@
 							<td><strong>Size:</strong></td>
 							<td>FAKE GB</td>
 						</tr>
-						<tr>
-							<td><strong>DELETE!</strong></td>
-							<td></td>
-						</tr>
 					</tbody>
 				</table>
+				<ul class="nav nav-pills nav-stacked">
+				  <li><a href="#" data-toggle="modal" data-target="#delete-confirm"><span class="glyphicon glyphicon-trash"></span> Delete Database</a></li>
+				</ul>				
 			</div>
 		</div>
 	</div>
 	<div class="col-md-8">
 		<div class="panel panel-info panel2k">
 			<div class="panel-heading">
-				<h3 class="panel-title">Server Status</h3>
+				<h3 class="panel-title">Database Details</h3>
 			  </div>
 			  <div class="panel-body">
 				<form class="form-horizontal" role="form" method="POST">
@@ -54,7 +53,7 @@
 							</div>
 					</div>
 						<div class="form-group">
-						<label for="inputPassword" class="col-lg-2 control-label">Password</label>
+						<label for="inputPassword" class="col-lg-2 control-label">Password</labe>
 						<div class="col-lg-10">
 							<input type="password" class="form-control" id="inputPassword" name="database_passwd"></input>
 							<span class="help-block">Leave blank if you don't want to change the password</span>
@@ -63,7 +62,7 @@
 				
 					<div class="form-group">
 						<div class="col-lg-offset-2 col-lg-10">
-							<button type="submit" class="btn btn-default">Save</button>
+							<button type="submit" class="btn btn-default">Save Changes</button>
 						</div>
 					</div>
 				</form>
@@ -76,9 +75,6 @@
 <h3>Resides on {{ db.server }}</h3>
 
 <ul>
-	<li>current size of db</li>
-	<li>DELETE</li>
-	<li>Edit owner/description</li>
 	<li>change password</li>
 </u>
 
