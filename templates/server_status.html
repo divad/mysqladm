@@ -1,7 +1,9 @@
 {% extends "layout.html" %}
 {% block body %}
 
-<h3>Server Status</h3>
+<div class="page-dashboard">
+  <h1><span class="glyphicon glyphicon-plus-sign"></span> Server Status</h1>
+</div>
 
 <script type="text/javascript">
 $(document).ready(function()
@@ -22,7 +24,7 @@ $(document).ready(function()
 			<th>Load Average</th>
 			<th class="sorter-metric" data-metric-name="B|byte">Disk Capacity</th>
 			<th class="sorter-metric" data-metric-name="B|byte">Disk Usage</th>
-			<th class="sorter-metric" data-metric-name="B|byte">Disk Free</th>	
+			<th class="sorter-metric" data-metric-name="B|byte">Disk Free</th>
 			<th>MySQL Uptime</th>
 		</tr>
 	</thead>
