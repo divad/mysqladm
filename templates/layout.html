@@ -42,11 +42,11 @@
 	          <ul class="nav nav-sidebar">
 	            <li {% if active == 'servers' %} class="active" {% endif %}><a href="{{ url_for('server_list') }}"><span class="glyphicon glyphicon-list-alt"></span> Server List</a></li>
 	            <li {% if active == 'server_status' %} class="active" {% endif %}><a href="{{ url_for('server_status') }}"><span class="glyphicon glyphicon-dashboard"></span> Server Status</a></li>
-	            <li {% if active == 'server_add' %} class="active" {% endif %}><a href="{{ url_for('server_add') }}"><span class="glyphicon glyphicon-search"></span> Add Server</a></li>
+	            <li {% if active == 'server_add' %} class="active" {% endif %}><a href="{{ url_for('server_add') }}"><span class="glyphicon glyphicon-plus-sign"></span> Add Server</a></li>
 	          </ul>
 	          <ul class="nav nav-sidebar">
-	            <li {% if active == 'databases' %} class="active" {% endif %}><a href="{{ url_for('database_list') }}"><span class="glyphicon glyphicon-search"></span> Databases</a></li>
-	            <li {% if active == 'database_create' %} class="active" {% endif %}><a href="{{ url_for('database_create') }}"><span class="glyphicon glyphicon-search"></span> Create Database</a></li>
+	            <li {% if active == 'databases' %} class="active" {% endif %}><a href="{{ url_for('database_list') }}"><span class="glyphicon glyphicon-book"></span> Databases</a></li>
+	            <li {% if active == 'database_create' %} class="active" {% endif %}><a href="{{ url_for('database_create') }}"><span class="glyphicon glyphicon-plus"></span> Create Database</a></li>
 	          </ul>
 	        </div>
 	        <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
