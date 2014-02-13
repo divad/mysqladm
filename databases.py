@@ -37,6 +37,7 @@ def get_database(db_name,server_id):
 #### LIST DATABASES
 
 @app.route('/databases')
+@mysqladm.core.login_required
 def database_list():
 	## Load the dictionary based cursor
 	cur = g.db.cursor(mysql.cursors.DictCursor)
@@ -53,6 +54,7 @@ def database_list():
 	return render_template('databases.html', active='databases', rows=rows)
 
 @app.route('/database/<database_id>')
+@mysqladm.core.login_required
 def database_view(database_id):
 	## Load the dictionary based cursor
 	cur = g.db.cursor(mysql.cursors.DictCursor)
@@ -73,6 +75,7 @@ def database_view(database_id):
 #### CREATE DATABASE
 
 @app.route('/databases/create', methods=['GET','POST'])
+@mysqladm.core.login_required
 def database_create():
 	if request.method == 'GET':
 		return render_template('database_create.html', active='database_create')

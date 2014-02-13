@@ -39,6 +39,7 @@ def get_server_by_hostname(hostname):
 #### LIST SERVERS
 
 @app.route('/servers')
+@mysqladm.core.login_required
 def server_list():
 	## Load the dictionary based cursor
 	cur = g.db.cursor(mysql.cursors.DictCursor)
@@ -60,6 +61,7 @@ def server_list():
 #### SERVER STATUS
 
 @app.route('/server_status')
+@mysqladm.core.login_required
 def server_status():
 	## Load the dictionary based cursor
 	cur = g.db.cursor(mysql.cursors.DictCursor)
@@ -106,6 +108,7 @@ def server_status():
 #### MANAGE SERVER
 
 @app.route('/server/<server_name>', methods=['GET','POST'])
+@mysqladm.core.login_required
 def server_view(server_name):
 	if request.method == 'GET':
 		## Load the dictionary based cursor
@@ -226,6 +229,7 @@ def server_view(server_name):
 #### ADD SERVER
 
 @app.route('/servers/add', methods=['GET','POST'])
+@mysqladm.core.login_required
 def server_add():
 	if request.method == 'GET':
 		return render_template('server_add.html', active='server_add')

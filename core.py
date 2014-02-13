@@ -49,7 +49,7 @@ def login_required(f):
 			flash('<strong>Oops!</strong> You must login first.','alert-error')
 			## TODO take the next code from sysman - much improved over this.
 			args = url_encode(request.args)
-			return redirect(url_for('hero', next=request.script_root + request.path + "?" + args))
+			return redirect(url_for('default', next=request.script_root + request.path + "?" + args))
 		return f(*args, **kwargs)
 	return decorated_function
 

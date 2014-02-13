@@ -38,6 +38,7 @@ def default():
 #### ABOUT 
 
 @app.route('/about')
+@mysqladm.core.login_required
 def about():
 	return render_template('about.html', active='about')
 
@@ -45,6 +46,7 @@ def about():
 #### STATS
 
 @app.route('/stats')
+@mysqladm.core.login_required
 def stats():
 	## Load the dictionary based cursor
 	cur = g.db.cursor()
