@@ -99,7 +99,7 @@ def database_view(database_id):
 		if 'database_passwd' in request.form and len(request.form['database_passwd']) > 0:
 			## Talk to the server via HTTPS
 			try:
-				json_response = mysqladm.core.msg_node(server['hostname'],server['password'],'passwd',name=database['name'], passwd=database_passwd)
+				json_response = mysqladm.core.msg_node(server['hostname'],server['password'],'passwd',name=database['name'], passwd=request.form['database_passwd'])
 	
 				if 'status' not in json_response:
 					return mysqladm.errors.output_error('Unable to change database password', 'The mysql server responded with something unexpected: ' + str(json_response), '')
