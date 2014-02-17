@@ -120,6 +120,40 @@ def database_view(database_id):
 
 		# redirect to server view
 		return redirect(url_for('database_view', database_id=database_id))
+		
+################################################################################
+#### DELETE DATABASE INSTANCE
+
+@app.route('/deletedb/<database_id>', methods=['POST'])
+@mysqladm.core.login_required
+def database_delete(database_id):
+	database = get_database_by_id(database_id)
+	if database == None:
+		return mysqladm.errors.output_error('No such database','I could not find the database you were trying to edit! ','')
+
+	try:
+		json_response = mysqladm.core.msg_node(server['hostname'],server['password'],'drop',name=database['name'])
+
+		if 'status' not in json_response:
+			return mysqladm.errors.output_error('Unable to delete database instance', 'The mysql server responded with something unexpected: ' + str(json_response), '')
+
+		if json_response['status'] != 0:
+			if 'error' in json_response:
+				return mysqladm.errors.output_error('Unable to delete database instance','The mysql server responded with an error: ' + str(json_response['error']),'core.msg_node error')
+			else:
+				return mysqladm.errors.output_error('Unable to delete database instance','The mysql server responded with an error status code: ' + str(json_response['status']),'core.msg_node status no error')
+
+	except requests.exceptions.RequestException as e:
+		return mysqladm.errors.output_error('Unable to change database password','An error occured when communicating with the MySQL node: ' + str(e),'')	
+
+	cur = g.db.cursor(mysql.cursors.DictCursor)
+	cur.execute('DELETE FROM `databases` WHERE `id` = %s', (database_id))
+	g.db.commit()
+		
+	flash('Database instance deleted successfully', 'alert-success')
+
+	# redirect to server view
+	return redirect(url_for('server_view', server_name=database['server'])
 
 ################################################################################
 #### CREATE DATABASE
