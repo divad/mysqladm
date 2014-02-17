@@ -10,7 +10,6 @@
 			</div>
 			<form class="form-horizontal" role="form" method="POST" action="{{ url_for('database_delete', database_id=db.id) }}">
 				<input type="hidden" name="_csrf_token" value="{{ csrf_token() }}" />
-				<input type="hidden" name="database_id" value="{{ db.id }}" />
 				<input type="hidden" name="delete" value="yes" />
 				<div class="modal-body">
 				<p>Are you sure you want to delete this database? This will delete the data on the server. This is NON RECOVERABLE.</p>

@@ -76,7 +76,7 @@ def database_view(database_id):
 		## Load the server for the database
 		server = mysqladm.servers.get_server_by_hostname(database['server'])
 		if server == None:
-			return mysqladm.errors.output_error('No such server','I could not find the server the database is hosted on! ','')
+			return mysqladm.errors.output_error('No such server','I could not find the server the database resides on! ','')
 
 		if 'database_desc' in request.form and len(request.form['database_desc']) > 0:
 			database_desc = request.form['database_desc']
@@ -130,6 +130,11 @@ def database_delete(database_id):
 	database = get_database_by_id(database_id)
 	if database == None:
 		return mysqladm.errors.output_error('No such database','I could not find the database you were trying to edit! ','')
+
+	## Try to load the server
+	server = mysqladm.servers.get_server_by_hostname(database['server'])
+	if server == None:
+		return mysqladm.errors.output_error('No such server','I could not find the server the database resides on! ','')
 
 	try:
 		json_response = mysqladm.core.msg_node(server['hostname'],server['password'],'drop',name=database['name'])
@@ -185,7 +190,7 @@ def database_create():
 		if 'database_desc' in request.form and len(request.form['database_desc']) > 0:
 			description = request.form['database_desc']
 		else:
-			return mysqladm.errors.output_error('Unable to create database', 'You must specify a database de   scription','')
+			return mysqladm.errors.output_error('Unable to create database', 'You must specify a database description','')
 
 		if 'database_owner' in request.form and len(request.form['database_owner']) > 0:
 			owner = request.form['database_owner']
