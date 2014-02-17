@@ -153,7 +153,7 @@ def database_delete(database_id):
 	flash('Database instance deleted successfully', 'alert-success')
 
 	# redirect to server view
-	return redirect(url_for('server_view', server_name=database['server'])
+	return redirect(url_for('server_view', server_name=database['server']))
 
 ################################################################################
 #### CREATE DATABASE
