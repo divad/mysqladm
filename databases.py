@@ -122,6 +122,44 @@ def database_view(database_id):
 		return redirect(url_for('database_view', database_id=database_id))
 		
 ################################################################################
+#### VIEW/EDIT DATABASE INSTANCE
+
+@app.route('/dbpasswd/<database_id>', methods=['POST'])
+@mysqladm.core.login_required
+def database_passwd_rng(database_id):
+	database = get_database_by_id(database_id)
+	if database == None:
+		return mysqladm.errors.output_error('No such database','I could not find the database you were trying to edit! ','')
+
+	## Load the server for the database
+	server = mysqladm.servers.get_server_by_hostname(database['server'])
+	if server == None:
+		return mysqladm.errors.output_error('No such server','I could not find the server the database resides on! ','')
+	
+	## Now try to change password
+	new_passwd = mysqladm.core.pwgen()
+	
+	try:
+		json_response = mysqladm.core.msg_node(server['hostname'],server['password'],'passwd',name=database['name'], passwd=new_passwd)
+
+		if 'status' not in json_response:
+			return mysqladm.errors.output_error('Unable to change database password', 'The mysql server responded with something unexpected: ' + str(json_response), '')
+
+		if json_response['status'] != 0:
+			if 'error' in json_response:
+				return mysqladm.errors.output_error('Unable to change database password','The mysql server responded with an error: ' + str(json_response['error']),'core.msg_node error')
+			else:
+				return mysqladm.errors.output_error('Unable to change database password','The mysql server responded with an error status code: ' + str(json_response['status']),'core.msg_node status no error')
+
+		flash('Database password successfully changed to "' + new_passwd + '"', 'alert-success')
+
+	except requests.exceptions.RequestException as e:
+		return mysqladm.errors.output_error('Unable to change database password','An error occured when communicating with the MySQL node: ' + str(e),'')	
+
+	# redirect to server view
+	return redirect(url_for('database_view', database_id=database_id))
+		
+################################################################################
 #### DELETE DATABASE INSTANCE
 
 @app.route('/deletedb/<database_id>', methods=['POST'])
