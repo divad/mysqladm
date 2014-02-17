@@ -1,7 +1,9 @@
 {% extends "layout.html" %}
 {% block body %}
 
-<h2>Create new database</h2>
+<div class="page-header">
+  <h1>Create new database</h1>
+</div>
 
 <form class="form-horizontal" role="form" method="POST">
 	<input type="hidden" name="_csrf_token" value="{{ csrf_token() }}" />
