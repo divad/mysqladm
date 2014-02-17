@@ -59,24 +59,41 @@ def database_list():
 @app.route('/database/<database_id>', methods=['GET','POST'])
 @mysqladm.core.login_required
 def database_view(database_id):
+	## Get database
+	database = get_database_by_id(database_id)
+	if database == None:
+		return mysqladm.errors.output_error('No such database','I could not find the database you were looking for! ','')
+
+	## Get the server which hosts the database
+	server = mysqladm.servers.get_server_by_hostname(database['server'])
+	if server == None:
+		return mysqladm.errors.output_error('No such server','I could not find the server the database resides on! ','')	
+
+
+	db_size = "Unknown"
 	if request.method == 'GET':
-		## View database details
-		database = get_database_by_id(database_id)
-		if database == None:
-			return mysqladm.errors.output_error('No such database','I could not find the database you were looking for! ','')
+		try:
+			json_response = mysqladm.core.msg_node(row['hostname'], row['password'], 'stats')
+
+			if 'status' in json_response:
+				if json_response['status'] == 0 and 'list' in json_response:
+					db_sizes = json_response['db_sizes']
+					if database['name'] not in db_sizes:
+						db_size = "Size not yet calculated"
+					else:
+						db_size = db_sizes[database['name']]
+				else:
+					db_size = "Invalid response from server"
+			else:
+				db_size = "Invalid response from server"
+				
+		except requests.exceptions.RequestException as e:
+			db_size = "Error contacting server"
 	
-		return render_template('database.html', active='databases', db=database)
+		return render_template('database.html', active='databases', db=database, db_size=db_size)
 		
 	elif request.method == 'POST':
 		## Edit the database details
-		database = get_database_by_id(database_id)
-		if database == None:
-			return mysqladm.errors.output_error('No such database','I could not find the database you were trying to edit! ','')
-
-		## Load the server for the database
-		server = mysqladm.servers.get_server_by_hostname(database['server'])
-		if server == None:
-			return mysqladm.errors.output_error('No such server','I could not find the server the database resides on! ','')
 
 		if 'database_desc' in request.form and len(request.form['database_desc']) > 0:
 			database_desc = request.form['database_desc']
@@ -122,7 +139,7 @@ def database_view(database_id):
 		return redirect(url_for('database_view', database_id=database_id))
 		
 ################################################################################
-#### VIEW/EDIT DATABASE INSTANCE
+#### RESET DATABASE PASSWORD
 
 @app.route('/dbpasswd/<database_id>', methods=['POST'])
 @mysqladm.core.login_required
