@@ -74,7 +74,7 @@ def database_view(database_id):
 			return mysqladm.errors.output_error('No such database','I could not find the database you were trying to edit! ','')
 
 		## Load the server for the database
-		server = get_server_by_hostname(database['server'])
+		server = mysqladm.servers.get_server_by_hostname(database['server'])
 		if server == None:
 			return mysqladm.errors.output_error('No such server','I could not find the server the database is hosted on! ','')
 
