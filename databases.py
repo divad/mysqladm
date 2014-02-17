@@ -73,7 +73,7 @@ def database_view(database_id):
 	db_size = "Unknown"
 	if request.method == 'GET':
 		try:
-			json_response = mysqladm.core.msg_node(row['hostname'], row['password'], 'stats')
+			json_response = mysqladm.core.msg_node(server['hostname'], server['password'], 'stats')
 
 			if 'status' in json_response:
 				if json_response['status'] == 0 and 'list' in json_response:
