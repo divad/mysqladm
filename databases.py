@@ -90,7 +90,8 @@ def database_view(database_id):
 			flash('Database description must not be empty', 'alert-danger')
 			return redirect(url_for('database_view', database_id=database_id))
 
-		# Update details without a password
+		# Update details
+		cur = g.db.cursor(mysql.cursors.DictCursor)
 		cur.execute('UPDATE `databases` SET `description` = %s, `owner` = %s WHERE `id` = %s', (database_desc, database_owner, database_id))
 		g.db.commit()
 		
