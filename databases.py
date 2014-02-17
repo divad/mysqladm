@@ -75,17 +75,25 @@ def database_view(database_id):
 		try:
 			json_response = mysqladm.core.msg_node(server['hostname'], server['password'], 'stats')
 
-			if 'status' in json_response:
-				if json_response['status'] == 0 and 'list' in json_response:
+			if 'status' not in json_response:
+				db_size = "Invalid JSON response from server"
+			else:
+				if json_response['status'] != 0:
+					if 'error' in json_response:
+						db_size = "Error: " +  str(json_response['error']
+					else:
+						db_size = "Error code: " + str(json_response['status']
+				else:
 					db_sizes = json_response['db_sizes']
 					if database['name'] not in db_sizes:
 						db_size = "Size not yet calculated"
 					else:
 						db_size = db_sizes[database['name']]
-				else:
-					db_size = "Invalid response from server"
-			else:
-				db_size = "Invalid response from server"
+
+		except requests.exceptions.RequestException as e:
+			return mysqladm.errors.output_error('Unable to create database','An error occured when communicating with the MySQL node: ' + str(e),'')	
+
+
 				
 		except requests.exceptions.RequestException as e:
 			db_size = "Error contacting server"
