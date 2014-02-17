@@ -80,9 +80,9 @@ def database_view(database_id):
 			else:
 				if json_response['status'] != 0:
 					if 'error' in json_response:
-						db_size = "Error: " +  str(json_response['error']
+						db_size = "Error: " +  str(json_response['error'])
 					else:
-						db_size = "Error code: " + str(json_response['status']
+						db_size = "Error code: " + str(json_response['status'])
 				else:
 					db_sizes = json_response['db_sizes']
 					if database['name'] not in db_sizes:
