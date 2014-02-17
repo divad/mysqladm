@@ -24,13 +24,13 @@ import requests
 
 
 def get_database(db_name,server_id):
-	## Load the dictionary based cursor
 	cur = g.db.cursor(mysql.cursors.DictCursor)
-
-	## Execute a SQL select
 	cur.execute("SELECT * FROM `databases` WHERE `name` = %s AND `server` = %s", (db_name,server_id))
-
-	## Get results
+	return cur.fetchone()
+	
+def get_database_by_id(database_id):
+	cur = g.db.cursor(mysql.cursors.DictCursor)
+	cur.execute("SELECT `databases`.`id` AS 'id', `servers`.`hostname` AS `server`, `databases`.`name` AS 'name', `databases`.`owner` AS 'owner', `databases`.`description` AS 'description' FROM `databases` LEFT JOIN `servers` ON `servers`.`id` = `databases`.`server` WHERE `databases`.`id` = %s",(database_id))
 	return cur.fetchone()
 
 ################################################################################
@@ -60,23 +60,65 @@ def database_list():
 @mysqladm.core.login_required
 def database_view(database_id):
 	if request.method == 'GET':
-		## Load the dictionary based cursor
-		cur = g.db.cursor(mysql.cursors.DictCursor)
-	
-		## Execute a SQL select
-		cur.execute("SELECT `databases`.`id` AS 'id', `servers`.`hostname` AS `server`, `databases`.`name` AS 'name', `databases`.`owner` AS 'owner', `databases`.`description` AS 'description' FROM `databases` LEFT JOIN `servers` ON `servers`.`id` = `databases`.`server` WHERE `databases`.`id` = %s",(database_id))
-	
-		## Get results
-		database = cur.fetchone()
-	
-		## Return an error if there was no database
+		## View database details
+		database = get_database_by_id(database_id)
 		if database == None:
 			return mysqladm.errors.output_error('No such database','I could not find the database you were looking for! ','')
 	
 		return render_template('database.html', active='databases', db=database)
 		
 	elif request.method == 'POST':
-		pass
+		## Edit the database details
+		database = get_database_by_id(database_id)
+		if database == None:
+			return mysqladm.errors.output_error('No such database','I could not find the database you were trying to edit! ','')
+
+		## Load the server for the database
+		server = get_server_by_hostname(database['server'])
+		if server == None:
+			return mysqladm.errors.output_error('No such server','I could not find the server the database is hosted on! ','')
+
+		if 'database_desc' in request.form and len(request.form['database_desc']) > 0:
+			database_desc = request.form['database_desc']
+		else:
+			flash('Database description must not be empty', 'alert-danger')
+			return redirect(url_for('database_view', database_id=database_id))
+			
+		if 'database_owner' in request.form and len(request.form['database_owner']) > 0:
+			database_owner = request.form['database_owner']
+		else:
+			flash('Database description must not be empty', 'alert-danger')
+			return redirect(url_for('database_view', database_id=database_id))
+
+		# Update details without a password
+		cur.execute('UPDATE `databases` SET `description` = %s, `owner` = %s WHERE `id` = %s', (database_desc, database_owner, database_id))
+		g.db.commit()
+		
+		## Now try to change password, if required
+		if 'database_passwd' in request.form and len(request.form['database_passwd']) > 0:
+			## Talk to the server via HTTPS
+			try:
+				json_response = mysqladm.core.msg_node(server['hostname'],server['password'],'passwd',name=database['name'], passwd=passwd)
+	
+				if 'status' not in json_response:
+					return mysqladm.errors.output_error('Unable to change database password', 'The mysql server responded with something unexpected: ' + str(json_response), '')
+	
+				if json_response['status'] != 0:
+					if 'error' in json_response:
+						return mysqladm.errors.output_error('Unable to change database password','The mysql server responded with an error: ' + str(json_response['error']),'core.msg_node error')
+					else:
+						return mysqladm.errors.output_error('Unable to change database password','The mysql server responded with an error status code: ' + str(json_response['status']),'core.msg_node status no error')
+	
+				flash('Database password successfully changed', 'alert-success')
+	
+			except requests.exceptions.RequestException as e:
+				return mysqladm.errors.output_error('Unable to change database password','An error occured when communicating with the MySQL node: ' + str(e),'')	
+
+		# Notify that we've succeeded
+		flash('Database details successfully changed', 'alert-success')
+
+		# redirect to server view
+		return redirect(url_for('database_view', database_id=database_id))
 
 ################################################################################
 #### CREATE DATABASE
