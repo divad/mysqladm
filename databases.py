@@ -92,8 +92,6 @@ def database_view(database_id):
 
 		except requests.exceptions.RequestException as e:
 			return mysqladm.errors.output_error('Unable to create database','An error occured when communicating with the MySQL node: ' + str(e),'')	
-
-
 				
 		except requests.exceptions.RequestException as e:
 			db_size = "Error contacting server"
@@ -135,7 +133,8 @@ def database_view(database_id):
 					else:
 						return mysqladm.errors.output_error('Unable to change database password','The mysql server responded with an error status code: ' + str(json_response['status']),'core.msg_node status no error')
 	
-				flash('Database password successfully changed', 'alert-success')
+				session['dbpasswd'] = request.form['database_passwd']
+				return redirect(url_for('database_details',database_id=database_id))
 	
 			except requests.exceptions.RequestException as e:
 				return mysqladm.errors.output_error('Unable to change database password','An error occured when communicating with the MySQL node: ' + str(e),'')	
@@ -145,6 +144,30 @@ def database_view(database_id):
 
 		# redirect to server view
 		return redirect(url_for('database_view', database_id=database_id))
+		
+################################################################################
+#### PRINT DATABASE DETAILS AFTER CREATION OR PASSWORD CHANGE
+
+@app.route('/dbcreated/<database_id>', methods=['GET'])
+@mysqladm.core.login_required
+def database_view(database_id):
+	## Get database
+	database = get_database_by_id(database_id)
+	if database == None:
+		return mysqladm.errors.output_error('No such database','I could not find the database you were looking for! ','')
+
+	## Get the server which hosts the database
+	server = mysqladm.servers.get_server_by_hostname(database['server'])
+	if server == None:
+		return mysqladm.errors.output_error('No such server','I could not find the server the database resides on! ','')	
+		
+	if 'dbpasswd' in session:
+		dbpasswd = session['dbpasswd']
+		session['dbpasswd'] = ''
+	else:
+		dbpasswd = 'Unknown'
+	
+	return render_template('database_created.html', active='databases', db=database, server=server, passwd=dbpasswd)
 		
 ################################################################################
 #### RESET DATABASE PASSWORD
@@ -176,13 +199,12 @@ def database_passwd_rng(database_id):
 			else:
 				return mysqladm.errors.output_error('Unable to change database password','The mysql server responded with an error status code: ' + str(json_response['status']),'core.msg_node status no error')
 
-		flash('Database password successfully changed to "' + new_passwd + '"', 'alert-success')
-
 	except requests.exceptions.RequestException as e:
 		return mysqladm.errors.output_error('Unable to change database password','An error occured when communicating with the MySQL node: ' + str(e),'')	
 
-	# redirect to server view
-	return redirect(url_for('database_view', database_id=database_id))
+	# redirect to details view
+	session['dbpasswd'] = new_passwd
+	return redirect(url_for('database_details',database_id=database_id))
 		
 ################################################################################
 #### DELETE DATABASE INSTANCE
@@ -219,8 +241,6 @@ def database_delete(database_id):
 	g.db.commit()
 		
 	flash('Database instance deleted successfully', 'alert-success')
-
-	# redirect to server view
 	return redirect(url_for('server_view', server_name=database['server']))
 
 ################################################################################
@@ -267,8 +287,9 @@ def database_create():
 		else:
 			## Generate a password if one was not sent
 			passwd = mysqladm.core.pwgen()
+			## Remember we set a password randomly
 			genpasswd = True
-
+			
 		## Try to load the server details
 		server = mysqladm.servers.get_server_by_hostname(hostname)
 		if server == None:
@@ -297,19 +318,13 @@ def database_create():
 
 		# Create a record of the database in the database (yo dawg)
 		cur.execute('INSERT INTO `databases` (`server`, `name`, `owner`, `description`) VALUES (%s, %s, %s, %s)', (server['id'], name, owner, description))
-
+		
 		# Commit changes to the database
 		g.db.commit()
 
 		## Last insert ID
-		server_id = cur.lastrowid
+		database_id = cur.lastrowid
 
-		# Notify that we've succeeded
-		if genpasswd:
-			flash("Database instance successfully created with generated password '" + passwd + "'",'alert-success')
-		else:
-			flash('Database instance successfully created', 'alert-success')
-
-		# redirect to server list
-		return redirect(url_for('server_view',server_name=hostname))
-
+		# redirect to database details view
+		session['dbpasswd'] = passwd		
+		return redirect(url_for('database_details',database_id=database_id))
