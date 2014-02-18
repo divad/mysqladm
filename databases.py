@@ -148,9 +148,9 @@ def database_view(database_id):
 ################################################################################
 #### PRINT DATABASE DETAILS AFTER CREATION OR PASSWORD CHANGE
 
-@app.route('/dbcreated/<database_id>', methods=['GET'])
+@app.route('/database/<database_id>/details', methods=['GET'])
 @mysqladm.core.login_required
-def database_view(database_id):
+def database_details(database_id):
 	## Get database
 	database = get_database_by_id(database_id)
 	if database == None:
@@ -172,7 +172,7 @@ def database_view(database_id):
 ################################################################################
 #### RESET DATABASE PASSWORD
 
-@app.route('/dbpasswd/<database_id>', methods=['POST'])
+@app.route('/database/<database_id>/passwd', methods=['POST'])
 @mysqladm.core.login_required
 def database_passwd_rng(database_id):
 	database = get_database_by_id(database_id)
@@ -209,7 +209,7 @@ def database_passwd_rng(database_id):
 ################################################################################
 #### DELETE DATABASE INSTANCE
 
-@app.route('/deletedb/<database_id>', methods=['POST'])
+@app.route('/database/<database_id>/delete', methods=['POST'])
 @mysqladm.core.login_required
 def database_delete(database_id):
 	database = get_database_by_id(database_id)
