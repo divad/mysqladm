@@ -1,6 +1,6 @@
 Website:
 	
-	3 Add database without being on a server first
+	3 Add database wizard
 	4 MySQL farm seperation? Non-mysql farm database servers? Special code to handle the fact that the agent assumes its a farm node...
 		unique names on mysql farm? or not?	
 		
