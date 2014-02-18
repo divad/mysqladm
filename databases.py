@@ -164,8 +164,9 @@ def database_details(database_id):
 	
 	dbpasswd = 'N/A - Only available when setting or changing password'
 	if 'dbpasswd' in session:
-		dbpasswd = session['dbpasswd']
-		session['dbpasswd'] = ''
+		if len(session['dbpasswd']) > 0:
+			dbpasswd = session['dbpasswd']
+			session['dbpasswd'] = ''
 	
 	return render_template('database_created.html', active='databases', db=database, server=server, passwd=dbpasswd)
 		
