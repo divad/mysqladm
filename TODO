@@ -1,10 +1,11 @@
 Website:
 
 	
-	1 Database Details on create or change password
 	2 Create database date
+	
 	3 Add database without being on a server first
 	4 MySQL farm seperation? Non-mysql farm database servers? Special code to handle the fact that the agent assumes its a farm node...
+
 	5 Search
 	6 More stats? Pie charts?
 	7 Landing page

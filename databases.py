@@ -69,7 +69,6 @@ def database_view(database_id):
 	if server == None:
 		return mysqladm.errors.output_error('No such server','I could not find the server the database resides on! ','')	
 
-
 	db_size = 0
 	db_size_error = ""
 	if request.method == 'GET':
@@ -317,8 +316,8 @@ def database_create():
 		except requests.exceptions.RequestException as e:
 			return mysqladm.errors.output_error('Unable to create database','An error occured when communicating with the MySQL node: ' + str(e),'')	
 
-		# Create a record of the database in the database (yo dawg)
-		cur.execute('INSERT INTO `databases` (`server`, `name`, `owner`, `description`) VALUES (%s, %s, %s, %s)', (server['id'], name, owner, description))
+		# Create a record of the database in the database
+		cur.execute('INSERT INTO `databases` (`server`, `name`, `owner`, `description`, `create_date`) VALUES (%s, %s, %s, %s, UNIX_TIMESTAMP(NOW()))', (server['id'], name, owner, description))
 		
 		# Commit changes to the database
 		g.db.commit()
