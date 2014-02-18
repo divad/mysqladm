@@ -138,6 +138,7 @@ def database_view(database_id):
 					else:
 						return mysqladm.errors.output_error('Unable to change database password','The mysql server responded with an error status code: ' + str(json_response['status']),'core.msg_node status no error')
 	
+				flash('Database details successfully changed', 'alert-success')
 				session['dbpasswd'] = request.form['database_passwd']
 				return redirect(url_for('database_details',database_id=database_id))
 	
@@ -209,6 +210,7 @@ def database_passwd_rng(database_id):
 
 	# redirect to details view
 	session['dbpasswd'] = new_passwd
+	flash('Database password successfully changed', 'alert-success')
 	return redirect(url_for('database_details',database_id=database_id))
 		
 ################################################################################
@@ -331,5 +333,6 @@ def database_create():
 		database_id = cur.lastrowid
 
 		# redirect to database details view
-		session['dbpasswd'] = passwd		
+		session['dbpasswd'] = passwd
+		flash('Database successfully created', 'alert-success')
 		return redirect(url_for('database_details',database_id=database_id))
