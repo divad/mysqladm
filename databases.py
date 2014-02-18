@@ -30,7 +30,7 @@ def get_database(db_name,server_id):
 	
 def get_database_by_id(database_id):
 	cur = g.db.cursor(mysql.cursors.DictCursor)
-	cur.execute("SELECT `databases`.`id` AS 'id', `servers`.`hostname` AS `server`, `databases`.`name` AS 'name', `databases`.`owner` AS 'owner', `databases`.`description` AS 'description' FROM `databases` LEFT JOIN `servers` ON `servers`.`id` = `databases`.`server` WHERE `databases`.`id` = %s",(database_id))
+	cur.execute("SELECT `databases`.`id` AS 'id', `servers`.`hostname` AS `server`, `databases`.`create_date` AS `create_date`, `databases`.`name` AS 'name', `databases`.`owner` AS 'owner', `databases`.`description` AS 'description' FROM `databases` LEFT JOIN `servers` ON `servers`.`id` = `databases`.`server` WHERE `databases`.`id` = %s",(database_id))
 	return cur.fetchone()
 
 ################################################################################
