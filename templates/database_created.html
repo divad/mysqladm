@@ -11,7 +11,9 @@ Database Server: {{server.alias}}
 Database Port: 3306
 
 Username: {{db.name}}
-Password: {{dbpasswd}}
+Password: {{passwd}}
 </pre>
+
+<a href="{{ url_for('database_view',database_id=db.id) }}">View database</a>
 
 {% endblock %}
