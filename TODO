@@ -1,22 +1,18 @@
 Website:
 
-	Create database date
-	'helpful database details' thing
-	Add database generic (I think this should be part of the 'farm' functions)
-	Finish view database
-	Delete database
-	Modify database
-
-	moar stats and shizzle? graphs.
-
-	seperation between 'farm' and 'not farm'??
-		change DB to classify 'farm' and 'not farm' servers?
-		
-	search!
+	
+	1 Database Details on create or change password
+	2 Create database date
+	3 Add database without being on a server first
+	4 MySQL farm seperation? Non-mysql farm database servers? Special code to handle the fact that the agent assumes its a farm node...
+	5 Search
+	6 More stats? Pie charts?
+	7 Landing page
+	8 Password is logged into mysqlagent logs :( (switch to POST?)
 
 Scripts
 	Script to run and check for new databases ('statsync)'
-	cronjobs 
 	puppet module for agent
 
-move database to another server? would not be super difficul?
+BIG feature ideas:
+	move database to another server? would not be super difficul?

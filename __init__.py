@@ -51,6 +51,12 @@ DB_USER='mysqladm'
 DB_PASS='mysqladm'
 DB_PORT='3306'
 
+## Group logon access restriction
+ACCESS_GROUP='sys'
+
+## Should we verify the SSL certificate presented on the mysqlagent
+AGENT_SSL_VERIFY=True
+
 ################################################################################
 
 

@@ -20,9 +20,6 @@ import mysqladm.errors
 from werkzeug.urls import url_encode	
 from flask import Flask, g, request, redirect, session, url_for, abort, render_template, flash
 from functools import wraps
-from Crypto.Cipher import AES
-# the following needs a later pycrypto than is in RHEL6.
-#from Crypto import Random
 import random
 import base64
 import os
@@ -109,62 +106,6 @@ def pwgen(length=16):
 
 ################################################################################
 
-def aes_encrypt(s,key):
-	"""This function is used to encrypt a string via AES.
-	Pass it the string to encrypt and the key to use to do so.
-	Returns a base64 encoded string using AES CFB.
-	"""
-
-	# the following needs a later pycrypto version than is on RHEL6.
-	#iv = Random.new().read(AES.block_size)
-	iv = os.urandom(AES.block_size)
-	
-	c = AES.new(key,AES.MODE_CFB,iv)
-	b64 = base64.b64encode(iv + c.encrypt(s))
-	return b64
-
-################################################################################
-
-def aes_decrypt(s,key):
-	"""This function is used to decrypt a base64-encoded
-	AES CFB encrypted string. 
-	Pass it the string to decrypt and the correct key.
-	Returns an unencrypted string.
-	"""
-
-	binary = base64.b64decode(s)
-	iv = binary[:16]
-	e = binary[16:]
-	c = AES.new(key,AES.MODE_CFB,iv)
-	return c.decrypt(e)
-
-################################################################################
-
-def str_size(size):
-	"""Takes an integer representing number of bytes and returns it
-	as a human readable size, either bytes, kilobytes, megabytes or gigabytes.
-	"""
-	# Default to bytes as the type
-	t="bytes"
-	
-	## Make sure it is an int
-	size = int(size)
-
-	if size > 1024:
-
-		if size > 1024*1024*1024:
-			size = float(size) / (1024.0*1024.0*1024.0)
-			t="GB"
-
-		elif size > 1048576:
-			size = float(size) / (1024.0*1024.0)
-			t="MB"
-		else:
-			size = float(size) / 1024.0
-			t="KB"
-
-		size = round(size,1)
-
 def poperr_set(title,message):
 	"""This function will create and show a
 	popup dialog error on the next time a page
@@ -189,7 +130,8 @@ def poperr_clear():
 	## if you return nothing, it prints "None", so we return empty string!
 	return ""
 
-###################
+################################################################################
+
 def msg_node(hostname, agent_password, function, **kwargs):
 	payload = {'function': function, 'agent_password': agent_password}
 
@@ -198,7 +140,7 @@ def msg_node(hostname, agent_password, function, **kwargs):
 		payload[arg] = kwargs[arg]
 
 	## TODO turn verification back on once SSL in place
-	r = requests.get('https://' + hostname + ':1337/', params=payload, verify=False)
+	r = requests.get('https://' + hostname + ':1337/', params=payload, verify=app.config['AGENT_SSL_VERIFY'])
 	if r.status_code == requests.codes.ok:
 		return json.loads(r.text)
 	else:
