@@ -71,7 +71,7 @@ def database_view(database_id):
 
 
 	db_size = 0
-	db_size_error = "Unknown Error"
+	db_size_error = ""
 	if request.method == 'GET':
 		try:
 			json_response = mysqladm.core.msg_node(server['hostname'], server['password'], 'stats')
