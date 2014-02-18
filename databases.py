@@ -161,12 +161,11 @@ def database_details(database_id):
 	server = mysqladm.servers.get_server_by_hostname(database['server'])
 	if server == None:
 		return mysqladm.errors.output_error('No such server','I could not find the server the database resides on! ','')	
-		
+	
+	dbpasswd = 'N/A - Only available when setting or changing password'
 	if 'dbpasswd' in session:
 		dbpasswd = session['dbpasswd']
 		session['dbpasswd'] = ''
-	else:
-		dbpasswd = 'Unknown'
 	
 	return render_template('database_created.html', active='databases', db=database, server=server, passwd=dbpasswd)
 		
