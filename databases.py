@@ -96,7 +96,10 @@ def database_view(database_id):
 		except requests.exceptions.RequestException as e:
 			db_size = "Error contacting server"
 			
-		database['create_date'] = mysqladm.core.ut_to_string(database['create_date'])
+		try:
+			database['create_date'] = mysqladm.core.ut_to_string(database['create_date'])
+		except TypeError:
+			database['create_date'] = 'Unknown'
 	
 		return render_template('database.html', active='databases', db=database, db_size=db_size, db_size_error=db_size_error)
 		
