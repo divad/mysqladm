@@ -43,7 +43,7 @@ def database_list():
 	cur = g.db.cursor(mysql.cursors.DictCursor)
 
 	## Execute a SQL select
-	cur.execute("SELECT `databases`.`id`, AS `id`, `databases`.`create_date` AS `create_date`, `servers`.`hostname` AS `server`, `databases`.`name` AS 'name', `databases`.`owner` AS 'owner', `databases`.`description` AS 'description' FROM `databases` LEFT JOIN `servers` ON `servers`.`id` = `databases`.`server`")
+	cur.execute("SELECT `databases`.`id` AS `id`, `databases`.`create_date` AS `create_date`, `servers`.`hostname` AS `server`, `databases`.`name` AS 'name', `databases`.`owner` AS 'owner', `databases`.`description` AS 'description' FROM `databases` LEFT JOIN `servers` ON `servers`.`id` = `databases`.`server`")
 
 	## Get results
 	rows = cur.fetchall()

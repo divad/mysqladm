@@ -1,10 +1,12 @@
 Website:
-
-	
-	2 Create database date
 	
 	3 Add database without being on a server first
 	4 MySQL farm seperation? Non-mysql farm database servers? Special code to handle the fact that the agent assumes its a farm node...
+		unique names on mysql farm? or not?	
+		
+		
+	9 Hide default databases (mysql, mytop, information_schema)
+	10 Show arrows on table sorter
 
 	5 Search
 	6 More stats? Pie charts?
@@ -14,6 +16,7 @@ Website:
 Scripts
 	Script to run and check for new databases ('statsync)'
 	puppet module for agent
+	proper SSL on agent
 
 BIG feature ideas:
 	move database to another server? would not be super difficul?
