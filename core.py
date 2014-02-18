@@ -140,7 +140,7 @@ def msg_node(hostname, agent_password, function, **kwargs):
 		payload[arg] = kwargs[arg]
 
 	## TODO turn verification back on once SSL in place
-	r = requests.get('https://' + hostname + ':1337/', params=payload, verify=app.config['AGENT_SSL_VERIFY'])
+	r = requests.post('https://' + hostname + ':1337/', data=payload, verify=app.config['AGENT_SSL_VERIFY'])
 	if r.status_code == requests.codes.ok:
 		return json.loads(r.text)
 	else:
