@@ -60,7 +60,9 @@ def stats():
 
 	# Average up servers
 	count = 0
-	sum = 0.0
+	load_sum = 0.0
+	capacity_size = 0
+	usage_size = 0
 	row = cur.fetchone()
 	while row != None:
 		try:
@@ -69,8 +71,10 @@ def stats():
 
 			# If we have a valid response
 			if 'status' in json_response and json_response['status'] == 0 and 'load_avg_1' in json_response:
-				count = count + 1
-				sum = sum + float(json_response['load_avg_1'])
+				count         = count + 1
+				load_sum      = load_sum + float(json_response['load_avg_1'])
+				capacity_size = capacity_size + json_response['disk_capacity']
+				usage_size    = usage_size + (json_response['disk_capacity'] - json_response['disk_free'])
 		except Exception, e:
 			app.logger.warn(str(e))
 			# We ignore exceptions here
@@ -81,11 +85,11 @@ def stats():
 
 	# Calculate the load average
 	if count > 0:
-		loadavg = sum / count
+		loadavg = load_sum / count
 	else:
 		loadavg = 0
 
-	return render_template('stats.html', active='stats', servers=servers_row[0], databases=databases_row[0], loadavg="%.2f" % loadavg)
+	return render_template('stats.html', active='stats', servers=servers_row[0], databases=databases_row[0], loadavg="%.2f" % loadavg, capacity=capacity_size, usage=usage_size)
 
 ################################################################################
 #### LOGIN
