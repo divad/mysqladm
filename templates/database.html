@@ -62,7 +62,14 @@
 						</tr>
 						<tr>
 							<td><strong>Size:</strong></td>
-							<td>{{db_size|filesizeformat}}</td>
+							<td>
+							{% if db_size_error %}
+							{{ db_size_error }}
+							{% else %}
+							{{db_size|filesizeformat}}
+							{% endif %}
+								
+							</td>
 						</tr>
 					</tbody>
 				</table>
