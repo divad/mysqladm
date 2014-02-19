@@ -131,8 +131,8 @@ def server_view(server_name):
 
 		except Exception, e:
 			#app.logger.warn(str(e))
-			#return mysqladm.errors.output_error('Server communication error','An error occured whilst communicating with the remote server: ' + str(e),'mysqladm.core.msg_node')
-			server_error = str(e)
+			return mysqladm.errors.output_error('Server communication error','An error occured whilst communicating with the remote server: ' + str(e),'mysqladm.core.msg_node')
+			#server_error = str(e)
 
 		# If we have a valid response
 		if 'status' in json_response and json_response['status'] == 0 and 'load_avg_1' in json_response:
@@ -158,8 +158,8 @@ def server_view(server_name):
 			return render_template('server.html', active='servers', stats=json_response, server=server, databases=databases)
 		else:
 			server_error = str(e)
-			return render_template('server.html', active='servers', stats=json_response, server=server, databases=databases)
-			#return mysqladm.errors.output_error('Error querying server','An error occured whilst communicating with the remote server: ' + str(json_response['status']) + " " + json_response['error'],'jason_response handler')
+			#return render_template('server.html', active='servers', stats=json_response, server=server, databases=databases)
+			return mysqladm.errors.output_error('Error querying server','An error occured whilst communicating with the remote server: ' + str(json_response['status']) + " " + json_response['error'],'jason_response handler')
 
 	elif request.method == 'POST':
 		## Used to EDIT and DELETE/REMOVE
