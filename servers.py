@@ -74,24 +74,23 @@ def server_status():
 
 	## Iterate through each database and get the statistics
 	for row in rows:
-
+		server_error = False
+		serror = ''
+		
 		try:
 			json_response = mysqladm.core.msg_node(row['hostname'], row['password'], 'stats')
 
 			if 'status' in json_response:
 				if json_response['status'] == 0 and 'list' in json_response:
-					## ERROR
 					pass
+					## no error
 				else:
-					## error 'Error: JSON Error returned code: ' + str(json_response['status']) + " message: " + json_response['error']
-					pass
+					row['error'] = "Error: Invalid JSON response from server"
 			else:
-				## ERROR row['databases'] = 'Error: Invalid JSON response'
-				pass
+				row['error'] = "Error: Invalid JSON response from server"
 				
 		except requests.exceptions.RequestException as e:
-			#row['databases'] = 'Error: ' + str(e)
-			pass
+			row['error'] = "Error: " + str(e)
 			
 		row['load'] = json_response['load_avg_1'] + ' ' + json_response['load_avg_5'] + ' ' + json_response['load_avg_15']
 		row['disk_usage'] = json_response['disk_capacity'] - json_response['disk_free']

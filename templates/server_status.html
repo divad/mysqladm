@@ -34,11 +34,17 @@ $(document).ready(function()
 			<td><a href="{{ row.link }}"><button type="button" class="btn btn-primary btn-sm"><span class="glyphicon glyphicon-wrench"></span></button></a></td>
 			<td>{{ row.hostname }}</td>
 			<td>{{ row.databases }}</td>
+			
+			{% if row.error %}
+				<td colspan="5" class="danger">{{ row.error }}</td>
+			{% else %}
+			
 			<td>{{ row.load }}</td>
 			<td>{{ row.disk_capacity|filesizeformat }}</td>
 			<td>{{ row.disk_usage|filesizeformat }}</td>
 			<td>{{ row.disk_free|filesizeformat }}</td>
 			<td>{{ row.uptime }}</td>
+			{% endif %}
 		</tr>
 		{% endfor %}
 	</tbody>
