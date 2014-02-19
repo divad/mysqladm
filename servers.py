@@ -85,12 +85,12 @@ def server_status():
 					pass
 					## no error
 				else:
-					row['error'] = "Error: Invalid JSON response from server"
+					row['error'] = "Error contacting agent: Invalid JSON response from server"
 			else:
-				row['error'] = "Error: Invalid JSON response from server"
+				row['error'] = "Error contacting agent: Invalid JSON response from server"
 				
 		except requests.exceptions.RequestException as e:
-			row['error'] = "Error: " + str(e)
+			row['error'] = "Error contacting agent: " + str(e)
 			
 		row['load'] = json_response['load_avg_1'] + ' ' + json_response['load_avg_5'] + ' ' + json_response['load_avg_15']
 		row['disk_usage'] = json_response['disk_capacity'] - json_response['disk_free']
