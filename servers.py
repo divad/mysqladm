@@ -81,7 +81,7 @@ def server_status():
 			json_response = mysqladm.core.msg_node(row['hostname'], row['password'], 'stats')
 
 			if 'status' in json_response:
-				if json_response['status'] == 0 and 'list' in json_response:
+				if json_response['status'] == 0 and 'load_avg_1' in json_response:
 					pass
 					## no error
 				else:
