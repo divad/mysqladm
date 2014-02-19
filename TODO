@@ -10,7 +10,6 @@ Website:
 	5 Search
 	6 More stats? Pie charts?
 	7 Landing page
-	8 Test when a server is down or returns invalid info all pages
 
 Scripts
 	Script to run and check for new databases ('statsync)'

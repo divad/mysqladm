@@ -80,9 +80,9 @@ def database_view(database_id):
 			else:
 				if json_response['status'] != 0:
 					if 'error' in json_response:
-						db_size_error = "Error: " +  str(json_response['error'])
+						db_size_error = "Error contacting agent: " +  str(json_response['error'])
 					else:
-						db_size_error = "Error code: " + str(json_response['status'])
+						db_size_error = "Error contacting agent, code: " + str(json_response['status'])
 				else:
 					db_sizes = json_response['db_sizes']
 					if database['name'] not in db_sizes:
@@ -91,7 +91,7 @@ def database_view(database_id):
 						db_size = db_sizes[database['name']]
 
 		except requests.exceptions.RequestException as e:
-			return mysqladm.errors.output_error('Unable to create database','An error occured when communicating with the MySQL node: ' + str(e),'')	
+			db_size_error = "Error contacting agent: " +  str(e)
 				
 		except requests.exceptions.RequestException as e:
 			db_size = "Error contacting server"
