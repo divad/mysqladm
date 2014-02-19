@@ -30,13 +30,18 @@ $(document).ready(function()
 	</thead>
 	<tbody>
 		{% for row in rows %}
+		{% if row.error %}
+		<tr class="danger">
+		{% else %}
 		<tr>
+		{% endif %}
+		
 			<td><a href="{{ row.link }}"><button type="button" class="btn btn-primary btn-sm"><span class="glyphicon glyphicon-wrench"></span></button></a></td>
 			<td>{{ row.hostname }}</td>
 			<td>{{ row.databases }}</td>
 			
 			{% if row.error %}
-				<td colspan="5" class="danger">{{ row.error }}</td>
+				<td colspan="5">{{ row.error }}</td>
 			{% else %}
 			
 			<td>{{ row.load }}</td>
