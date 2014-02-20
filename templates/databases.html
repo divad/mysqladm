@@ -31,7 +31,7 @@ $(document).ready(function()
 			<td colspan='3'>There are no databases here!</td>
 		</tr>
 {% else %}
-	{% for row in rows if not row.name == 'mysql' %}
+	{% for row in rows %}
 		<tr>
 			<td><a href="{{ row.link }}"><button type="button" class="btn btn-primary btn-sm"><span class="glyphicon glyphicon-cog"></span></button></a></td>
 			<td>{{ row.name }}</td>
