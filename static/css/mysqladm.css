@@ -138,7 +138,7 @@ body
  	cursor: pointer; 
     font-weight: bold; 
     background-repeat: no-repeat; 
-    background-position: center left; 
+    background-position: center right; 
 }
 .tablesorter-headerAsc
 {
