@@ -134,15 +134,15 @@ body
  
 table.tablesorter thead tr .header
 {
-	background-image: url(bg.gif);
+	background-image url('/adm/static/img/bg.gif')
 }
 table.tablesorter thead tr .headerSortUp
 {
-	background-image: url(asc.gif);
+	background-image: url('/adm/static/img/asc.gif');
 }
 table.tablesorter thead tr .headerSortDown
 {
-	background-image: url(desc.gif);
+	background-image: url('/adm/static/img/desc.gif');
 }
 
 
