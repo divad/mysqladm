@@ -132,15 +132,15 @@ body
  * Table sorter stuff
  */
  
-table.tablesorter thead tr .header
+.tablesorter-header
 {
 	background-image url('/adm/static/img/bg.gif')
 }
-table.tablesorter thead tr .headerSortUp
+.tablesorter-headerAsc
 {
 	background-image: url('/adm/static/img/asc.gif');
 }
-table.tablesorter thead tr .headerSortDown
+.tablesorter-headerDesc
 {
 	background-image: url('/adm/static/img/desc.gif');
 }
