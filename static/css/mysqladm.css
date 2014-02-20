@@ -110,17 +110,39 @@ body
  * Placeholder dashboard ideas
  */
 
-.placeholders {
+.placeholders
+{
   margin-bottom: 30px;
   text-align: center;
 }
-.placeholders h4 {
+.placeholders h4
+{
   margin-bottom: 0;
 }
-.placeholder {
+.placeholder
+{
   margin-bottom: 20px;
 }
-.placeholder img {
+.placeholder img
+{
   border-radius: 50%;
 }
+
+/*
+ * Table sorter stuff
+ */
+ 
+table.tablesorter thead tr .header
+{
+	background-image: url(bg.gif);
+}
+table.tablesorter thead tr .headerSortUp
+{
+	background-image: url(asc.gif);
+}
+table.tablesorter thead tr .headerSortDown
+{
+	background-image: url(desc.gif);
+}
+
 
