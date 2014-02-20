@@ -134,7 +134,11 @@ body
  
 .tablesorter-header
 {
-	background-image url('/adm/static/img/bg.gif')
+	background-image: url('/adm/static/img/bg.gif');
+ 	cursor: pointer; 
+    font-weight: bold; 
+    background-repeat: no-repeat; 
+    background-position: center left; 
 }
 .tablesorter-headerAsc
 {
