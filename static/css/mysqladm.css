@@ -112,12 +112,12 @@ body
 
 .placeholders
 {
-  margin-bottom: 30px;
-  text-align: center;
+	margin-bottom: 30px;
+	text-align: center;
 }
 .placeholders h4
 {
-  margin-bottom: 0;
+	margin-bottom: 0;
 }
 .placeholder
 {
@@ -135,10 +135,11 @@ body
 .tablesorter-header
 {
 	background-image: url('/adm/static/img/bg.gif');
- 	cursor: pointer; 
-    font-weight: bold; 
-    background-repeat: no-repeat; 
-    background-position: center right; 
+	cursor: pointer; 
+	font-weight: bold; 
+	background-repeat: no-repeat; 
+	background-position: center left;
+	padding-left: 20px;
 }
 .tablesorter-headerAsc
 {
