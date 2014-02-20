@@ -139,7 +139,7 @@ body
 	font-weight: bold; 
 	background-repeat: no-repeat; 
 	background-position: center left;
-	padding-left: 20px;
+	padding-left: 20px !important;
 }
 .tablesorter-headerAsc
 {
