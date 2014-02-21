@@ -2,6 +2,8 @@ import sys
 sys.path.insert(0, '/data/mysqladm2/')
 from flask.ext.script import Manager
 from mysqladm.fapp import WrapFlask
+import mysqladm.servers
+import mysqladm.core
 
 app = WrapFlask(__name__)
 manager = Manager(app)
