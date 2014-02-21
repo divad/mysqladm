@@ -39,7 +39,10 @@ def listservers():
 		print row['hostname']
 		
 @manager.command
-def initdb():
+def initsetup():
+	"""
+	Runs the initial setup code to create the database and set up mysqladm
+	"""
 	print "Function not implemented (yet)"
     
 if __name__ == "__main__":
