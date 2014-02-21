@@ -59,7 +59,7 @@ def listservers():
 	rows = mysqladm.servers.get_all_servers()
 	
 	for row in rows:
-		print row['hostname']
+		print(row['hostname'])
 		
 @manager.command
 def initsetup():
