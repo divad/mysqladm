@@ -301,7 +301,7 @@ def server_add():
 				if 'error' in json_response:
 					flash("Error adding server: " + str(json_response['error']), 'alert-danger')
 				else:
-					flash("Error adding server: " + str(json_response['error']), 'alert-danger')
+					flash("Error adding server, code: " + str(json_response['status']), 'alert-danger')
 
 				return render_template('server_add.html', active='servers', hostname=hostname, alias=alias, description=description, state=state)
 				
