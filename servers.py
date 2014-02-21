@@ -164,16 +164,16 @@ def server_view(server_name):
 		if server_error:
 			errorstr = 'N/A'
 			json_response = {
-				'stats.db_sizes_date': errorstr,
-				'stats.db_version': errorstr,
-				'stats.disk_mount_point': errorstr,
-				'stats.disk_capacity': errorstr,
-				'stats.disk_free': errorstr,
-				'stats.disk_usage': errorstr,	
-				'stats.uptime': errorstr,
-				'stats.load_avg_1': errorstr,
-				'stats.load_avg_5': errorstr,
-				'stats.load_avg_15': errorstr,				
+				'db_sizes_date': errorstr,
+				'db_version': errorstr,
+				'disk_mount_point': errorstr,
+				'disk_capacity': errorstr,
+				'disk_free': errorstr,
+				'disk_usage': errorstr,	
+				'uptime': errorstr,
+				'load_avg_1': errorstr,
+				'load_avg_5': errorstr,
+				'load_avg_15': errorstr,				
 				}
 			
 		return render_template('server.html', active='servers', stats=json_response, server=server, databases=databases)
