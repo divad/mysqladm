@@ -66,7 +66,7 @@ def initsetup():
 	"""
 	Runs the initial setup code to create the database and set up mysqladm
 	"""
-	print "Function not implemented (yet)"
+	print("Function not implemented (yet)")
     
 if __name__ == "__main__":
 	manager.run()
