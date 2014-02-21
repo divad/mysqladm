@@ -8,7 +8,7 @@ manager = Manager(app)
 
 @manager.command
 def agentsync():
-	option_list = ( Option('--server', '-s', dest='server_name',help='Sync database list between mysql manager and each mysql agent'))
+	option_list = ( Option('--server', '-s', dest='server_name', help='Sync database list between mysql manager and each mysql agent'), )
     
 	## Load servers
 	rows = mysqladm.servers.get_all_servers()
