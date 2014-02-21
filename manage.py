@@ -11,12 +11,17 @@ manager = Manager(app)
 @manager.command
 @manager.option('-s', '--server', help='What server to sync from, default all',required=False)
 def agentsync(server=''):
+	g.db = mysqladm.core.db_connect()
+		
 	## Load servers
 	rows = mysqladm.servers.get_all_servers()
 	
 	for row in rows:
 		print row['name']
+		
+@manage.command
+def initdb():
+	print "Function not implemented (yet)"
     
 if __name__ == "__main__":
-	g.db = mysqladm.core.db_connect()
 	manager.run()
