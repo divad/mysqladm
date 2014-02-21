@@ -9,7 +9,7 @@ import mysqladm.servers
 import mysqladm.core
 
 app = WrapFlask(__name__)
-manager = Manager(app)
+manager = Manager(app,with_default_commands=False)
 
 @manager.command
 @manager.option('-s', '--server', help='What server to sync from, default all',required=False)
