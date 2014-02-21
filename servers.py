@@ -164,22 +164,14 @@ def server_view(server_name):
 		if server_error:
 			errorstr = 'N/A'
 			json_response = {
-				'db_sizes_date': errorstr,
 				'db_version': errorstr,
 				'disk_mount_point': errorstr,
-				'disk_capacity': 0,
-				'disk_free': 0,
-				'disk_usage': 0,	
-				'db_uptime': errorstr,
-				'load_avg_1': errorstr,
-				'load_avg_5': errorstr,
-				'load_avg_15': errorstr,				
 				}
 				
 			for db in databases:
 				db['size'] = 0
 			
-		return render_template('server.html', active='servers', stats=json_response, server=server, databases=databases)
+		return render_template('server.html', active='servers', stats=json_response, server=server, databases=databases, server_error = server_error)
 
 	elif request.method == 'POST':
 		## Used to EDIT and DELETE/REMOVE
