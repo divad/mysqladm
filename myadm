@@ -24,7 +24,7 @@ def agentsync(server=''):
 	servers = mysqladm.servers.get_all_servers()
 	
 	for server in servers:
-		print server['hostname']		
+		print(server['hostname'])
 		try:
 			json_response = mysqladm.core.msg_node(server['hostname'],server['password'],'list')
 
