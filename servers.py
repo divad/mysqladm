@@ -170,7 +170,7 @@ def server_view(server_name):
 				'disk_capacity': 0,
 				'disk_free': 0,
 				'disk_usage': 0,	
-				'uptime': errorstr,
+				'db_uptime': errorstr,
 				'load_avg_1': errorstr,
 				'load_avg_5': errorstr,
 				'load_avg_15': errorstr,				
