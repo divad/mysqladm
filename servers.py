@@ -154,15 +154,27 @@ def server_view(server_name):
 						db['size'] = db_sizes[db['name']]
 						
 			else:
-				flash('The MySQL agent returned an error: ' + json_response['error'],'alert-warning')
+				flash('The MySQL agent returned an error: ' + json_response['error'],'alert-danger')
 				server_error = True
 
 		except Exception, e:
-			flash('An error occured whilst communicating with the MySQL agent: ' + str(e),'alert-warning')
+			flash('An error occured whilst communicating with the MySQL agent: ' + str(e),'alert-danger')
 			server_error = True
 			
 		if server_error:
-			json_response = {}
+			errorstr = 'N/A'
+			json_response = {
+				'stats.db_sizes_date': errorstr,
+				'stats.db_version': errorstr,
+				'stats.disk_mount_point': errorstr,
+				'stats.disk_capacity': errorstr,
+				'stats.disk_free': errorstr,
+				'stats.disk_usage': errorstr,	
+				'stats.uptime': errorstr,
+				'stats.load_avg_1': errorstr,
+				'stats.load_avg_5': errorstr,
+				'stats.load_avg_15': errorstr,				
+				}
 			
 		return render_template('server.html', active='servers', stats=json_response, server=server, databases=databases)
 
