@@ -7,16 +7,13 @@ app = WrapFlask(__name__)
 manager = Manager(app)
 
 @manager.command
-def agentsync():
-	option_list = ( Option('--server', '-s', dest='server_name', help='Sync database list between mysql manager and each mysql agent'), )
-    
+@manager.option('-s', '--server', help='What server to sync from, default all')
+def agentsync(server):
 	## Load servers
 	rows = mysqladm.servers.get_all_servers()
 	
 	for row in rows:
 		print row['name']
     
-	print "hello"
-
 if __name__ == "__main__":
 	manager.run()
