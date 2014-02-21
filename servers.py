@@ -23,7 +23,7 @@ import MySQLdb as mysql
 import requests
 
 ################################################################################
-#### UTILITY 
+#### UTILITY FUNCTIONS
 
 def get_server_by_hostname(hostname):
 	## Load the dictionary based cursor
@@ -34,13 +34,8 @@ def get_server_by_hostname(hostname):
 
 	## Get results
 	return cur.fetchone()
-
-################################################################################
-#### LIST SERVERS
-
-@app.route('/servers')
-@mysqladm.core.login_required
-def server_list():
+	
+def get_all_servers():
 	## Load the dictionary based cursor
 	cur = g.db.cursor(mysql.cursors.DictCursor)
 
@@ -49,6 +44,17 @@ def server_list():
 
 	## Get results
 	rows = cur.fetchall()
+	
+	return rows
+
+################################################################################
+#### LIST SERVERS
+
+@app.route('/servers')
+@mysqladm.core.login_required
+def server_list():
+	## Load servers
+	rows = get_all_servers()
 	
 	## Create link for each server 
 	for row in rows:
@@ -63,14 +69,8 @@ def server_list():
 @app.route('/server_status')
 @mysqladm.core.login_required
 def server_status():
-	## Load the dictionary based cursor
-	cur = g.db.cursor(mysql.cursors.DictCursor)
-
-	## Execute a SQL select
-	cur.execute("SELECT `servers`.`id` AS `id`, `servers`.`hostname` AS `hostname`, `servers`.`alias` AS `alias`, `servers`.`desc` AS `desc`, `servers`.`state` AS `state`, `servers`.`password` AS `password`, COUNT(`databases`.`id`) AS `databases` FROM `servers` INNER JOIN `databases` ON databases.server = servers.id GROUP BY `servers`.`id`;");
-
-	## Get results
-	rows = cur.fetchall()
+	## Load servers
+	rows = get_all_servers()
 
 	## Iterate through each database and get the statistics
 	for row in rows:

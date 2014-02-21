@@ -7,7 +7,18 @@ app = WrapFlask(__name__)
 manager = Manager(app)
 
 @manager.command
-def hello():
+def agentsync():
+	option_list =
+	(
+        Option('--server', '-s', dest='server_name'),
+    )
+    
+	## Load servers
+	rows = mysqladm.servers.get_all_servers()
+	
+	for row in rows:
+		print row['name']
+    
 	print "hello"
 
 if __name__ == "__main__":
