@@ -121,45 +121,50 @@ def server_view(server_name):
 		## Get the list of databases
 		cur.execute("SELECT `id` AS 'id', `name`, `owner`, `description` FROM `databases` WHERE `server` = %s",(server['id']))
 
-		## Get results
+		## Get result
 		databases = cur.fetchall()
+		
+		## Error handling
+		server_error = False
 
 		## ask the server for stats
 		try:
 			# Query the server for stats
 			json_response = mysqladm.core.msg_node(server['hostname'], server['password'], 'stats')
+			
+			# If we have a valid response
+			if 'status' in json_response and json_response['status'] == 0 and 'load_avg_1' in json_response:
+	
+				## turn date into date string
+				json_response['db_sizes_date'] = mysqladm.core.ut_to_string(json_response['db_sizes_timestamp'])
+	
+				## create a 'usage' total
+				json_response['disk_usage'] = json_response['disk_capacity'] - json_response['disk_free']
+	
+				## create a databases url for each one
+				db_sizes = json_response['db_sizes']
+				for db in databases:
+					db['link'] = url_for('database_view',database_id=db['id'])
+	
+					## Need to put in a zero byte size or similar for databases listed from 'list' but not in stats view which is only run once in a while
+					if db['name'] not in db_sizes:
+						db['size'] = 0
+						db['unsized'] = 1
+					else:
+						db['size'] = db_sizes[db['name']]
+						
+			else:
+				flash('The MySQL agent returned an error: ' + json_response['error'],'alert-warning')
+				server_error = True
 
 		except Exception, e:
-			#app.logger.warn(str(e))
-			return mysqladm.errors.output_error('Server communication error','An error occured whilst communicating with the remote server: ' + str(e),'mysqladm.core.msg_node')
-			#server_error = str(e)
-
-		# If we have a valid response
-		if 'status' in json_response and json_response['status'] == 0 and 'load_avg_1' in json_response:
-
-			## turn date into date string
-			json_response['db_sizes_date'] = mysqladm.core.ut_to_string(json_response['db_sizes_timestamp'])
-
-			## create a 'usage' total
-			json_response['disk_usage'] = json_response['disk_capacity'] - json_response['disk_free']
-
-			## create a databases url for each one
-			db_sizes = json_response['db_sizes']
-			for db in databases:
-				db['link'] = url_for('database_view',database_id=db['id'])
-
-				## Need to put in a zero byte size or similar for databases listed from 'list' but not in stats view which is only run once in a while
-				if db['name'] not in db_sizes:
-					db['size'] = 0
-					db['unsized'] = 1
-				else:
-					db['size'] = db_sizes[db['name']]
-
-			return render_template('server.html', active='servers', stats=json_response, server=server, databases=databases)
-		else:
-			server_error = str(e)
-			#return render_template('server.html', active='servers', stats=json_response, server=server, databases=databases)
-			return mysqladm.errors.output_error('Error querying server','An error occured whilst communicating with the remote server: ' + str(json_response['status']) + " " + json_response['error'],'jason_response handler')
+			flash('An error occured whilst communicating with the MySQL agent: ' + str(e),'alert-warning')
+			server_error = True
+			
+		if server_error:
+			json_response = {}
+			
+		return render_template('server.html', active='servers', stats=json_response, server=server, databases=databases)
 
 	elif request.method == 'POST':
 		## Used to EDIT and DELETE/REMOVE
