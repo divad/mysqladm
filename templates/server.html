@@ -212,11 +212,11 @@ $(document).ready(function()
 			</div>
 			<div class="panel-body">
 				<ul class="nav nav-pills nav-stacked">
-				  <% if server_error %>
+				  {% if server_error %}
 				  <li class="disabled">
 				  {% else %}
 				  <li>
-				  {%endif%}
+				  {% endif %}
 				    <a href="#" data-toggle="modal" data-target="#create-database"><span class="glyphicon glyphicon-plus"></span> Create Database</a>
 				  </li>
 				  <li>
