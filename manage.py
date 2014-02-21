@@ -18,4 +18,5 @@ def agentsync(server=''):
 		print row['name']
     
 if __name__ == "__main__":
+	g.db = mysqladm.core.db_connect()
 	manager.run()
