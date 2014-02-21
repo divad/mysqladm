@@ -1,3 +1,5 @@
+#!/usr/bin/python
+
 import sys
 sys.path.insert(0, '/data/mysqladm2/')
 from flask import Flask, g
@@ -7,11 +9,14 @@ import mysqladm.servers
 import mysqladm.core
 
 app = WrapFlask(__name__)
-manager = Manager(app,help='test2')
+manager = Manager(app)
 
 @manager.command
 @manager.option('-s', '--server', help='What server to sync from, default all',required=False)
 def agentsync(server=''):
+	"""
+	Compares the list of databases between mysqladm and the mysqlagent and corrects differences
+	"""
 	g.db = mysqladm.core.db_connect()
 
 	## Load servers
@@ -22,6 +27,9 @@ def agentsync(server=''):
 		
 @manager.command
 def listservers():
+	"""
+	List servers managed by mysqladm
+	"""
 	g.db = mysqladm.core.db_connect()
 
 	## Load servers
