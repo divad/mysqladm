@@ -19,7 +19,7 @@ def agentsync(server=''):
 	for row in rows:
 		print row['name']
 		
-@manage.command
+@manager.command
 def initdb():
 	print "Function not implemented (yet)"
     
