@@ -175,6 +175,9 @@ def server_view(server_name):
 				'load_avg_5': errorstr,
 				'load_avg_15': errorstr,				
 				}
+				
+			for db in databases:
+				db['size'] = 0
 			
 		return render_template('server.html', active='servers', stats=json_response, server=server, databases=databases)
 
