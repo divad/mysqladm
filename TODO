@@ -1,6 +1,5 @@
 Website:
 	
-	0 Better error handling with servers being down
 	3 Better regex checks everywhere and code review of error handling everywhere
 	2 Add database wizard with isotope?
 	

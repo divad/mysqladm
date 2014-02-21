@@ -212,8 +212,16 @@ $(document).ready(function()
 			</div>
 			<div class="panel-body">
 				<ul class="nav nav-pills nav-stacked">
-				  <li><a href="#" data-toggle="modal" data-target="#create-database"><span class="glyphicon glyphicon-plus"></span> Create Database</a></li>
-				  <li><a href="#" data-toggle="modal" data-target="#edit-server"><span class="glyphicon glyphicon-wrench"></span> Edit Server</a></li>
+				  <% if server_error %>
+				  <li class="disabled">
+				  {% else %}
+				  <li>
+				  {%endif%}
+				    <a href="#" data-toggle="modal" data-target="#create-database"><span class="glyphicon glyphicon-plus"></span> Create Database</a>
+				  </li>
+				  <li>
+				  	<a href="#" data-toggle="modal" data-target="#edit-server"><span class="glyphicon glyphicon-wrench"></span> Edit Server</a>
+				  </li>
 				  <li><a href="#" data-toggle="modal" data-target="#remove-server"><span class="glyphicon glyphicon-trash"></span> Remove Server</a></li>
 				</ul>
 			</div>
