@@ -47,7 +47,7 @@ def agentsync(server=''):
 		databases = mysqladm.servers.get_server_databases(server['id'])
 		
 		for name in databases.keys:
-			print "\t" + name
+			print("\t" + name)
 		
 		
 @manager.command
