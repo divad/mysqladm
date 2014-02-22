@@ -43,11 +43,21 @@ def agentsync(server=''):
 			print('Error contacting agent: ' + str(e), file=sys.stderr)
 			continue
 
+		## Check to see if any databases have been created without us knowing about it
+		if 'list' in json_response:
+			for instance in json_response['list']:
+				cur.execute('INSERT INTO `databases` (`server`, `name`, `owner`, `description`) VALUES (%s, %s, %s, %s)', (server_id,instance,'N/A','N/A'))
+				g.db.commit()
+
+
 		## now compare 'list' output to database tables
 		databases = mysqladm.servers.get_server_databases(server['id'])
-		
-		for name in databases.keys:
-			print("\t" + name)
+
+		print(type(databases))	
+		print(databases)
+
+		#for name in databases.keys:
+		#	print("\t" + name)
 		
 		
 @manager.command
