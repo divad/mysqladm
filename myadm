@@ -46,6 +46,9 @@ def agentsync(server=''):
 		## now compare 'list' output to database tables
 		databases = mysqladm.servers.get_server_databases(server['id'])
 		
+		for name in databases.keys:
+			print "\t" + name
+		
 		
 @manager.command
 def listservers():
