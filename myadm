@@ -45,7 +45,7 @@ def agentsync(server=''):
 		
 		databases = mysqladm.servers.get_server_databases(server['id'])
 		dblist = []
-		foreach db in databases:
+		for db in databases:
 			dblist.append[db['name']]
 
 		## Check to see if any databases have been created without us knowing about it
