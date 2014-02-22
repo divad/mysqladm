@@ -46,7 +46,7 @@ def agentsync(server=''):
 		databases = mysqladm.servers.get_server_databases(server['id'])
 		dblist = []
 		for db in databases:
-			dblist.append[db['name']]
+			dblist.append(db['name'])
 
 		## Check to see if any databases have been created without us knowing about it
 		if 'list' in json_response:
