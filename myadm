@@ -55,6 +55,13 @@ def agentsync(server=''):
 					print("\t" + 'db: ' + instance + ' not found in records, but was on server')
 					#cur.execute('INSERT INTO `databases` (`server`, `name`, `owner`, `description`) VALUES (%s, %s, %s, %s)', (server_id,instance,'N/A','N/A'))
 					#g.db.commit()
+					
+		## Check to see if any databases appear to have been deleted without us knowing about it
+		for db in dblist:
+			if db not in json_response['list']:
+				print("\t" + 'db: ' + db + ' found in records, but was NOT on server')
+				# delete record
+				# d.db.commit()
 		
 @manager.command
 def listservers():
