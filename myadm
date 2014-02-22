@@ -43,8 +43,8 @@ def agentsync(server=''):
 			print('Error contacting agent: ' + str(e), file=sys.stderr)
 			continue
 
-		# Get a cursor to the database
-		cur = g.db.cursor()
+		## now compare 'list' output to database tables
+		databases = get_server_databases(server['id'])
 		
 		
 @manager.command

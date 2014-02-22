@@ -46,6 +46,16 @@ def get_all_servers():
 	rows = cur.fetchall()
 	
 	return rows
+	
+def get_server_databases(server_id):
+	## Load the dictionary based cursor
+	cur = g.db.cursor(mysql.cursors.DictCursor)
+	
+	## Get the list of databases
+	cur.execute("SELECT `id` AS 'id', `name`, `owner`, `description` FROM `databases` WHERE `server` = %s",(server_id))
+
+	## Get result
+	return cur.fetchall()
 
 ################################################################################
 #### LIST SERVERS
@@ -118,11 +128,8 @@ def server_view(server_name):
 		if server == None:
 			return mysqladm.errors.output_error('No such server','I could not find the server you were looking for! ','')
 
-		## Get the list of databases
-		cur.execute("SELECT `id` AS 'id', `name`, `owner`, `description` FROM `databases` WHERE `server` = %s",(server['id']))
-
-		## Get result
-		databases = cur.fetchall()
+		## Get list of databases for the server
+		databases = get_server_databases(server['id'])
 		
 		## Error handling
 		server_error = False
