@@ -6,6 +6,8 @@ Website:
 	4 MySQL farm seperation? Non-mysql farm database servers? Special code to handle the fact that the agent assumes its a farm node...
 		unique names on mysql farm? or not?	
 		
+	BUG on alerts on logon page!
+		
 	5 Link to Munin graphs or some shit
 
 Scripts
