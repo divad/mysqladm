@@ -3,7 +3,7 @@ body
 	padding-top: 40px;
 	padding-bottom: 40px;
 	background-color: #eee;
-	background-image: url('/adm/static/img/google.jpg') !important;
+	background-image: url('/adm/static/img/server_room.jpg') !important;
 	background-position: center top !important;
 	background-repeat: no-repeat !important;
 }
@@ -16,6 +16,17 @@ body
 	margin-left: auto;
 	margin-right: auto;
 	margin-bottom: 20px;
+}
+
+.wrapper-signin
+{
+   width: 350px;
+   height: 400px;
+   position: absolute;
+   left: 50%;
+   top: 50%;
+   margin-left: -175px;
+   margin-top: -200px;
 }
 
 .form-signin 

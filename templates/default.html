@@ -8,7 +8,7 @@
 		<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/login.css') }}">
 	</head>
 
-	<body>
+	<body style="display: inline-block">
 
 		<script type="text/javascript">
 		window.onload = function()
@@ -18,7 +18,10 @@
 			text_input.select();
 		}
 		</script>
-		<div class="container container-signin">
+
+		<div class="wrapper-signin">
+
+		<div class="container container-signin" style="padding: 0px">
 			<form class="form-signin" action="{{ url_for('login') }}" method="POST">
 
 				<input name="_csrf_token" type="hidden" value="{{ csrf_token() }}"/>
@@ -42,6 +45,8 @@
 				{{ message|safe }}
 			</div>
 			{% endfor %}
+
+		</div>
 
 		</div>
   </body>
