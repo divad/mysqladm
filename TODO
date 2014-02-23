@@ -9,7 +9,7 @@ Website:
 	5 Link to Munin graphs or some shit
 
 Scripts
-	1 Script to run and check for new databases ('statsync)'
+	100 Finish myadm, decide what to do with agentsync options
 	
 	puppet module for agent
 	proper SSL on agent
