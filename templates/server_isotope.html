@@ -12,7 +12,7 @@ $( document ).ready(function()
 {
 	$('#isotope').isotope(
 	{
-		itemSelector : '.panel',
+		itemSelector : '.item',
 		layoutMode   : 'fitRows',
 		getSortData  :
 		{
@@ -62,16 +62,12 @@ $( document ).ready(function()
 
 <div id="isotope">
 	{% for row in rows %}
-	<div class="panel panel-success panel2k {{row.state}}">
-		<div class="panel-heading name">
-			{{row.shortname}}
-		</div>
-		<div class="panel-body">
+		<div class="item {{row.state}}">
+			<h4 class="name">{{ row.shortname }}</h4>
 			<p class="number">{{ row.databases }}</p>
 			<p class="state">{{ row.state }}</p>
 			<p class="free">{{ row.disk_free|filesizeformat }} free</p>
 		</div>
-	</div>
 	{% endfor %}
 </div>
 
