@@ -14,7 +14,6 @@ $( document ).ready(function()
 	{
 		itemSelector : '.item',
 		layoutMode   : 'fitRows',
-		sortAscending : false,
 		getSortData  :
 		{
 			name : function ( $elem )
@@ -64,10 +63,10 @@ $( document ).ready(function()
 <div id="isotope">
 	{% for row in rows %}
 		<div class="item {{row.state}}">
-			<h3 class="name">{{ row.shortname }}</h2>
-			<h4 class="number">{{ row.databases }}</h3>
-			<h4 class="state">{{ row.state }}</h3>
-			<h4 class="free">{{ row.disk_free|filesizeformat }} free</h3>
+			<h4 class="name">{{ row.shortname }}</h4>
+			<p class="number">{{ row.databases }}</p>
+			<p class="state">{{ row.state }}</p>
+			<p class="free">{{ row.disk_free|filesizeformat }} free</p>
 		</div>
 	{% endfor %}
 </div>
