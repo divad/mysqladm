@@ -14,6 +14,13 @@ itemSelector : '.item',
 layoutMode : 'fitRows'
 })
 });
+
+// filter items when filter link is clicked
+$('#filters button').click(function(){
+  var selector = $(this).attr('data-filter');
+  $container.isotope({ filter: selector });
+  return false;
+});
 </script>
 
 <div class="btn-group">
