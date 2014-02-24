@@ -16,9 +16,11 @@ layoutMode : 'fitRows'
 });
 </script>
 
+
+
 <div id="isotope">
 	{% for row in rows %}
-		<div class="item">
+		<div class="item well">
 			{{ row.hostname }}
 		</div>
 	{% endfor %}
