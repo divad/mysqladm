@@ -16,14 +16,17 @@ layoutMode : 'fitRows'
 });
 
 // filter items when filter link is clicked
+$( document ).ready(function() {
 $('#filters a').click(function(){
   var selector = $(this).attr('data-filter');
   $('#isotope').isotope({ filter: selector });
-  return false;
+  return false;	
+})
 });
 </script>
 
 <div id="filters" class="btn-group">
+  <a href="#" data-filter="*" class="btn btn-default">All</a>
   <a href="#" data-filter=".Production" class="btn btn-default">Prod</a>
   <a href="#" data-filter=".Development" class="btn btn-default">Dev</a>
   <a href="#" data-filter=".PreProduction" class="btn btn-default">PreProd</a>
