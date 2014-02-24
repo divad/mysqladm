@@ -63,7 +63,7 @@ $( document ).ready(function()
 <div id="isotope">
 	{% for row in rows %}
 		<div class="item {{row.state}}">
-			<h4 class="name">{{ row.shortname }}</h4>
+			<a href="{{ row.link }}"><h4 class="name">{{ row.shortname }}</h4></a>
 			<p><span class="number">{{ row.databases }}</span> databases</p>
 			<p class="state">{{ row.state }}</p>
 			<p>{{ row.disk_free|filesizeformat }} free</p>
