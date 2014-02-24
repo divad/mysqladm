@@ -1,20 +1,20 @@
-Website:
+RELEASE 2.0
+
+	1 Better regex checks everywhere and code review of error handling everywhere
+	2 Bug on alerts on logon page
+	3 Remove 'add database' view
+	4 Isotope view
+	5 Puppet Module for Agent
+	6 Turn on SSL verification
+	7 error page on 404 or whatever when not logged in 
+
+RELEASE 2.2
 	
-	3 Better regex checks everywhere and code review of error handling everywhere
-	2 Add database wizard with isotope?
-	
-	4 MySQL farm seperation? Non-mysql farm database servers? Special code to handle the fact that the agent assumes its a farm node...
+	1 MySQL farm seperation? Non-mysql farm database servers? Special code to handle the fact that the agent assumes its a farm node...
 		unique names on mysql farm? or not?	
-		
-	BUG on alerts on logon page!
-		
-	5 Link to Munin graphs or some shit
-
-Scripts
-	100 Finish myadm, decide what to do with agentsync options
+	2 Link to Munin graphs or some shit
+	3 Myadm stuff
 	
-	puppet module for agent
-	proper SSL on agent
+FUTURE
 
-BIG feature ideas:
 	move database to another server? would not be super difficult?
