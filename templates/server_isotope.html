@@ -5,6 +5,22 @@
   <h1>Isotope development</h1>
 </div>
 
+<script type="text/javascript">
+$('#isotope').isotope({
+// options
+itemSelector : '.item',
+layoutMode : 'fitRows'
+});
+</script>
+
+<div id="isotope">
+	{% for row in rows %}
+		<div class="item">
+			{{ row.hostname }}
+		</div>
+	{% endfor %}
+</div>
+
 
 
 

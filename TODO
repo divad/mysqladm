@@ -1,12 +1,12 @@
 RELEASE 2.0
 
 	1 Better regex checks everywhere and code review of error handling everywhere
-	2 Bug on alerts on logon page
-	3 Remove 'add database' view
 	4 Isotope view
 	5 Puppet Module for Agent
 	6 Turn on SSL verification
 	7 error page on 404 or whatever when not logged in 
+	8 Fix height issue on login box - maybe float at top with margin from top instead
+	9 Finish removing add datbase files/view
 
 RELEASE 2.2
 	
