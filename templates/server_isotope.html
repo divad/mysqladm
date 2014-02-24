@@ -16,7 +16,7 @@ layoutMode : 'fitRows'
 });
 
 // filter items when filter link is clicked
-$('#filters button').click(function(){
+$('#filters a').click(function(){
   var selector = $(this).attr('data-filter');
   $container.isotope({ filter: selector });
   return false;
@@ -24,11 +24,11 @@ $('#filters button').click(function(){
 </script>
 
 <div class="btn-group">
-  <button type="button" data-filter=".production" class="btn btn-default">Prod</button>
-  <button type="button" data-filter=".preproduction" class="btn btn-default">PreProd</button>
-  <button type="button" data-filter=".development" class="btn btn-default">Dev</button>
-  <button type="button" data-filter=".training" class="btn btn-default">Training</button>
-  <button type="button" data-filter=".other" class="btn btn-default">Other</button>
+  <a href="" data-filter=".Production" class="btn btn-default">Prod</a>
+  <a href="" data-filter=".PreProduction" class="btn btn-default">PreProd</a>
+  <a href="" data-filter=".Development" class="btn btn-default">Dev</a>
+  <a href="" data-filter=".Training" class="btn btn-default">Training</a>
+  <a href="" data-filter=".Other" class="btn btn-default">Other</a>
 </div>
 
 <div id="isotope">
