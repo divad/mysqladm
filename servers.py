@@ -150,6 +150,10 @@ def isotope():
 
 		## Add the link to the server
 		row['link'] = url_for('server_view', server_name=row['hostname'])
+		
+		## Add the short form of the database hostname
+		short,sep,after = row['hostname'].partition(.)
+		row['shortname'] = short
 
 	return render_template('server_isotope.html', active='server_isotope',rows=rows)
 
