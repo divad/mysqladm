@@ -64,9 +64,10 @@ $( document ).ready(function()
 	{% for row in rows %}
 		<div class="item {{row.state}}">
 			<h4 class="name">{{ row.shortname }}</h4>
-			<p class="number">{{ row.databases }}</p>
+			<p><span class="number">{{ row.databases }}</span> databases</p>
 			<p class="state">{{ row.state }}</p>
-			<p class="free">{{ row.disk_free|filesizeformat }} free</p>
+			<p>{{ row.disk_free|filesizeformat }} free</p>
+			<span class="free" style="display: none">{{ row.disk_free}}</span>
 		</div>
 	{% endfor %}
 </div>
