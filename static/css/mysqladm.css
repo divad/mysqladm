@@ -200,4 +200,16 @@ body
           transition-duration: 0s;
 }
 
+.item {
+color: #212121;
+padding: 15px;
+float: left;
+margin-left: 10px;
+margin-right: 10px;
+width: 250px;
+background: #ffffff;
+border: 2px solid #787878;
+margin-bottom: 20px;
+}
+
 
