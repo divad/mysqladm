@@ -7,80 +7,70 @@
 
 <script type="text/javascript">
 
-$( document ).ready(function() {
-$('#isotope').isotope({
-// options
-itemSelector : '.item',
-layoutMode : 'fitRows'
-})
-});
-
 // filter items when filter link is clicked
-$( document ).ready(function() {
-$('#filters a').click(function(){
-  var selector = $(this).attr('data-filter');
-  $('#isotope').isotope({ filter: selector });
-  return false;	
-})
+$( document ).ready(function()
+{
+	$('#isotope').isotope(
+	{
+		itemSelector : '.item',
+		layoutMode   : 'fitRows',
+		getSortData  :
+		{
+			name : function ( $elem )
+			{
+				return $elem.find('.name').text();
+			},
+			numdb : function ( $elem )
+			{
+				return parseInt( $elem.find('.number').text(), 10 );
+			}
+		}
+	})	
+	
+	$('#filters a').click(function()
+	{
+		var selector = $(this).attr('data-filter');
+		$('#isotope').isotope({ filter: selector });
+		return false;	
+	})
+	
+	$('#sort-by a').click(function(){
+		var sortName = $(this).attr('href').slice(1);
+		$('#isotope').isotope({ sortBy : sortName });
+		return false;
+	});
+
 });
 </script>
 
-<div id="filters" class="btn-group">
-  <a href="#" data-filter="*" class="btn btn-default">All</a>
-  <a href="#" data-filter=".Production" class="btn btn-default">Prod</a>
-  <a href="#" data-filter=".Development" class="btn btn-default">Dev</a>
-  <a href="#" data-filter=".Pre-Production" class="btn btn-default">PreProd</a>
-  <a href="#" data-filter=".Training" class="btn btn-default">Training</a>
-  <a href="#" data-filter=".Other" class="btn btn-default">Other</a>
+<div class="btn-toolbar" role="toolbar">
+	<div id="filters" class="btn-group">
+	  <a href="#" data-filter="*" class="btn btn-default">All</a>
+	  <a href="#" data-filter=".Production" class="btn btn-default">Prod</a>
+	  <a href="#" data-filter=".Development" class="btn btn-default">Dev</a>
+	  <a href="#" data-filter=".Pre-Production" class="btn btn-default">PreProd</a>
+	  <a href="#" data-filter=".Training" class="btn btn-default">Training</a>
+	  <a href="#" data-filter=".Other" class="btn btn-default">Other</a>
+	</div>
+	
+	<div id="sort-by" class="btn-group">
+	  <a href="#name" class="btn btn-default">Name</a>
+	  <a href="#space" class="btn btn-default">Space Left</a>
+	  <a href="#number" class="btn btn-default">Databases</a>
+	</div>
 </div>
 
 <div id="isotope">
 	{% for row in rows %}
 		<div class="item {{row.state}}">
-			{{ row.shortname }}
+			<h2>{{ row.shortname }}</h2>
+			<h3>{{ row.databases }} databases</h3>
+			<h3>{{ row.state }}</h3>
+			<h3>{{ row.disk_free|filesizeformat }} free</h3>
 		</div>
 	{% endfor %}
 </div>
 
-
-<table id="tsort" class="table table-hover table-striped table-condensed table-responsive">
-	<thead>
-		<tr>
-			<th></th>
-			<th>Name</th>
-			<th>Databases</th>
-			<th>Load Average</th>
-			<th class="sorter-metric" data-metric-name="B|byte">Disk Capacity</th>
-			<th class="sorter-metric" data-metric-name="B|byte">Disk Usage</th>
-			<th class="sorter-metric" data-metric-name="B|byte">Disk Free</th>
-			<th>MySQL Uptime</th>
-		</tr>
-	</thead>
-	<tbody>
-		{% for row in rows %}
-		{% if row.error %}
-		<tr class="danger">
-		{% else %}
-		<tr>
-		{% endif %}
-		
-			<td><a href="{{ row.link }}"><button type="button" class="btn btn-primary btn-sm"><span class="glyphicon glyphicon-wrench"></span></button></a></td>
-			<td>{{ row.hostname }}</td>
-			<td>{{ row.databases }}</td>
-			
-			{% if row.error %}
-				<td colspan="5">{{ row.error }}</td>
-			{% else %}
-			
-			<td>{{ row.load }}</td>
-			<td>{{ row.disk_capacity|filesizeformat }}</td>
-			<td>{{ row.disk_usage|filesizeformat }}</td>
-			<td>{{ row.disk_free|filesizeformat }}</td>
-			<td>{{ row.uptime }}</td>
-			{% endif %}
-		</tr>
-		{% endfor %}
-	</tbody>
-</table>
+<!-- TODO COPE WITH ERRORS! -->
 
 {% endblock %}
