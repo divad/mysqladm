@@ -32,8 +32,10 @@
 	
 	    <div class="container-fluid">
 	      <div class="row">
+	      	          {% if session.logged_in %}
 	        <div class="col-sm-3 col-md-2 sidebar">
 	          <ul class="nav nav-sidebar">
+	          
 	            <li {% if active == 'databases' %} class="active" {% endif %}><a href="{{ url_for('database_list') }}"><span class="glyphicon glyphicon-book"></span> Databases</a></li>
 	            <!--<li {% if active == 'database_create' %} class="active" {% endif %}><a href="{{ url_for('database_create') }}"><span class="glyphicon glyphicon-plus"></span> Create Database</a></li>-->
 	          </ul>
@@ -48,11 +50,14 @@
 	            <li {% if active == 'stats' %} class="active" {% endif %}><a href="{{ url_for('stats') }}"><span class="glyphicon glyphicon-stats"></span> Stats</a></li>
 	          </ul>
 	        </div>
+	        {%endif%}
+	        
 	        <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
 	
 				{% for category, message in get_flashed_messages(with_categories=true) %}
 				<div class="alert {{ category }} fade in"> <a data-dismiss="alert" class="close" href="#">×</a> {{ message|safe }} </div>
 				{% endfor %}
+				
 				{% block body %}{% endblock %}
 	
 	        </div>
