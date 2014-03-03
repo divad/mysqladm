@@ -1,4 +1,4 @@
-RELEASE 2.0
+STABLE RELEASE 2.0
 
 	1 Better regex checks everywhere and code review of error handling everywhere
 	4 Isotope view - filters/sorts tuning.
@@ -6,13 +6,14 @@ RELEASE 2.0
 	5 Puppet Module for Agent
 	6 Turn on SSL verification
 
-RELEASE 2.2
+FUTURE RELEASE 2.2
 	
 	1 MySQL farm seperation? Non-mysql farm database servers? Special code to handle the fact that the agent assumes its a farm node...
 		unique names on mysql farm? or not?	
 	2 Link to Munin graphs or some shit
 	3 Myadm stuff
 	
-FUTURE
+FUTURE RELEASE 2.4
 
 	move database to another server? would not be super difficult?
+	<expect lots of feedback requirements here>

@@ -41,8 +41,8 @@
 	          </ul>
 	          <ul class="nav nav-sidebar">
 	            <li {% if active == 'servers' %} class="active" {% endif %}><a href="{{ url_for('server_list') }}"><span class="glyphicon glyphicon-list-alt"></span> Server List</a></li>
+	            <li {% if active == 'server_isotope' %} class="active" {% endif %}><a href="{{ url_for('isotope') }}"><span class="glyphicon glyphicon-th"></span> Server Grid View</a></li>	      
 	            <li {% if active == 'server_status' %} class="active" {% endif %}><a href="{{ url_for('server_status') }}"><span class="glyphicon glyphicon-dashboard"></span> Server Status</a></li>
-	            <li {% if active == 'server_isotope' %} class="active" {% endif %}><a href="{{ url_for('isotope') }}"><span class="glyphicon glyphicon-th"></span> Isotope View</a></li>
 	            <li {% if active == 'server_add' %} class="active" {% endif %}><a href="{{ url_for('server_add') }}"><span class="glyphicon glyphicon-plus-sign"></span> Add Server</a></li>
 	          </ul>	          
 	          <ul class="nav nav-sidebar">	          

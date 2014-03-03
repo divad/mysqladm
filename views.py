@@ -29,7 +29,7 @@ import grp
 @app.route('/')
 def default():
 	if 'username' in session:
-		return redirect(url_for('stats'))
+		return redirect(url_for('isotope'))
 	else:
 		next = request.args.get('next',default=None)
 		return render_template('default.html', active='default',next=next)
@@ -159,4 +159,3 @@ def logout():
 	flash('You have been logged out. Goodbye.','alert-success')
 
 	return redirect(url_for('default'))
-
