@@ -268,6 +268,8 @@ def database_create():
 
 	if 'database_name' in request.form and len(request.form['database_name']) > 0:
 		name = request.form['database_name']
+		if re.search('^[A-Za-z_][A-Za-z0-9_]*$', name) == None:
+			return mysqladm.errors.output_error('Unable to create database', 'Invalid character(s) in database name','')	
 	else:
 		return mysqladm.errors.output_error('Unable to create database', 'You must specify a database name','')
 
