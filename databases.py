@@ -253,86 +253,82 @@ def database_delete(database_id):
 ################################################################################
 #### CREATE DATABASE
 
-@app.route('/databases/create', methods=['GET','POST'])
+@app.route('/databases/create', methods=['POST'])
 @mysqladm.core.login_required
 def database_create():
-	if request.method == 'GET':
-		return render_template('database_create.html', active='database_create')
-	elif request.method == 'POST':
+	# Get a cursor to the database
+	cur = g.db.cursor()
+
+	# Grab the fields
+	#### TODO VALIDATE THESE FIELDS
+	if 'server_hostname' in request.form and len(request.form['server_hostname']) > 0:
+		hostname = request.form['server_hostname']
+	else:
+		return mysqladm.errors.output_error('Unable to create database', 'You must specify a server to create the database on','')
+
+	if 'database_name' in request.form and len(request.form['database_name']) > 0:
+		name = request.form['database_name']
+	else:
+		return mysqladm.errors.output_error('Unable to create database', 'You must specify a database name','')
+
+	# TODO verify and valdidate field contents are VALID
+
+	if 'database_desc' in request.form and len(request.form['database_desc']) > 0:
+		description = request.form['database_desc']
+	else:
+		return mysqladm.errors.output_error('Unable to create database', 'You must specify a database description','')
+
+	if 'database_owner' in request.form and len(request.form['database_owner']) > 0:
+		owner = request.form['database_owner']
+	else:
+		return mysqladm.errors.output_error('Unable to create database', 'You must specify a database owner','')
+
+	genpasswd = False
+
+	if 'database_passwd' in request.form and len(request.form['database_passwd']) > 0:
+		passwd = request.form['database_passwd']
+	else:
+		## Generate a password if one was not sent
+		passwd = mysqladm.core.pwgen()
+		## Remember we set a password randomly
+		genpasswd = True
 		
-		# Get a cursor to the database
-		cur = g.db.cursor()
+	## Try to load the server details
+	server = mysqladm.servers.get_server_by_hostname(hostname)
+	if server == None:
+		return mysqladm.errors.output_error('No such server','I could not find the server you were looking for! ','')
 
-		# Grab the fields
-		#### TODO VALIDATE THESE FIELDS
-		if 'server_hostname' in request.form and len(request.form['server_hostname']) > 0:
-			hostname = request.form['server_hostname']
-		else:
-			return mysqladm.errors.output_error('Unable to create database', 'You must specify a server to create the database on','')
+	## Check to make sure a database instance doesn't already exist on the server according to our database
+	existing_db = get_database(name,server['id'])
+	if not existing_db == None:
+		return mysqladm.errors.output_error('Database already exists','There is already a database of that name residing on the selected server ','get_database returned true') 
 
-		if 'database_name' in request.form and len(request.form['database_name']) > 0:
-			name = request.form['database_name']
-		else:
-			return mysqladm.errors.output_error('Unable to create database', 'You must specify a database name','')
+	## Talk to the server via HTTPS
+	try:
+		json_response = mysqladm.core.msg_node(server['hostname'],server['password'],'create',name=name, passwd=passwd)
 
-		# TODO verify and valdidate field contents are VALID
+		if 'status' not in json_response:
+			return mysqladm.errors.output_error('Unable to create database', 'The mysql server responded with something unexpected: ' + str(json_response), '')
 
-		if 'database_desc' in request.form and len(request.form['database_desc']) > 0:
-			description = request.form['database_desc']
-		else:
-			return mysqladm.errors.output_error('Unable to create database', 'You must specify a database description','')
+		if json_response['status'] != 0:
+			if 'error' in json_response:
+				return mysqladm.errors.output_error('Unable to create database','The mysql server responded with an error: ' + str(json_response['error']),'core.msg_node error')
+			else:
+				return mysqladm.errors.output_error('Unable to create database','The mysql server responded with an error status code: ' + str(json_response['status']),'core.msg_node status no error')
 
-		if 'database_owner' in request.form and len(request.form['database_owner']) > 0:
-			owner = request.form['database_owner']
-		else:
-			return mysqladm.errors.output_error('Unable to create database', 'You must specify a database owner','')
+	except requests.exceptions.RequestException as e:
+		return mysqladm.errors.output_error('Unable to create database','An error occured when communicating with the MySQL node: ' + str(e),'')	
 
-		genpasswd = False
+	# Create a record of the database in the database
+	cur.execute('INSERT INTO `databases` (`server`, `name`, `owner`, `description`, `create_date`) VALUES (%s, %s, %s, %s, UNIX_TIMESTAMP(NOW()))', (server['id'], name, owner, description))
+	
+	# Commit changes to the database
+	g.db.commit()
 
-		if 'database_passwd' in request.form and len(request.form['database_passwd']) > 0:
-			passwd = request.form['database_passwd']
-		else:
-			## Generate a password if one was not sent
-			passwd = mysqladm.core.pwgen()
-			## Remember we set a password randomly
-			genpasswd = True
-			
-		## Try to load the server details
-		server = mysqladm.servers.get_server_by_hostname(hostname)
-		if server == None:
-			return mysqladm.errors.output_error('No such server','I could not find the server you were looking for! ','')
+	## Last insert ID
+	database_id = cur.lastrowid
 
-		## Check to make sure a database instance doesn't already exist on the server according to our database
-		existing_db = get_database(name,server['id'])
-		if not existing_db == None:
-			return mysqladm.errors.output_error('Database already exists','There is already a database of that name residing on the selected server ','get_database returned true') 
- 
-		## Talk to the server via HTTPS
-		try:
-			json_response = mysqladm.core.msg_node(server['hostname'],server['password'],'create',name=name, passwd=passwd)
-
-			if 'status' not in json_response:
-				return mysqladm.errors.output_error('Unable to create database', 'The mysql server responded with something unexpected: ' + str(json_response), '')
-
-			if json_response['status'] != 0:
-				if 'error' in json_response:
-					return mysqladm.errors.output_error('Unable to create database','The mysql server responded with an error: ' + str(json_response['error']),'core.msg_node error')
-				else:
-					return mysqladm.errors.output_error('Unable to create database','The mysql server responded with an error status code: ' + str(json_response['status']),'core.msg_node status no error')
-
-		except requests.exceptions.RequestException as e:
-			return mysqladm.errors.output_error('Unable to create database','An error occured when communicating with the MySQL node: ' + str(e),'')	
-
-		# Create a record of the database in the database
-		cur.execute('INSERT INTO `databases` (`server`, `name`, `owner`, `description`, `create_date`) VALUES (%s, %s, %s, %s, UNIX_TIMESTAMP(NOW()))', (server['id'], name, owner, description))
-		
-		# Commit changes to the database
-		g.db.commit()
-
-		## Last insert ID
-		database_id = cur.lastrowid
-
-		# redirect to database details view
-		session['dbpasswd'] = passwd
-		flash('Database successfully created', 'alert-success')
-		return redirect(url_for('database_details',database_id=database_id))
+	# redirect to database details view
+	session['dbpasswd'] = passwd
+	flash('Database successfully created', 'alert-success')
+	return redirect(url_for('database_details',database_id=database_id))

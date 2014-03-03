@@ -6,10 +6,6 @@ RELEASE 2.0
 	5 Puppet Module for Agent
 	6 Turn on SSL verification
 
-	7 error page on 404 or whatever when not logged in 
-	8 Fix height issue on login box - maybe float at top with margin from top instead
-	9 Finish removing add datbase files/view
-
 RELEASE 2.2
 	
 	1 MySQL farm seperation? Non-mysql farm database servers? Special code to handle the fact that the agent assumes its a farm node...
