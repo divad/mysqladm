@@ -21,6 +21,7 @@ import mysqladm.errors
 from flask import Flask, request, session, g, redirect, url_for, abort, render_template, flash
 import MySQLdb as mysql
 import requests
+import re
 
 
 def get_database(db_name,server_id):
