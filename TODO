@@ -1,8 +1,6 @@
 STABLE RELEASE 2.0
 
 	1 Better regex checks everywhere and code review of error handling everywhere
-	4 Isotope view - filters/sorts tuning.
-	
 	5 Puppet Module for Agent
 	6 Turn on SSL verification
 
