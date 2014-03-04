@@ -29,7 +29,7 @@ import grp
 @app.route('/')
 def default():
 	if 'username' in session:
-		return redirect(url_for('databases'))
+		return redirect(url_for('database_list'))
 	else:
 		next = request.args.get('next',default=None)
 		return render_template('default.html', active='default',next=next)
@@ -141,7 +141,7 @@ def login():
 	next = request.form.get('next',default=None)
 
 	if next == None:
-		return redirect(url_for('databases'))
+		return redirect(url_for('database_list'))
 	else:
 		return redirect(next)
 
