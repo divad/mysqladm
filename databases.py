@@ -27,6 +27,9 @@ import re
 #### UTILITY FUNCTIONS
 
 def get_database(db_name,server_id):
+	"""Return a database instance. db_name is the name of the database and 
+	server_id the numerical ID of the server the database resides on.
+	"""
 	try:
 		server_id = int(server_id)
 	except ValueError:
@@ -37,6 +40,9 @@ def get_database(db_name,server_id):
 	return cur.fetchone()
 	
 def get_database_by_id(database_id):
+	"""Return a database instance. database_id is the numerical ID of the the
+	representing the database. 
+	"""
 	try:
 		database_id = int(database_id)
 	except ValueError:
@@ -52,6 +58,8 @@ def get_database_by_id(database_id):
 @app.route('/databases')
 @mysqladm.core.login_required
 def database_list():
+	"""View function to return a simple list of databases.
+	"""
 	## Load the dictionary based cursor
 	cur = g.db.cursor(mysql.cursors.DictCursor)
 
@@ -72,6 +80,10 @@ def database_list():
 @app.route('/database/<database_id>', methods=['GET','POST'])
 @mysqladm.core.login_required
 def database_view(database_id):
+	"""View function to show the details of a database (via GET) or save changes 
+	to it (via POST).
+	"""
+	
 	## Get database
 	database = get_database_by_id(database_id)
 	if database == None:
@@ -119,8 +131,6 @@ def database_view(database_id):
 	elif request.method == 'POST':
 		## Edit the database details
 		
-		## TODO regex for database_desc, database_owner, database_passwd
-
 		if 'database_desc' in request.form and len(request.form['database_desc']) > 0:
 			database_desc = request.form['database_desc']
 			if re.search('^[A-Za-z0-9_\s\-\.]*\@\&$', database_desc) == None:
@@ -177,6 +187,9 @@ def database_view(database_id):
 @app.route('/database/<database_id>/details', methods=['GET'])
 @mysqladm.core.login_required
 def database_details(database_id):
+	"""View function to print the connection-string like view for easy pasting
+	into tickets or e-mails.
+	"""
 	## Get database
 	database = get_database_by_id(database_id)
 	if database == None:
@@ -201,6 +214,9 @@ def database_details(database_id):
 @app.route('/database/<database_id>/passwd', methods=['POST'])
 @mysqladm.core.login_required
 def database_passwd_rng(database_id):
+	"""View function to change the password of a DB to a random password.
+	"""
+	
 	database = get_database_by_id(database_id)
 	if database == None:
 		return mysqladm.errors.output_error('No such database','I could not find the database you were trying to edit! ','')
@@ -239,6 +255,9 @@ def database_passwd_rng(database_id):
 @app.route('/database/<database_id>/delete', methods=['POST'])
 @mysqladm.core.login_required
 def database_delete(database_id):
+	"""View function to delete a database.
+	"""
+	
 	database = get_database_by_id(database_id)
 	if database == None:
 		return mysqladm.errors.output_error('No such database','I could not find the database you were trying to edit! ','')
@@ -276,6 +295,9 @@ def database_delete(database_id):
 @app.route('/databases/create', methods=['POST'])
 @mysqladm.core.login_required
 def database_create():
+	"""View function to create a new database instance on a server.
+	"""	
+	
 	# Get a cursor to the database
 	cur = g.db.cursor()
 
