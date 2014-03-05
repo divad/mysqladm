@@ -23,13 +23,25 @@ import MySQLdb as mysql
 import requests
 import re
 
+################################################################################
+#### UTILITY FUNCTIONS
 
 def get_database(db_name,server_id):
+	try:
+		server_id = int(server_id)
+	except ValueError:
+		abort(400)
+
 	cur = g.db.cursor(mysql.cursors.DictCursor)
 	cur.execute("SELECT * FROM `databases` WHERE `name` = %s AND `server` = %s", (db_name,server_id))
 	return cur.fetchone()
 	
 def get_database_by_id(database_id):
+	try:
+		database_id = int(database_id)
+	except ValueError:
+		abort(400)
+		
 	cur = g.db.cursor(mysql.cursors.DictCursor)
 	cur.execute("SELECT `databases`.`id` AS 'id', `servers`.`hostname` AS `server`, `databases`.`create_date` AS `create_date`, `databases`.`name` AS 'name', `databases`.`owner` AS 'owner', `databases`.`description` AS 'description' FROM `databases` LEFT JOIN `servers` ON `servers`.`id` = `databases`.`server` WHERE `databases`.`id` = %s",(database_id))
 	return cur.fetchone()
@@ -68,7 +80,7 @@ def database_view(database_id):
 	## Get the server which hosts the database
 	server = mysqladm.servers.get_server_by_hostname(database['server'])
 	if server == None:
-		return mysqladm.errors.output_error('No such server','I could not find the server the database resides on! ','')	
+		return mysqladm.errors.output_error('No such server','I could not find the server the database resides on!','')
 
 	db_size = 0
 	db_size_error = ""
@@ -106,15 +118,21 @@ def database_view(database_id):
 		
 	elif request.method == 'POST':
 		## Edit the database details
+		
+		## TODO regex for database_desc, database_owner, database_passwd
 
 		if 'database_desc' in request.form and len(request.form['database_desc']) > 0:
 			database_desc = request.form['database_desc']
+			if re.search('^[A-Za-z0-9_\s\-\.]*\@\&$', database_desc) == None:
+				return mysqladm.errors.output_error('Unable to save database details', 'Invalid character(s) in description','')
 		else:
 			flash('Database description must not be empty', 'alert-danger')
 			return redirect(url_for('database_view', database_id=database_id))
 			
 		if 'database_owner' in request.form and len(request.form['database_owner']) > 0:
 			database_owner = request.form['database_owner']
+			if re.search('^[A-Za-z0-9_\s\-\.]*\@\&$', database_owner) == None:
+				return mysqladm.errors.output_error('Unable to save detabase details', 'Invalid character(s) in owner,'')
 		else:
 			flash('Database description must not be empty', 'alert-danger')
 			return redirect(url_for('database_view', database_id=database_id))
@@ -126,6 +144,7 @@ def database_view(database_id):
 		
 		## Now try to change password, if required
 		if 'database_passwd' in request.form and len(request.form['database_passwd']) > 0:
+			
 			## Talk to the server via HTTPS
 			try:
 				json_response = mysqladm.core.msg_node(server['hostname'],server['password'],'passwd',name=database['name'], passwd=request.form['database_passwd'])
@@ -177,7 +196,7 @@ def database_details(database_id):
 	return render_template('database_created.html', active='databases', db=database, server=server, passwd=dbpasswd)
 		
 ################################################################################
-#### RESET DATABASE PASSWORD
+#### RESET DATABASE PASSWORD TO RANDOM PASSWORD
 
 @app.route('/database/<database_id>/passwd', methods=['POST'])
 @mysqladm.core.login_required
@@ -261,7 +280,6 @@ def database_create():
 	cur = g.db.cursor()
 
 	# Grab the fields
-	#### TODO VALIDATE THESE FIELDS
 	if 'server_hostname' in request.form and len(request.form['server_hostname']) > 0:
 		hostname = request.form['server_hostname']
 	else:
@@ -274,15 +292,17 @@ def database_create():
 	else:
 		return mysqladm.errors.output_error('Unable to create database', 'You must specify a database name','')
 
-	# TODO verify and valdidate field contents are VALID
-
 	if 'database_desc' in request.form and len(request.form['database_desc']) > 0:
 		description = request.form['database_desc']
+		if re.search('^[A-Za-z0-9_\s\-\.]*\@\&$', description) == None:
+			return mysqladm.errors.output_error('Unable to create database', 'Invalid character(s) in description','')
 	else:
 		return mysqladm.errors.output_error('Unable to create database', 'You must specify a database description','')
 
 	if 'database_owner' in request.form and len(request.form['database_owner']) > 0:
 		owner = request.form['database_owner']
+		if re.search('^[A-Za-z0-9_\s\-\.]*\@\&$', owner) == None:
+			return mysqladm.errors.output_error('Unable to create database', 'Invalid character(s) in owner field','')
 	else:
 		return mysqladm.errors.output_error('Unable to create database', 'You must specify a database owner','')
 
@@ -290,9 +310,11 @@ def database_create():
 
 	if 'database_passwd' in request.form and len(request.form['database_passwd']) > 0:
 		passwd = request.form['database_passwd']
+		## dont validate the password. There really is not point even trying.
 	else:
 		## Generate a password if one was not sent
 		passwd = mysqladm.core.pwgen()
+		
 		## Remember we set a password randomly
 		genpasswd = True
 		

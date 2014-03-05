@@ -29,7 +29,11 @@ import MySQLdb as mysql
 import requests 
 import datetime
 
+################################################################################
+
 def db_connect():
+	"""This function connects to the DB via parameters stored in the config file.
+	"""
 	conn = mysql.connect(app.config['DB_SERV'],app.config['DB_USER'],app.config['DB_PASS'],app.config['DB_NAME'])
 	conn.errorhandler = mysqladm.errors.db_error_handler
 	return conn
@@ -44,7 +48,6 @@ def login_required(f):
 	def decorated_function(*args, **kwargs):
 		if session.get('logged_in',False) is False:
 			flash('<strong>Oops!</strong> You must login first.','alert-danger')
-			## TODO take the next code from sysman - much improved over this.
 			args = url_encode(request.args)
 			return redirect(url_for('default', next=request.script_root + request.path + "?" + args))
 		return f(*args, **kwargs)
@@ -71,7 +74,7 @@ def before_request():
 			else:
 				app.logger.warning('CSRF protection alert: a non-logged in user failed to present a valid POST token')
 
-			### the user cannot have accidentally triggered this
+			### the user cannot have accidentally triggered this (?)
 			### so just throw a 403.
 			abort(403)
 
@@ -79,6 +82,8 @@ def before_request():
 
 @app.teardown_request
 def teardown_request(exception):
+	"""This function closes the DB connection as the app stops.
+	"""
 	db = getattr(g, 'db', None)
 	if db is not None:
 		db.close()
@@ -97,7 +102,7 @@ def generate_csrf_token():
 ################################################################################
 
 def pwgen(length=16):
-	"""This is crude password generator.
+	"""This is very crude password generator.
 	"""
 
 	urandom = random.SystemRandom()
@@ -133,20 +138,25 @@ def poperr_clear():
 ################################################################################
 
 def msg_node(hostname, agent_password, function, **kwargs):
+	"""This function communicates via HTTP(S) to a mysqlagent
+	running on a mysql server.
+	"""
+	
+	## create a payload
 	payload = {'function': function, 'agent_password': agent_password}
 
-	# Put the keyword arguments into the payload
+	## Put the keyword arguments into the payload
 	for arg in kwargs:
 		payload[arg] = kwargs[arg]
 
-	## TODO turn verification back on once SSL in place
+	## send post request
 	r = requests.post('https://' + hostname + ':1337/', data=payload, verify=app.config['AGENT_SSL_VERIFY'])
 	if r.status_code == requests.codes.ok:
 		return json.loads(r.text)
 	else:
 		r.raise_for_status()
 
-		## throw a node exception
+################################################################################
 
 def ut_to_string(ut):
 	"""Converts unix time to a formatted string for human consumption
