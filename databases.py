@@ -60,6 +60,7 @@ def get_database_by_id(database_id):
 def database_list():
 	"""View function to return a simple list of databases.
 	"""
+	
 	## Load the dictionary based cursor
 	cur = g.db.cursor(mysql.cursors.DictCursor)
 
@@ -133,7 +134,7 @@ def database_view(database_id):
 		
 		if 'database_desc' in request.form and len(request.form['database_desc']) > 0:
 			database_desc = request.form['database_desc']
-			if re.search('^[A-Za-z0-9_\s\-\.]*\@\&$', database_desc) == None:
+			if not mysqladm.core.is_valid_desc(database_desc):
 				return mysqladm.errors.output_error('Unable to save database details', 'Invalid character(s) in description','')
 		else:
 			flash('Database description must not be empty', 'alert-danger')
@@ -142,7 +143,7 @@ def database_view(database_id):
 		if 'database_owner' in request.form and len(request.form['database_owner']) > 0:
 			database_owner = request.form['database_owner']
 			if re.search('^[A-Za-z0-9_\s\-\.]*\@\&$', database_owner) == None:
-				return mysqladm.errors.output_error('Unable to save detabase details', 'Invalid character(s) in owner,'')
+				return mysqladm.errors.output_error('Unable to save detabase details', 'Invalid character(s) in owner','')
 		else:
 			flash('Database description must not be empty', 'alert-danger')
 			return redirect(url_for('database_view', database_id=database_id))
@@ -316,7 +317,7 @@ def database_create():
 
 	if 'database_desc' in request.form and len(request.form['database_desc']) > 0:
 		description = request.form['database_desc']
-		if re.search('^[A-Za-z0-9_\s\-\.]*\@\&$', description) == None:
+		if not mysqladm.core.is_valid_desc(description):
 			return mysqladm.errors.output_error('Unable to create database', 'Invalid character(s) in description','')
 	else:
 		return mysqladm.errors.output_error('Unable to create database', 'You must specify a database description','')

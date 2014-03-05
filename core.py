@@ -28,6 +28,7 @@ import json
 import MySQLdb as mysql
 import requests 
 import datetime
+import re
 
 ################################################################################
 
@@ -163,3 +164,21 @@ def ut_to_string(ut):
 	Used by smb.py for turning fstat results into human readable dates.
 	"""
 	return datetime.datetime.fromtimestamp(int(ut)).strftime('%Y-%m-%d %H:%M:%S %Z')
+	
+################################################################################
+
+def is_valid_hostname(hostname):
+	"""Validated a string as a hostname.
+	"""
+	
+    if len(hostname) > 255:
+        return False
+    if hostname[-1] == ".":
+        hostname = hostname[:-1] # strip exactly one dot from the right, if present
+    allowed = re.compile("(?!-)[A-Z\d-]{1,63}(?<!-)$", re.IGNORECASE)
+    return all(allowed.match(x) for x in hostname.split("."))
+    
+def is_valid_desc(desc):
+	if re.search('^[A-Za-z0-9_\s\-\.]*\@\&$', database_desc) == None:
+		return False
+	return True

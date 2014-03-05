@@ -26,6 +26,12 @@ import requests
 #### UTILITY FUNCTIONS
 
 def get_server_by_hostname(hostname):
+	"""Utility funtion to return a server by passing it the full hostname.
+	"""
+	
+	if not mysqladm.core.is_valid_hostname(hostname):
+		abort(400)
+	
 	## Load the dictionary based cursor
 	cur = g.db.cursor(mysql.cursors.DictCursor)
 
@@ -36,6 +42,9 @@ def get_server_by_hostname(hostname):
 	return cur.fetchone()
 	
 def get_all_servers():
+	"""Utility funtion to return all server objects.
+	"""	
+	
 	## Load the dictionary based cursor
 	cur = g.db.cursor(mysql.cursors.DictCursor)
 
@@ -48,6 +57,14 @@ def get_all_servers():
 	return rows
 	
 def get_server_databases(server_id):
+	"""Utility funtion to return all databases from a particular server
+	"""	
+	
+	try:
+		server_id = int(server_id)
+	except ValueError:
+		abort(400)
+	
 	## Load the dictionary based cursor
 	cur = g.db.cursor(mysql.cursors.DictCursor)
 	
@@ -63,6 +80,9 @@ def get_server_databases(server_id):
 @app.route('/servers')
 @mysqladm.core.login_required
 def server_list():
+	"""View function to list all servers in a basic table
+	"""		
+	
 	## Load servers
 	rows = get_all_servers()
 	
@@ -79,6 +99,9 @@ def server_list():
 @app.route('/server_status')
 @mysqladm.core.login_required
 def server_status():
+	"""View function to list all servers with a status output too
+	"""		
+	
 	## Load servers
 	rows = get_all_servers()
 
@@ -119,6 +142,9 @@ def server_status():
 @app.route('/isotope')
 @mysqladm.core.login_required
 def isotope():
+	"""View function to list all servers via the isotope grid
+	"""		
+	
 	## Load servers
 	rows = get_all_servers()
 
@@ -163,6 +189,9 @@ def isotope():
 @app.route('/server/<server_name>', methods=['GET','POST'])
 @mysqladm.core.login_required
 def server_view(server_name):
+	"""View function to view a servers details
+	"""		
+	
 	if request.method == 'GET':
 		## Load the dictionary based cursor
 		cur = g.db.cursor(mysql.cursors.DictCursor)
@@ -232,6 +261,7 @@ def server_view(server_name):
 
 		## Load the server
 		server = get_server_by_hostname(server_name)
+		
 		if server == None:
 			return mysqladm.errors.output_error('No such server','I could not find the server you were looking for! ','')
 
@@ -255,6 +285,8 @@ def server_view(server_name):
 
 			if 'server_alias' in request.form and len(request.form['server_alias']) > 0:
 				alias = request.form['server_alias']
+				if not mysqladm.core.is_valid_hostname(alias):
+					return mysqladm.errors.output_error('Invalid alias','That server alias is invalid. ','')
 			else:
 				had_error = 1
 				alias = ''
@@ -262,6 +294,8 @@ def server_view(server_name):
 
 			if 'server_desc' in request.form and len(request.form['server_desc']) > 0:
 				description = request.form['server_desc']
+				if not mysqladm.core.is_valid_desc(description):
+					return mysqladm.errors.output_error('Invalid description','That server description is invalid. ','')
 			else:
 				had_error = 1
 				description = ''
@@ -295,6 +329,9 @@ def server_view(server_name):
 @app.route('/servers/add', methods=['GET','POST'])
 @mysqladm.core.login_required
 def server_add():
+	"""View function to add a new server
+	"""	
+	
 	if request.method == 'GET':
 		return render_template('server_add.html', active='server_add')
 	elif request.method == 'POST':
@@ -304,6 +341,8 @@ def server_add():
 		# Grab the fields
 		if 'server_hostname' in request.form and len(request.form['server_hostname']) > 0:
 			hostname = request.form['server_hostname']
+			if not mysqladm.core.is_valid_hostname(hostname):
+				return mysqladm.errors.output_error('Invalid hostname','That server hostname is invalid.','')
 		else:
 			had_error = 1
 			hostname = ''
@@ -311,6 +350,8 @@ def server_add():
 
 		if 'server_alias' in request.form and len(request.form['server_alias']) > 0:
 			alias = request.form['server_alias']
+			if not mysqladm.core.is_valid_hostname(alias):
+				return mysqladm.errors.output_error('Invalid alias','That server alias is invalid.','')
 		else:
 			had_error = 1
 			alias = ''
@@ -318,6 +359,8 @@ def server_add():
 
 		if 'server_desc' in request.form and len(request.form['server_desc']) > 0:
 			description = request.form['server_desc']
+			if not mysqladm.core.is_valid_desc(description):
+				return mysqladm.errors.output_error('Invalid description','That server description is invalid. ','')
 		else:
 			had_error = 1
 			description = ''
