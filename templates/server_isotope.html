@@ -66,6 +66,7 @@ $( document ).ready(function()
 
 <div id="isotope">
 	{% for row in rows %}
+		{% if row.error %}
 		<div class="item {{row.state}}">
 			<a href="{{ row.link }}"><h4 class="name">{{ row.shortname }}</h4></a>
 			<p><span class="number">{{ row.databases }}</span> databases</p>
@@ -73,6 +74,14 @@ $( document ).ready(function()
 			<p>{{ row.disk_free|filesizeformat }} free</p>
 			<span class="free" style="display: none">{{ row.disk_free}}</span>
 		</div>
+		{% else %}
+		<div class="item {{row.state}}">
+			<a href="{{ row.link }}"><h4 class="name">{{ row.shortname }}</h4></a>
+			<p><span class="number">{{ row.databases }}</span> databases</p>
+			<p class="state">{{ row.state }}</p>
+			<p>Error</p>
+		</div>
+		{% endif %}
 	{% endfor %}
 </div>
 
