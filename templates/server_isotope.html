@@ -71,7 +71,7 @@ $( document ).ready(function()
 			<a href="{{ row.link }}"><h4 class="name">{{ row.shortname }}</h4></a>
 			<p><span class="number">{{ row.databases }}</span> databases</p>
 			<p class="state">{{ row.state }}</p>
-			<p>Error</p>
+			<p class="bg-danger">Communication Error></p>
 		</div>
 		{% else %}
 		<div class="item {{row.state}}">
