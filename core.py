@@ -173,10 +173,12 @@ def is_valid_hostname(hostname):
 	
 	if len(hostname) > 255:
 		return False
+		
 	if hostname[-1] == ".":
 		hostname = hostname[:-1] # strip exactly one dot from the right, if present
-		allowed = re.compile("(?!-)[A-Z\d-]{1,63}(?<!-)$", re.IGNORECASE)
-		return all(allowed.match(x) for x in hostname.split("."))
+		
+	allowed = re.compile("(?!-)[A-Z\d-]{1,63}(?<!-)$", re.IGNORECASE)
+	return all(allowed.match(x) for x in hostname.split("."))
     
 def is_valid_desc(desc):
 	if re.search('^[A-Za-z0-9_\s\-\.]*\@\&$', database_desc) == None:
