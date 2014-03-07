@@ -67,7 +67,7 @@ $( document ).ready(function()
 <div id="isotope">
 	{% for row in rows %}
 		{% if row.error %}
-		<div class="item {{row.state}} bg-danger">
+		<div class="item {{row.state}} danger">
 			<a href="{{ row.link }}"><h4 class="name">{{ row.shortname }}</h4></a>
 			<p><span class="number">{{ row.databases }}</span> databases</p>
 			<p class="state">{{ row.state }}</p>
