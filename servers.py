@@ -368,10 +368,12 @@ def server_add():
 
 		if 'server_state' in request.form and len(request.form['server_state']) > 0:
 			state = request.form['server_state']
+			if not mysqladm.core.is_valid_env(state):
+				return mysqladm.errors.output_error('Invalid environment','That server status/environment is invalid. ','')			
 		else:
 			had_error = 1
 			state = ''
-			flash("You must specify a server status", 'alert-danger')
+			flash("You must specify a server status/environment", 'alert-danger')
 
 		if 'server_password' in request.form and len(request.form['server_password']) > 0:
 			password = request.form['server_password']

@@ -184,3 +184,18 @@ def is_valid_desc(desc):
 	if re.search('^[A-Za-z0-9_\s\-\.]*\@\&$', database_desc) == None:
 		return False
 	return True
+	
+def is_valid_env(str):
+	
+	if str == 'Production':
+		return True
+	elif str == 'Pre-Production':
+		return True
+	elif str == 'Development':
+		return True
+	elif str == 'Training':
+		return True
+	elif str == 'Other':
+		return True
+		
+	return False
