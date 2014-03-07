@@ -266,6 +266,8 @@ def server_view(server_name):
 			return mysqladm.errors.output_error('No such server','I could not find the server you were looking for! ','')
 
 		if 'delete' in request.form and request.form['delete'] == 'yes':
+			## DELETE
+			
 			# Update details
 			cur.execute('DELETE FROM `servers` WHERE `hostname` = %s', (server_name))
 
@@ -279,6 +281,7 @@ def server_view(server_name):
 			return redirect(url_for('server_list'))
 
 		else:
+			## EDIT
 
 			## error tracking variable
 			had_error = 0
@@ -303,6 +306,8 @@ def server_view(server_name):
 
 			if 'server_state' in request.form and len(request.form['server_state']) > 0:
 				state = request.form['server_state']
+				if not mysqladm.core.is_valid_env(state):
+					return mysqladm.errors.output_error('Invalid environment','That server status/environment is invalid. ','')	
 			else:
 				had_error = 1
 				state = ''

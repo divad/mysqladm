@@ -197,5 +197,5 @@ def is_valid_env(str):
 		return True
 	elif str == 'Other':
 		return True
-		
+
 	return False
