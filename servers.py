@@ -109,6 +109,9 @@ def server_status():
 	for row in rows:
 		server_error = False
 		serror = ''
+
+		## Add the link to the server
+		row['link'] = url_for('server_view', server_name=row['hostname'])
 		
 		try:
 			json_response = mysqladm.core.msg_node(row['hostname'], row['password'], 'stats')
@@ -134,9 +137,6 @@ def server_status():
 		row['disk_free'] = json_response['disk_free']
 		row['uptime'] = json_response['db_uptime']
 
-		## Add the link to the server
-		row['link'] = url_for('server_view', server_name=row['hostname'])
-
 	return render_template('server_status.html', active='server_status',rows=rows)
 	
 ################################################################################
@@ -155,6 +155,9 @@ def isotope():
 	for row in rows:
 		server_error = False
 		serror = ''
+		
+		## Add the link to the server
+		row['link'] = url_for('server_view', server_name=row['hostname'])
 		
 		try:
 			json_response = mysqladm.core.msg_node(row['hostname'], row['password'], 'stats')
@@ -179,9 +182,6 @@ def isotope():
 		row['disk_capacity'] = json_response['disk_capacity']
 		row['disk_free'] = json_response['disk_free']
 		row['uptime'] = json_response['db_uptime']
-
-		## Add the link to the server
-		row['link'] = url_for('server_view', server_name=row['hostname'])
 		
 		## Add the short form of the database hostname
 		short,sep,after = row['hostname'].partition('.')
