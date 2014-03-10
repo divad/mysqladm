@@ -119,12 +119,15 @@ def server_status():
 					## no error
 				else:
 					row['error'] = "Error contacting agent: Invalid JSON response from server"
+					continue
 			else:
 				row['error'] = "Error contacting agent: Invalid JSON response from server"
+				continue
 				
-		except requests.exceptions.RequestException as e:
+		except Exception as e:
 			row['error'] = "Error contacting agent: " + str(e)
-			
+			continue
+		
 		row['load'] = json_response['load_avg_1'] + ' ' + json_response['load_avg_5'] + ' ' + json_response['load_avg_15']
 		row['disk_usage'] = json_response['disk_capacity'] - json_response['disk_free']
 		row['disk_capacity'] = json_response['disk_capacity']
@@ -162,11 +165,14 @@ def isotope():
 					## no error
 				else:
 					row['error'] = "Error contacting agent: Invalid JSON response from server"
+					continue
 			else:
 				row['error'] = "Error contacting agent: Invalid JSON response from server"
+				continue
 				
-		except requests.exceptions.RequestException as e:
+		except Exception as e:
 			row['error'] = "Error contacting agent: " + str(e)
+			continue
 			
 		row['load'] = json_response['load_avg_1'] + ' ' + json_response['load_avg_5'] + ' ' + json_response['load_avg_15']
 		row['disk_usage'] = json_response['disk_capacity'] - json_response['disk_free']
