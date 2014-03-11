@@ -159,6 +159,10 @@ def isotope():
 		## Add the link to the server
 		row['link'] = url_for('server_view', server_name=row['hostname'])
 		
+		## Add the short form of the database hostname
+		short,sep,after = row['hostname'].partition('.')
+		row['shortname'] = short
+		
 		try:
 			json_response = mysqladm.core.msg_node(row['hostname'], row['password'], 'stats')
 
@@ -182,10 +186,6 @@ def isotope():
 		row['disk_capacity'] = json_response['disk_capacity']
 		row['disk_free'] = json_response['disk_free']
 		row['uptime'] = json_response['db_uptime']
-		
-		## Add the short form of the database hostname
-		short,sep,after = row['hostname'].partition('.')
-		row['shortname'] = short
 
 	return render_template('server_isotope.html', active='server_isotope',rows=rows)
 
