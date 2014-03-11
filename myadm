@@ -7,6 +7,7 @@ from flask.ext.script import Manager
 from mysqladm.fapp import WrapFlask
 import mysqladm.servers
 import mysqladm.core
+import requests
 
 app = WrapFlask(__name__)
 manager = Manager(app,with_default_commands=False)
