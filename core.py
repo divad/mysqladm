@@ -26,7 +26,7 @@ import os
 import string
 import json
 import MySQLdb as mysql
-import requests 
+import requests
 import datetime
 import re
 
@@ -181,7 +181,7 @@ def is_valid_hostname(hostname):
 	return all(allowed.match(x) for x in hostname.split("."))
     
 def is_valid_desc(desc):
-	if re.search('^[A-Za-z0-9_\s\-\.]*\@\&$', database_desc) == None:
+	if re.search('^[A-Za-z0-9_\s\-\.]*\@\&$', desc) == None:
 		return False
 	return True
 	

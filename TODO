@@ -1,6 +1,6 @@
 STABLE RELEASE 2.0
 
-	2 Puppet Module for Agent
+	cron in agent
 	3 Turn on SSL verification
 
 FUTURE RELEASE 2.2
@@ -14,3 +14,5 @@ FUTURE RELEASE 2.4
 
 	move database to another server? would not be super difficult?
 	<expect lots of feedback requirements here>
+	
+	
