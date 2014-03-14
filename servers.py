@@ -49,7 +49,7 @@ def get_all_servers():
 	cur = g.db.cursor(mysql.cursors.DictCursor)
 
 	## Execute a SQL select
-	cur.execute("SELECT `servers`.`id` AS `id`, `servers`.`hostname` AS `hostname`, `servers`.`alias` AS `alias`, `servers`.`desc` AS `desc`, `servers`.`state` AS `state`, `servers`.`password` AS `password`, COUNT(`databases`.`id`) AS `databases` FROM `servers` INNER JOIN `databases` ON databases.server = servers.id GROUP BY `servers`.`id`;");
+	cur.execute("SELECT `servers`.`id` AS `id`, `servers`.`hostname` AS `hostname`, `servers`.`alias` AS `alias`, `servers`.`desc` AS `desc`, `servers`.`state` AS `state`, `servers`.`password` AS `password`, COUNT(`databases`.`id`) AS `databases` FROM `servers` LEFT JOIN `databases` ON databases.server = servers.id GROUP BY `servers`.`id`;");
 
 	## Get results
 	rows = cur.fetchall()
