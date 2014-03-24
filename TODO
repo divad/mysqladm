@@ -1,7 +1,3 @@
-STABLE RELEASE 2.0
-
-	3 Turn on SSL verification
-
 FUTURE RELEASE 2.2
 	
 	1 MySQL farm seperation? Non-mysql farm database servers? Special code to handle the fact that the agent assumes its a farm node...

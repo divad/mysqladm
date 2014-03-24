@@ -151,7 +151,12 @@ def msg_node(hostname, agent_password, function, **kwargs):
 		payload[arg] = kwargs[arg]
 
 	## send post request
-	r = requests.post('https://' + hostname + ':1337/', data=payload, verify=app.config['AGENT_SSL_VERIFY'])
+	if 'sslverify' in kwargs:
+		verify = kwargs['sslverify']
+	else:
+		verify = app.config['AGENT_SSL_VERIFY']
+	
+	r = requests.post('https://' + hostname + ':1337/', data=payload, verify=verify)
 	if r.status_code == requests.codes.ok:
 		return json.loads(r.text)
 	else:
