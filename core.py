@@ -165,7 +165,7 @@ def msg_node(serverobj, function, **kwargs):
 	else:
 		verify = False
 	
-	app.logger.debug("verify is: " + str(verify))
+	app.logger.warn("verify is: " + str(verify))
 	r = requests.post('https://' + serverobj['hostname'] + ':1337/', data=payload, verify=verify)
 	if r.status_code == requests.codes.ok:
 		return json.loads(r.text)
