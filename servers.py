@@ -36,7 +36,7 @@ def get_server_by_hostname(hostname):
 	cur = g.db.cursor(mysql.cursors.DictCursor)
 
 	## Execute a SQL select
-	cur.execute("SELECT `id`, `hostname`, `alias`, `desc`, `state`, `password` FROM `servers` WHERE `hostname` = %s", (hostname))
+	cur.execute("SELECT `id`, `hostname`, `alias`, `desc`, `state`, `password`, `sslverify` FROM `servers` WHERE `hostname` = %s", (hostname))
 
 	## Get results
 	return cur.fetchone()
@@ -49,7 +49,7 @@ def get_all_servers():
 	cur = g.db.cursor(mysql.cursors.DictCursor)
 
 	## Execute a SQL select
-	cur.execute("SELECT `servers`.`id` AS `id`, `servers`.`hostname` AS `hostname`, `servers`.`alias` AS `alias`, `servers`.`desc` AS `desc`, `servers`.`state` AS `state`, `servers`.`password` AS `password`, COUNT(`databases`.`id`) AS `databases` FROM `servers` LEFT JOIN `databases` ON databases.server = servers.id GROUP BY `servers`.`id`;");
+	cur.execute("SELECT `servers`.`id` AS `id`, `servers`.`hostname` AS `hostname`, `servers`.`sslverify` AS `sslverify`, `servers`.`alias` AS `alias`, `servers`.`desc` AS `desc`, `servers`.`state` AS `state`, `servers`.`password` AS `password`, COUNT(`databases`.`id`) AS `databases` FROM `servers` LEFT JOIN `databases` ON databases.server = servers.id GROUP BY `servers`.`id`;");
 
 	## Get results
 	rows = cur.fetchall()

@@ -154,18 +154,13 @@ def msg_node(serverobj, function, **kwargs):
 	for arg in kwargs:
 		payload[arg] = kwargs[arg]
 
-	## send post request
+	## Shall we verify the SSL cert of the node?
 	if 'sslverify' in serverobj:
 		verify = serverobj['sslverify']
 	else:
 		verify = app.config['AGENT_SSL_VERIFY']
 		
-	if verify == 1:
-		verify = True
-	else:
-		verify = False
-	
-	app.logger.warn("verify is: " + str(verify))
+	app.logger.warn("Messaging " + serverobj['hostname'] + " with ssl verify set to: " + str(verify))
 	r = requests.post('https://' + serverobj['hostname'] + ':1337/', data=payload, verify=verify)
 	if r.status_code == requests.codes.ok:
 		return json.loads(r.text)
