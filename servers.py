@@ -321,7 +321,7 @@ def server_view(server_name):
 				
 			if 'server_sslverify' in request.form:
 				sslverify = request.form['server_sslverify']
-				if sslverify != 1 or sslverify != 0:
+				if sslverify != '1' or sslverify != '0':
 					return mysqladm.errors.output_error('Invalid ssl verify flag','That ssl verify flag is invalid','')
 			else:
 				had_error = 1
@@ -404,7 +404,7 @@ def server_add():
 			
 		if 'server_sslverify' in request.form:
 			sslverify = request.form['server_sslverify']
-			if not sslverify == 1 or not sslverify == 0:
+			if sslverify != '1' or sslverify != '0':
 				return mysqladm.errors.output_error('Invalid ssl verify flag','That ssl verify flag is invalid','')
 		else:
 			had_error = 1
