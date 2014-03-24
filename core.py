@@ -160,6 +160,9 @@ def msg_node(serverobj, function, **kwargs):
 	else:
 		verify = bool(app.config['AGENT_SSL_VERIFY'])
 		
+	if verify == False:
+		flash('Warning: Connected to ' + serverobj['hostname'] + ' without SSL verification enabled','alert-warning')
+		
 	app.logger.warn("Messaging " + serverobj['hostname'] + " with ssl verify set to: " + str(verify))
 	r = requests.post('https://' + serverobj['hostname'] + ':1337/', data=payload, verify=verify)
 	if r.status_code == requests.codes.ok:

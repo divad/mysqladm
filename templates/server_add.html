@@ -67,8 +67,8 @@
 		<label for="inputSsl" class="col-lg-2 control-label">Security Mode</label>
 			<div class="col-lg-5">
 				<select name="server_sslverify" class="form-control" id="inputSsl">
-					<option value="1">Require a valid SSL certificate</option>
-					<option value="0">Don't validate the SSL certificate</option>	
+					<option value="1"{% if server.sslverify and server.sslverify == "1" %} selected="selected"{% endif %}>Require a valid SSL certificate</option>
+					<option value="0"{% if server.sslverify and server.sslverify == "0" %} selected="selected"{% endif %}>Don't validate the SSL certificate</option>
 				</select>
 
 				<span class="help-block">Should we validate the SSL certificate of the server?

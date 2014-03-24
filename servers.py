@@ -318,12 +318,21 @@ def server_view(server_name):
 				had_error = 1
 				state = ''
 				flash("You must specify a server status", 'alert-danger')
+				
+			if 'server_sslverify' in request.form:
+				sslverify = request.form['server_sslverify']
+				if sslverify != 1 or sslverify != 0:
+					return mysqladm.errors.output_error('Invalid ssl verify flag','That ssl verify flag is invalid','')
+			else:
+				had_error = 1
+				state = ''
+				flash("You must specify a ssl verify flag", 'alert-danger')
 
 			if had_error == 1:
 				return redirect(url_for('server_view', server_name=server['hostname']))
 
 			# Update details
-			cur.execute('UPDATE `servers` SET `alias` = %s, `desc` = %s, `state` = %s WHERE `hostname` = %s', (alias, description, state, server_name))
+			cur.execute('UPDATE `servers` SET `alias` = %s, `desc` = %s, `state` = %s, `sslverify` = %s WHERE `hostname` = %s', (alias, description, state, server_name, sslverify))
 
 			# Commit changes to the database
 			g.db.commit()
@@ -392,14 +401,23 @@ def server_add():
 			had_error = 1
 			password = ''
 			flash("You must specify a password", 'alert-danger')
+			
+		if 'server_sslverify' in request.form:
+			sslverify = request.form['server_sslverify']
+			if sslverify != 1 or sslverify != 0:
+				return mysqladm.errors.output_error('Invalid ssl verify flag','That ssl verify flag is invalid','')
+		else:
+			had_error = 1
+			state = ''
+			flash("You must specify a ssl verify flag", 'alert-danger')
 
 		# If we had an error, just render the server_add page with whatever fields filled in
 		if had_error == 1:
-			return render_template('server_add.html', active='servers', hostname=hostname, alias=alias, description=description, state=state)
+			return render_template('server_add.html', active='servers', hostname=hostname, alias=alias, description=description, state=state, sslverify=sslverify)
  
 		## Talk to the server via HTTPS
 		try:
-			serverobj = {'hostname': hostname, 'password': password}
+			serverobj = {'hostname': hostname, 'password': password, 'sslverify': sslverify}
 			json_response = mysqladm.core.msg_node(serverobj,'list')
 
 			if 'status' not in json_response:
@@ -411,7 +429,7 @@ def server_add():
 				else:
 					flash("Error adding server, code: " + str(json_response['status']), 'alert-danger')
 
-				return render_template('server_add.html', active='servers', hostname=hostname, alias=alias, description=description, state=state)
+				return render_template('server_add.html', active='servers', hostname=hostname, alias=alias, description=description, state=state, sslverify=sslverify)
 				
 		except requests.exceptions.RequestException as e:
 			return mysqladm.errors.output_error('Unable to add server','An error occured when communicating with the MySQL node: ' + str(e),'')	
@@ -423,10 +441,10 @@ def server_add():
 		cur.execute('SELECT 1 FROM `servers` WHERE `hostname` = %s;', (hostname,))
 		if cur.fetchone() is not None:
 			flash('Error: The specified MySQL server is already managed by this server', 'alert-danger')
-			return render_template('server_add.html', active='servers', hostname=hostname, alias=alias, description=description, state=state)
+			return render_template('server_add.html', active='servers', hostname=hostname, alias=alias, description=description, state=state, sslverify=sslverify)
 	
 		# Insert the server into the database
-		cur.execute('INSERT INTO `servers` (`hostname`, `alias`, `desc`, `state`, `password`) VALUES (%s, %s, %s, %s, %s)', (hostname, alias, description, state, password))
+		cur.execute('INSERT INTO `servers` (`hostname`, `alias`, `desc`, `state`, `password`, `sslverify`) VALUES (%s, %s, %s, %s, %s)', (hostname, alias, description, state, password, sslverify))
 
 		# Commit changes to the database
 		g.db.commit()
