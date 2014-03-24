@@ -26,7 +26,7 @@ def agentsync(server=''):
 	for server in servers:
 		print(server['hostname'])
 		try:
-			json_response = mysqladm.core.msg_node(server['hostname'],server['password'],'list')
+			json_response = mysqladm.core.msg_node(server,'list')
 
 			if 'status' not in json_response:
 				print('Error: Invalid JSON response from server', file=sys.stderr)

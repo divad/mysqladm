@@ -114,7 +114,7 @@ def server_status():
 		row['link'] = url_for('server_view', server_name=row['hostname'])
 		
 		try:
-			json_response = mysqladm.core.msg_node(row['hostname'], row['password'], 'stats')
+			json_response = mysqladm.core.msg_node(row, 'stats')
 
 			if 'status' in json_response:
 				if json_response['status'] == 0 and 'load_avg_1' in json_response:
@@ -164,7 +164,7 @@ def isotope():
 		row['shortname'] = short
 		
 		try:
-			json_response = mysqladm.core.msg_node(row['hostname'], row['password'], 'stats')
+			json_response = mysqladm.core.msg_node(row, 'stats')
 
 			if 'status' in json_response:
 				if json_response['status'] == 0 and 'load_avg_1' in json_response:
@@ -216,7 +216,7 @@ def server_view(server_name):
 		## ask the server for stats
 		try:
 			# Query the server for stats
-			json_response = mysqladm.core.msg_node(server['hostname'], server['password'], 'stats')
+			json_response = mysqladm.core.msg_node(server, 'stats')
 			
 			# If we have a valid response
 			if 'status' in json_response and json_response['status'] == 0 and 'load_avg_1' in json_response:
@@ -399,7 +399,8 @@ def server_add():
  
 		## Talk to the server via HTTPS
 		try:
-			json_response = mysqladm.core.msg_node(hostname,password,'list')
+			serverobj = {'hostname': hostname, 'password': password}
+			json_response = mysqladm.core.msg_node(serverobj,'list')
 
 			if 'status' not in json_response:
 				return mysqladm.errors.output_error('Unable to add server', 'The given MySQL node responded with something unexpected: ' + str(json_response), '')

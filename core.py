@@ -138,25 +138,29 @@ def poperr_clear():
 
 ################################################################################
 
-def msg_node(hostname, agent_password, function, **kwargs):
+def msg_node(serverobj, function, **kwargs):
 	"""This function communicates via HTTP(S) to a mysqlagent
-	running on a mysql server.
+	running on a mysql server. Serverobj is a hash containing hostname,
+	password and optionally an sslverify boolean.
 	"""
 	
+	## Server object is a hash with hostname/agent_password/etc.
+	
+	
 	## create a payload
-	payload = {'function': function, 'agent_password': agent_password}
+	payload = {'function': function, 'agent_password': serverobj['password']}
 
 	## Put the keyword arguments into the payload
 	for arg in kwargs:
 		payload[arg] = kwargs[arg]
 
 	## send post request
-	if 'sslverify' in kwargs:
-		verify = kwargs['sslverify']
+	if 'sslverify' in serverobj:
+		verify = serverobj['sslverify']
 	else:
 		verify = app.config['AGENT_SSL_VERIFY']
 	
-	r = requests.post('https://' + hostname + ':1337/', data=payload, verify=verify)
+	r = requests.post('https://' + serverobj['hostname'] + ':1337/', data=payload, verify=verify)
 	if r.status_code == requests.codes.ok:
 		return json.loads(r.text)
 	else:

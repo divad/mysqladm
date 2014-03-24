@@ -99,7 +99,7 @@ def database_view(database_id):
 	db_size_error = ""
 	if request.method == 'GET':
 		try:
-			json_response = mysqladm.core.msg_node(server['hostname'], server['password'], 'stats')
+			json_response = mysqladm.core.msg_node(server, 'stats')
 
 			if 'status' not in json_response:
 				db_size_error = "Invalid JSON response from server"
@@ -158,7 +158,7 @@ def database_view(database_id):
 			
 			## Talk to the server via HTTPS
 			try:
-				json_response = mysqladm.core.msg_node(server['hostname'],server['password'],'passwd',name=database['name'], passwd=request.form['database_passwd'])
+				json_response = mysqladm.core.msg_node(server,'passwd',name=database['name'], passwd=request.form['database_passwd'])
 	
 				if 'status' not in json_response:
 					return mysqladm.errors.output_error('Unable to change database password', 'The mysql server responded with something unexpected: ' + str(json_response), '')
@@ -231,7 +231,7 @@ def database_passwd_rng(database_id):
 	new_passwd = mysqladm.core.pwgen()
 	
 	try:
-		json_response = mysqladm.core.msg_node(server['hostname'],server['password'],'passwd',name=database['name'], passwd=new_passwd)
+		json_response = mysqladm.core.msg_node(server,'passwd',name=database['name'], passwd=new_passwd)
 
 		if 'status' not in json_response:
 			return mysqladm.errors.output_error('Unable to change database password', 'The mysql server responded with something unexpected: ' + str(json_response), '')
@@ -269,7 +269,7 @@ def database_delete(database_id):
 		return mysqladm.errors.output_error('No such server','I could not find the server the database resides on! ','')
 
 	try:
-		json_response = mysqladm.core.msg_node(server['hostname'],server['password'],'drop',name=database['name'])
+		json_response = mysqladm.core.msg_node(server,'drop',name=database['name'])
 
 		if 'status' not in json_response:
 			return mysqladm.errors.output_error('Unable to delete database instance', 'The mysql server responded with something unexpected: ' + str(json_response), '')
@@ -353,7 +353,7 @@ def database_create():
 
 	## Talk to the server via HTTPS
 	try:
-		json_response = mysqladm.core.msg_node(server['hostname'],server['password'],'create',name=name, passwd=passwd)
+		json_response = mysqladm.core.msg_node(server,'create',name=name, passwd=passwd)
 
 		if 'status' not in json_response:
 			return mysqladm.errors.output_error('Unable to create database', 'The mysql server responded with something unexpected: ' + str(json_response), '')
