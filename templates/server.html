@@ -92,7 +92,7 @@
 									<option value="0"{% if server.sslverify and server.sslverify == 0 %} selected="selected"{% endif %}>Don't validate the SSL certificate</option>	
 								</select>
 				
-								<span class="help-block">Should we validate the SSL certificate of the server?
+								<span class="help-block">Should we validate the SSL certificate of the server? {{ server.sslverify }}
 								</span>
 							</div>
 					</div>					
