@@ -322,7 +322,7 @@ def server_view(server_name):
 			if 'server_sslverify' in request.form:
 				sslverify = request.form['server_sslverify']
 				if sslverify != '1' or sslverify != '0':
-					return mysqladm.errors.output_error('Invalid ssl verify flag','That ssl verify flag is invalid','')
+					return mysqladm.errors.output_error('Invalid ssl verify flag','That ssl verify flag is invalid: ' + str(type(sslverify)) + ' ' + str(sslverify),'')
 			else:
 				had_error = 1
 				state = ''
