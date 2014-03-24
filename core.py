@@ -159,6 +159,11 @@ def msg_node(serverobj, function, **kwargs):
 		verify = serverobj['sslverify']
 	else:
 		verify = app.config['AGENT_SSL_VERIFY']
+		
+	if verify == 1:
+		verify = True
+	else:
+		verify = False
 	
 	r = requests.post('https://' + serverobj['hostname'] + ':1337/', data=payload, verify=verify)
 	if r.status_code == requests.codes.ok:
