@@ -332,7 +332,7 @@ def server_view(server_name):
 				return redirect(url_for('server_view', server_name=server['hostname']))
 
 			# Update details
-			cur.execute('UPDATE `servers` SET `alias` = %s, `desc` = %s, `state` = %s, `sslverify` = %s WHERE `hostname` = %s', (alias, description, state, server_name, sslverify))
+			cur.execute('UPDATE `servers` SET `alias` = %s, `desc` = %s, `state` = %s, `sslverify` = %s WHERE `hostname` = %s', (alias, description, state, sslverify, server_name,))
 
 			# Commit changes to the database
 			g.db.commit()
