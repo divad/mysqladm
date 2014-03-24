@@ -321,8 +321,8 @@ def server_view(server_name):
 				
 			if 'server_sslverify' in request.form:
 				sslverify = int(request.form['server_sslverify'])
-				if sslverify != 1 or sslverify != 0:
-					return mysqladm.errors.output_error('Invalid ssl verify flag','That ssl verify flag is invalid: ' + str(type(sslverify)) + ' ' + str(sslverify),'')
+				if sslverify < 0 or sslverify > 1:
+					return mysqladm.errors.output_error('Invalid ssl verify flag','That ssl verify flag is invalid','')
 			else:
 				had_error = 1
 				state = ''
@@ -403,8 +403,8 @@ def server_add():
 			flash("You must specify a password", 'alert-danger')
 			
 		if 'server_sslverify' in request.form:
-			sslverify = request.form['server_sslverify']
-			if sslverify != '1' or sslverify != '0':
+			sslverify = int(request.form['server_sslverify'])
+			if sslverify < 0 or sslverify > 1:
 				return mysqladm.errors.output_error('Invalid ssl verify flag','That ssl verify flag is invalid','')
 		else:
 			had_error = 1
