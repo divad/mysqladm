@@ -156,9 +156,9 @@ def msg_node(serverobj, function, **kwargs):
 
 	## Shall we verify the SSL cert of the node?
 	if 'sslverify' in serverobj:
-		verify = serverobj['sslverify']
+		verify = bool(serverobj['sslverify'])
 	else:
-		verify = app.config['AGENT_SSL_VERIFY']
+		verify = bool(app.config['AGENT_SSL_VERIFY'])
 		
 	app.logger.warn("Messaging " + serverobj['hostname'] + " with ssl verify set to: " + str(verify))
 	r = requests.post('https://' + serverobj['hostname'] + ':1337/', data=payload, verify=verify)
