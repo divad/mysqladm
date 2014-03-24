@@ -165,7 +165,7 @@ def msg_node(serverobj, function, **kwargs):
 	else:
 		verify = False
 	
-	halt("Testing verify","verify is: " + str(verify))
+	mysqladm.errors.halt("Testing verify","verify is: " + str(verify))
 	r = requests.post('https://' + serverobj['hostname'] + ':1337/', data=payload, verify=verify)
 	if r.status_code == requests.codes.ok:
 		return json.loads(r.text)
