@@ -48,7 +48,6 @@ def about():
 @app.route('/stats')
 @mysqladm.core.login_required
 def stats():
-	## Load the dictionary based cursor
 	cur = g.db.cursor()
 
 	## Execute a SQL select
@@ -56,7 +55,10 @@ def stats():
 	servers_row = cur.fetchone()
 	cur.execute("SELECT COUNT(*) FROM `databases`");
 	databases_row = cur.fetchone()
-	cur.execute("SELECT `hostname`, `password` FROM `servers`");
+	
+	## Load the dictionary based cursor
+	cur = g.db.cursor(mysql.cursors.DictCursor)
+	cur.execute("SELECT * FROM `servers`");
 
 	# Average up servers
 	count = 0
@@ -67,7 +69,7 @@ def stats():
 	while row != None:
 		try:
 			# Query the server for stats
-			json_response = mysqladm.core.msg_node(row[0], row[1], 'stats')
+			json_response = mysqladm.core.msg_node(row, 'stats')
 
 			# If we have a valid response
 			if 'status' in json_response and json_response['status'] == 0 and 'load_avg_1' in json_response:
@@ -75,6 +77,7 @@ def stats():
 				load_sum      = load_sum + float(json_response['load_avg_1'])
 				capacity_size = capacity_size + json_response['disk_capacity']
 				usage_size    = usage_size + (json_response['disk_capacity'] - json_response['disk_free'])
+				
 		except Exception, e:
 			app.logger.warn(str(e))
 			# We ignore exceptions here
