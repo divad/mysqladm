@@ -442,6 +442,8 @@ def server_add():
 		if cur.fetchone() is not None:
 			flash('Error: The specified MySQL server is already managed by this server', 'alert-danger')
 			return render_template('server_add.html', active='servers', hostname=hostname, alias=alias, description=description, state=state, sslverify=sslverify)
+			
+		sslverify = str(sslverify)
 	
 		# Insert the server into the database
 		cur.execute('INSERT INTO `servers` (`hostname`, `alias`, `desc`, `state`, `password`, `sslverify`) VALUES (%s, %s, %s, %s, %s)', (hostname, alias, description, state, password, sslverify))
