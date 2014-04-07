@@ -22,6 +22,7 @@ from flask import Flask, request, session, g, redirect, url_for, abort, render_t
 import kerberos
 import pwd
 import grp
+import mysql
 
 ################################################################################
 #### HOME PAGE
