@@ -1,0 +1,237 @@
+#!/usr/bin/python
+
+## mysqlagent python handler
+## David Bell, d.bell@soton.ac.uk
+## October 2013
+
+## python-simplejson
+## MySQL-python
+
+import cgi
+import sys
+import ConfigParser
+import re, os, pickle
+import MySQLdb as mysql
+from datetime import timedelta
+
+try:
+    import json
+except ImportError:
+    import simplejson as json
+
+def requireParam(name):
+	if name not in params:
+		print json.dumps({'status': 1, 'error': 'Parameter \'' + name + '\' was not set'})
+		sys.exit()
+
+def validateDatabaseName(name):
+	# Database names can contain almost anything when quoted, except backtick, 
+	# period, slashes and must be less than 64 characters. However, because
+	# we don't want irritating database names, let's narrow it down to starting
+	# with a character or underscore, and contain only letters, numbers or
+	# an underscore
+	if re.search('^[A-Za-z_][A-Za-z0-9_]*$', name) == None:
+		print json.dumps({'status': 1, 'error': 'Invalid character in database name'})
+		sys.exit()
+
+	if name.lower() == "mysql":
+		print json.dumps({'status': 1, 'error': 'The system \'mysql\' database cannot be modified by this script'})
+		sys.exit()
+
+	if name.lower() == "information_schema":		
+		print json.dumps({'status': 1, 'error': 'The system \'information_schema\' database cannot be modified by this script'})
+		sys.exit()
+
+	if len(name) > 64:
+		print json.dumps({'status': 1, 'error': 'Database name is too long'})
+		sys.exit()
+
+## this is a REST type interface
+## HTTP params are:
+## 'function' either: 'list', 'create', 'passwd', 'drop', 'stats'
+### if 'create' then 'name' and 'passwd' are needed
+### if 'passwd' then 'name' and 'passwd' are needed
+### if 'drop' then 'name' is needed
+### if 'stats' then no params are needed
+### if 'list' then no params are needed
+## json is returned for all responses
+### 'status' is 0 on success, 1 on error
+### 'error' is a free text field indicating the fault if error if status is set to 1
+
+## We always should return a header
+sys.stdout.write("Content-Type: application/json\r\n\r\n")
+
+## Get config
+config = ConfigParser.SafeConfigParser()
+config.read('/opt/mysqlagent/mysql.conf')
+
+## check root password defined
+if not config.has_option('mysql','password'):
+	print json.dumps({'status': 1, 'error': 'Internal error: mysql root password not configured on agent'})
+	sys.exit()
+
+## connect to mysql
+try:
+	server = mysql.connect('localhost', 'root', config.get('mysql','password'));
+except mysql.Error, e:
+	print json.dumps({'status': 1, 'error': 'Internal error: MySQL error: ' + str(e)})
+	sys.exit()
+except Exception, e:
+	print json.dumps({'status': 1, 'error': 'Internal error: ' + str(e)})
+	sys.exit()
+
+## Get mysqladm password
+try:
+	manager_password = config.get('mysql', 'manager_password');
+except Exception, e:
+	print json.dumps({'status': 1, 'error': 'Internal error: manager password (mysql/manager_password) not configured on agent'})
+	sys.exit()
+
+## Get HTTP parameters
+params = cgi.FieldStorage()
+
+## Ensure 'function' was sent
+requireParam('function')
+function = params['function'].value
+
+## Ensure 'agent_password'
+requireParam('agent_password')
+given_password = params['agent_password'].value
+
+## Check that the password is correct
+if given_password != manager_password:
+	print json.dumps({'status': 1, 'error': 'Incorrect agent password'})
+	sys.exit()
+
+## list databases
+if function == 'list':
+	try:
+		cur = server.cursor()
+		cur.execute("SHOW DATABASES")
+		rows = cur.fetchall()
+		databases = []
+		hide = ['mysql','mytop','information_schema']
+		for entry in rows:
+			if not entry[0] in hide: 
+				databases.append(entry[0])
+
+		resp = {'status': 0, 'list': databases}
+		print json.dumps(resp)
+	except mysql.Error, e:
+		print json.dumps({'status': 1, 'error': 'Internal error: MySQL error: ' + str(e)})
+		sys.exit()
+
+## create database
+elif function == 'create':
+	requireParam('name')
+	requireParam('passwd')
+	name = params['name'].value
+	passwd = params['passwd'].value
+	validateDatabaseName(name)
+
+	try:
+		cur = server.cursor()
+		cur.execute("CREATE DATABASE `" + name + "`")
+		cur.execute("GRANT ALL ON `" + name + "`.* TO '" + name + "'@'%%' IDENTIFIED BY %s", (passwd))
+		cur.execute("FLUSH PRIVILEGES")
+		print json.dumps({'status': 0})
+	except mysql.Error, e:
+		print json.dumps({'status': 1, 'error': 'Internal error: MySQL error: ' + str(e)})
+		sys.exit()	
+
+## change password
+elif function == 'passwd':
+	requireParam('name')
+	requireParam('passwd')
+	name = params['name'].value
+	passwd = params['passwd'].value
+	validateDatabaseName(name)
+
+	try:
+		cur = server.cursor()
+		cur.execute("SET PASSWORD FOR '" + name + "'@'%%' = PASSWORD(%s)", (passwd))
+		print json.dumps({'status': 0})
+	except mysql.Error, e:
+		print json.dumps({'status': 1, 'error': 'Internal error: MySQL error: ' + str(e)})
+		sys.exit()
+
+## drop database
+elif function == 'drop':
+	requireParam('name')
+	name = params['name'].value
+	validateDatabaseName(name)
+
+	try:
+		cur = server.cursor()
+		cur.execute("DROP USER `" + name + "`")
+		cur.execute("DROP DATABASE `" + name + "`")
+		print json.dumps({'status': 0})
+	except mysql.Error, e:
+		print json.dumps({'status': 1, 'error': 'Internal error: MySQL error: ' + str(e)})
+		sys.exit()
+
+## stats call
+elif function == 'stats':
+	try:
+		cur = server.cursor()
+		cur.execute("SHOW GLOBAL STATUS LIKE 'Uptime';")
+		suptime = cur.fetchone()
+		db_uptime = str(timedelta(seconds = int(suptime[1])))
+
+		cur.execute('SELECT VERSION();')
+		db_version = cur.fetchone()
+		
+	except mysql.Error, e:
+		print json.dumps({'status': 1, 'error': 'Internal error: MySQL error: ' + str(e)})
+		sys.exit()
+
+	## Check that a volume has been provided to return disk space for
+	if not config.has_option('mysql', 'data_volume'):
+		print json.dumps({'status': 1, 'error': 'Internal error: mysql data volume (mysql/data_volume) not configured on agent'})
+		sys.exit()
+
+	## Check that a stats pickle file exists 
+	if not config.has_option('mysql', 'stats_file'):
+		print json.dumps({'status': 1, 'error': 'Internal error: mysql stats file (mysql/stats_file) not configured on agent'})
+		sys.exit()
+
+	# Get disk space available on /data
+	try:
+		data = os.statvfs(config.get('mysql', 'data_volume'))
+	except Exception, e:
+		print json.dumps({'status': 1, 'error': 'Internal error: Error checking disk volume: ' + str(e)})
+		sys.exit()		
+
+	# Get load average
+	loadavg = os.getloadavg()
+
+	# Get the stats data
+	try:
+		file = open(config.get('mysql', 'stats_file'), 'r')
+		db_sizes = pickle.load(file)
+		file.close()
+		file_stat = os.stat(config.get('mysql', 'stats_file'))
+	except Exception, e:
+		print json.dumps({'status': 1, 'error': 'Internal error: No stats file could be loaded: ' + str(e)})
+		sys.exit()
+
+	# Print out JSON
+	print json.dumps(
+	{
+		'status': 0,
+		'disk_mount_point': config.get('mysql', 'data_volume'),
+		'disk_capacity': data.f_bsize * data.f_blocks,
+		'disk_free': data.f_bsize * data.f_bavail,
+		'load_avg_1': "%.2f" % (loadavg[0],),
+		'load_avg_5': "%.2f" % (loadavg[1],),
+		'load_avg_15': "%.2f" % (loadavg[2],),
+		'db_sizes': db_sizes,
+		'db_sizes_timestamp': file_stat.st_mtime,
+		'db_version': db_version[0],
+		'db_uptime': db_uptime,
+	})
+	sys.exit()
+
+else:
+	print json.dumps({'status': 1, 'error': 'No such function'})
+	sys.exit()

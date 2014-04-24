@@ -1,0 +1,73 @@
+#!/usr/bin/python
+
+## mysqlagent statistics cronjob
+## Clayton Peters, c.l.peters@soton.ac.uk
+## October 2013
+
+import cgi
+import sys
+import ConfigParser
+import re, os, pickle
+from decimal import Decimal
+import MySQLdb as mysql
+
+try:
+    import json
+except ImportError:
+    import simplejson as json
+
+## Get config
+config = ConfigParser.SafeConfigParser()
+config.read('/opt/mysqlagent/mysql.conf')
+
+## Check root password defined
+if not config.has_option('mysql', 'password'):
+	print >> sys.stderr, 'Error: MySQL root password (mysql/password) not defined in config'
+	sys.exit(1)
+
+# Checl we have an output location for the stats file
+if not config.has_option('mysql', 'stats_file'):
+	print >> sys.stderr, 'Error: Statistics file location (mysql/stats_file) not defined in config'
+	sys.exit(1)
+
+## Connect to mysql
+try:
+	server = mysql.connect('localhost', 'root', config.get('mysql', 'password'));
+except mysql.Error, e:
+	print >> sys.stderr, 'Internal error: MySQL error: ' + str(e)
+	sys.exit(1)
+except Exception, e:
+	print >> sys.stderr, 'Internal error: ' + str(e)
+	sys.exit(1)
+
+## Get a cursor
+cur = server.cursor()
+
+try:
+	# Execute query to get database sizes. Note that this only returns the 
+	# sizes of databases that have tables, but we probably want it to return
+	# all databases, so we'll have to do some work to union this with the
+	# output of 'SHOW DATABASES'
+	cur.execute('SELECT `table_schema` AS "db_name", SUM(`data_length` + `index_length`) AS "size_bytes" FROM `information_schema`.`TABLES` GROUP BY `table_schema`;')
+	db_size_rows = cur.fetchall()
+	cur.execute('SHOW DATABASES;')
+	db_name_rows = cur.fetchall()
+
+	# Put all the known database sizes in to a dictionary, in kilobytes to two decimal places as string
+	db_sizes = {}
+	for row in db_size_rows:
+		db_sizes[row[0]] = str(row[1].quantize(Decimal('1.00')))
+
+	# Put all the known databases that don't have a size in to the dictionary, as 0 kB, to two decimal places (just like the others)
+	for row in db_name_rows:
+		if row[0] not in db_sizes:
+			db_sizes[row[0]] = '0.00'
+	
+	# Pickle the dictionary to the output file
+	pickle.dump(db_sizes, open(config.get('mysql', 'stats_file'), 'w'))
+except mysql.Error, e:
+	print >> sys.stderr, 'Internal error: MySQL error: ' + str(e)
+	sys.exit(1)
+except Exception, e:
+	print >> sys.stderr, 'Internal error: ' + str(e)
+	sys.exit(1)
