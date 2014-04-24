@@ -286,6 +286,27 @@ def server_view(server_name):
 			# redirect to server list
 			return redirect(url_for('server_list'))
 
+		if 'passwd' in request.form and request.form['passwd'] == 'yes':
+			## SET AGENT PASSWORD
+
+			if 'agent_password' in request.form and len(request.form['agent_password']) > 0:
+
+				# Update details
+				cur.execute('UPDATE `servers` SET `password` = %s WHERE `hostname` = %s', (request.form['agent_password'], server_name))
+
+				# Commit changes to the database
+				g.db.commit()
+
+				# Notify that we've succeeded
+				flash('Server agent password successfully changed', 'alert-success')
+
+				# redirect to server view
+				return redirect(url_for('server_view', server_name=server['hostname']))	
+
+			else:
+				flash("Invalid agent password", 'alert-danger')
+				return redirect(url_for('server_view', server_name=server['hostname']))
+
 		else:
 			## EDIT
 

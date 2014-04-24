@@ -62,10 +62,10 @@
 					<input type="hidden" name="server_hostname" value="{{ server.hostname }}" />
 					<div class="form-group">
 						<label for="inputAlias" class="col-lg-2 control-label">Alias</label>
-							<div class="col-lg-10">
-								<input type="text" class="form-control" id="inputAlias" name="server_alias" {% if server.alias %}value="{{ server.alias }}" {% endif %}>
-							</div>
+						<div class="col-lg-10">
+							<input type="text" class="form-control" id="inputAlias" name="server_alias" {% if server.alias %}value="{{ server.alias }}" {% endif %}>
 						</div>
+					</div>
 					<div class="form-group">
 						<label for="inputDescription" class="col-lg-2 control-label">Description</label>
 						<div class="col-lg-10">
@@ -100,6 +100,34 @@
 				<div class="modal-footer">
 					<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
 					<button type="submit" class="btn btn-primary">Save changes</button>
+				</div><!-- /.modal-footer -->
+			</form><!-- /.form -->
+		</div><!-- /.modal-content -->
+	</div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<div class="modal fade" id="change-agent-password">
+	<div class="modal-dialog modal-lg">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+				<h4 class="modal-title">Change server agent password</h4>
+			</div>
+			<form class="form-horizontal" role="form" method="POST">
+				<div class="modal-body">
+					<input type="hidden" name="_csrf_token" value="{{ csrf_token() }}" />
+					<input type="hidden" name="server_hostname" value="{{ server.hostname }}" />
+					<input type="hidden" name="passwd" value="yes" />
+					<div class="form-group">
+						<label for="inputAlias" class="col-lg-2 control-label">Password</label>
+						<div class="col-lg-10">
+							<input type="password" class="form-control" id="inputPassword" name="agent_password" placeholder="Agent password stored in /opt/mysqlagent/mysql.conf">
+						</div>
+					</div>
+				</div><!-- /.modal-body -->
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+					<button type="submit" class="btn btn-primary">Change Password</button>
 				</div><!-- /.modal-footer -->
 			</form><!-- /.form -->
 		</div><!-- /.modal-content -->
@@ -148,7 +176,7 @@ $(document).ready(function()
 
 <div class="row">
 	<div class="col-md-5">
-		<div class="panel panel-success panel2k">
+		<div class="panel panel-success panel24k">
 			<div class="panel-heading">
 				<h3 class="panel-title">Server Information</h3>
 			  </div>
@@ -181,7 +209,7 @@ $(document).ready(function()
 		</div>
 	</div>
 	<div class="col-md-4">
-		<div class="panel panel-info panel2k">
+		<div class="panel panel-info panel24k">
 			<div class="panel-heading">
 				<h3 class="panel-title">Server Status</h3>
 			  </div>
@@ -218,7 +246,7 @@ $(document).ready(function()
 		</div>
 	</div>
 	<div class="col-md-3">
-		<div class="panel panel-danger panel2k">
+		<div class="panel panel-danger panel24k">
 			<div class="panel-heading">
 				<h3 class="panel-title">Actions</h3>
 			</div>
@@ -234,7 +262,12 @@ $(document).ready(function()
 				  <li>
 				  	<a href="#" data-toggle="modal" data-target="#edit-server"><span class="glyphicon glyphicon-wrench"></span> Edit Server</a>
 				  </li>
-				  <li><a href="#" data-toggle="modal" data-target="#remove-server"><span class="glyphicon glyphicon-trash"></span> Remove Server</a></li>
+				  <li>
+				  	<a href="#" data-toggle="modal" data-target="#change-agent-password"><span class="glyphicon glyphicon-lock"></span> Change Agent Password</a>
+				  </li>
+				  <li>
+					<a href="#" data-toggle="modal" data-target="#remove-server"><span class="glyphicon glyphicon-trash"></span> Remove Server</a>
+				</li>
 				</ul>
 			</div>
 		</div>
