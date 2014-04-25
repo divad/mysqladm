@@ -101,53 +101,57 @@ def stats():
 @app.route('/login', methods=['GET','POST'])
 def login():
 
-	try:
-		## Check password with kerberos
-		kerberos.checkPassword(request.form['username'], request.form['password'], app.config['KRB5_SERVICE'], app.config['KRB5_DOMAIN'])
-	except kerberos.BasicAuthError as e:
-		flash('<strong>Error</strong> - Incorrect username and/or password','alert-danger')
+	if request.method == 'GET':
 		return redirect(url_for('default'))
-	except kerberos.KrbError as e:
-		flash('<strong>Unexpected Error</strong> - Kerberos Error: ' + e.__str__(),'alert-danger')
-		return redirect(url_for('default'))
-	except kerberos.GSSError as e:
-		flash('<strong>Unexpected Error</strong> - GSS Error: ' + e.__str__(),'alert-danger')
-		return redirect(url_for('default'))
-	except Exception as e:
-		mysqladm.errors.fatal(e)
-
-	## Ensure user is in mysqladm management group
-	group = grp.getgrnam(app.config['ACCESS_GROUP'])
-	if not request.form['username'] in group.gr_mem:
-		flash('<strong>Access Denied</strong> - You must be a member of the Linux group ' + app.config['ACCESS_GROUP'] + ' to use this service','alert-danger')
-		return redirect(url_for('default'))
-
-	## Set logged in (if we got this far)
-	session['logged_in'] = True
-	session['username'] = request.form['username']
-
-	## Check if the user selected "Log me out when I close the browser"
-	permanent = request.form.get('sec',default="")
-
-	## Set session as permanent or not
-	if permanent == 'sec':
-		session.permanent = True
 	else:
-		session.permanent = False
 
-	## Set defaults for hidden files
-	session['hidden_files'] = 'hide'
+		try:
+			## Check password with kerberos
+			kerberos.checkPassword(request.form['username'], request.form['password'], app.config['KRB5_SERVICE'], app.config['KRB5_DOMAIN'])
+		except kerberos.BasicAuthError as e:
+			flash('<strong>Error</strong> - Incorrect username and/or password','alert-danger')
+			return redirect(url_for('default'))
+		except kerberos.KrbError as e:
+			flash('<strong>Unexpected Error</strong> - Kerberos Error: ' + e.__str__(),'alert-danger')
+			return redirect(url_for('default'))
+		except kerberos.GSSError as e:
+			flash('<strong>Unexpected Error</strong> - GSS Error: ' + e.__str__(),'alert-danger')
+			return redirect(url_for('default'))
+		except Exception as e:
+			mysqladm.errors.fatal(e)
 
-	## Log a successful login
-	app.logger.info('User "' + session['username'] + '" logged in from "' + request.remote_addr + '" using ' + request.user_agent.string)
+		## Ensure user is in mysqladm management group
+		group = grp.getgrnam(app.config['ACCESS_GROUP'])
+		if not request.form['username'] in group.gr_mem:
+			flash('<strong>Access Denied</strong> - You must be a member of the Linux group ' + app.config['ACCESS_GROUP'] + ' to use this service','alert-danger')
+			return redirect(url_for('default'))
 
-	## determine if "next" variable is set (the URL to be sent to)
-	next = request.form.get('next',default=None)
+		## Set logged in (if we got this far)
+		session['logged_in'] = True
+		session['username'] = request.form['username']
 
-	if next == None:
-		return redirect(url_for('database_list'))
-	else:
-		return redirect(next)
+		## Check if the user selected "Log me out when I close the browser"
+		permanent = request.form.get('sec',default="")
+
+		## Set session as permanent or not
+		if permanent == 'sec':
+			session.permanent = True
+		else:
+			session.permanent = False
+
+		## Set defaults for hidden files
+		session['hidden_files'] = 'hide'
+
+		## Log a successful login
+		app.logger.info('User "' + session['username'] + '" logged in from "' + request.remote_addr + '" using ' + request.user_agent.string)
+
+		## determine if "next" variable is set (the URL to be sent to)
+		next = request.form.get('next',default=None)
+
+		if next == None:
+			return redirect(url_for('database_list'))
+		else:
+			return redirect(next)
 
 ################################################################################
 #### LOGOUT

@@ -79,7 +79,7 @@ $( document ).ready(function()
 			<p><span class="number">{{ row.databases }}</span> databases</p>
 			<p class="state">{{ row.state }}</p>
 			<p>{{ row.disk_free|filesizeformat }} free</p>
-			<span class="free" style="display: none">{{ row.disk_free}}</span>
+			<span class="space" style="display: none">{{ row.disk_free}}</span>
 		</div>
 		{% endif %}
 	{% endfor %}
