@@ -71,6 +71,8 @@ def database_list():
 	rows = cur.fetchall()
 
 	for row in rows:
+		short,sep,after = row['server'].partition('.')
+		row['shortserver'] = short
 		row['link'] = url_for('database_view', database_id = row['id'])
 
 	return render_template('databases.html', active='databases', rows=rows)
