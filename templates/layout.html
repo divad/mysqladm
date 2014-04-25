@@ -1,67 +1,65 @@
 <!doctype html>
-<html>
+<html lang="en">
 	<head>
 		<meta charset="utf-8">
-		<meta http-equiv="X-UA-Compatible" content="IE=edge">
-		<meta name="viewport" content="width=device-width, initial-scale=1">
 		<title>MySQL Manager</title>
 		{% include 'html-header.html' %}
 	</head>
 	<body>
+		<div class="navbar navbar-default navbar-fixed-top" role="navigation">	
+			<div class="container">
+				<div class="navbar-header">
+					<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#navbar-collapse-1">
+						<span class="sr-only">Toggle navigation</span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+					</button>
+					<a href="{{ url_for('database_list') }}" class="navbar-brand">MySQL Manager</a>
+				</div>
+			
+				{%- if session.logged_in %}
+				<div class="navbar-collapse collapse" id="navbar-collapse-1">	
+					<ul class="nav navbar-nav">
+						<li {% if active == 'databases' %} class="active" {% endif %}><a href="{{ url_for('database_list') }}"><i class="fa fa-fw fa-book"></i> Databases</a></li>
 
-	    <div class="navbar navbar-inverse navbar-fixed-top" role="navigation">
-	      <div class="container-fluid">
-	        <div class="navbar-header">
-	          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-	            <span class="sr-only">Toggle navigation</span>
-	            <span class="icon-bar"></span>
-	            <span class="icon-bar"></span>
-	            <span class="icon-bar"></span>
-	          </button>
-	          <a class="navbar-brand" href="{{ url_for('about') }}">MySQL Management Console</a>
-	        </div>
-	        <div class="navbar-collapse collapse">
-	          <ul class="nav navbar-nav navbar-right">
-	            {% if session.logged_in %}
-	            <li><a href="{{ url_for('logout') }}">Logout from {{session.username}}</a></li>
-	            {% endif %}
-	          </ul>
-	        </div>
-	      </div>
-	    </div>
-	
-	    <div class="container-fluid">
-	      <div class="row">
-	      	          {% if session.logged_in %}
-	        <div class="col-sm-3 col-md-2 sidebar">
-	          <ul class="nav nav-sidebar">
-	          
-	            <li {% if active == 'databases' %} class="active" {% endif %}><a href="{{ url_for('database_list') }}"><span class="glyphicon glyphicon-book"></span> Databases</a></li>
-	            <!--<li {% if active == 'database_create' %} class="active" {% endif %}><a href="{{ url_for('database_create') }}"><span class="glyphicon glyphicon-plus"></span> Create Database</a></li>-->
-	          </ul>
-	          <ul class="nav nav-sidebar">
-	            <li {% if active == 'servers' %} class="active" {% endif %}><a href="{{ url_for('server_list') }}"><span class="glyphicon glyphicon-list-alt"></span> Server List</a></li>
-	            <li {% if active == 'server_isotope' %} class="active" {% endif %}><a href="{{ url_for('isotope') }}"><span class="glyphicon glyphicon-th"></span> Server Grid View</a></li>	      
-	            <li {% if active == 'server_status' %} class="active" {% endif %}><a href="{{ url_for('server_status') }}"><span class="glyphicon glyphicon-dashboard"></span> Server Status</a></li>
-	            <li {% if active == 'server_add' %} class="active" {% endif %}><a href="{{ url_for('server_add') }}"><span class="glyphicon glyphicon-plus-sign"></span> Add Server</a></li>
-	          </ul>	          
-	          <ul class="nav nav-sidebar">	          
-	            <li {% if active == 'about' %} class="active" {% endif %}><a href="{{ url_for('about') }}"><span class="glyphicon glyphicon-info-sign"></span> About</a></li>
-	            <li {% if active == 'stats' %} class="active" {% endif %}><a href="{{ url_for('stats') }}"><span class="glyphicon glyphicon-stats"></span> Stats</a></li>
-	          </ul>
-	        </div>
-	        {%endif%}
-	        
-	        <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
-	
-				{% for category, message in get_flashed_messages(with_categories=true) %}
-				<div class="alert {{ category }} fade in"> <a data-dismiss="alert" class="close" href="#">×</a> {{ message|safe }} </div>
-				{% endfor %}
-				
-				{% block body %}{% endblock %}
-	
-	        </div>
-	      </div>
-	    </div>
+						<li class="dropdown{%if active == 'servers'%} active{%endif%}">
+							<a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-fw fa-hdd-o"></i> Servers <b class="caret"></b></a>
+							<ul class="dropdown-menu">
+								<li><a href="{{ url_for('server_list') }}"><i class="fa fa-fw fa-list-alt"></i> Server List</a></li>
+								<li><a href="{{ url_for('isotope') }}"><i class="fa fa-fw fa-th"></i> Server Grid View</a></li>
+								<li><a href="{{ url_for('server_status') }}"><i class="fa fa-fw fa-dashboard"></i> Server Status</a></li>
+								<li><a href="{{ url_for('server_add') }}"><i class="fa fa-fw fa-plus"></i> Add Server</a></li>
+							</ul>
+						</li>
+						<li class="dropdown{%if active == 'help'%} active{%endif%}">
+							<a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-fw fa-question-circle"></i> Help <b class="caret"></b></a>
+							<ul class="dropdown-menu">
+	            				<li><a href="{{ url_for('about') }}"><i class="fa fa-fw fa-info-circle"></i> About</a></li>
+					            <li><a href="{{ url_for('stats') }}"><i class="fa fa-fw fa-bar-chart-o"></i> Stats</a></li>
+							</ul>
+						</li>
+					</ul>
+					
+					<ul class="nav navbar-nav navbar-right">
+						<li class="dropdown{%if active == 'user'%} active{%endif%}">
+							<a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-fw fa-user"></i> {{ session.username }} <b class="caret"></b></a>
+							<ul class="dropdown-menu">
+								<li><a href="{{ url_for('logout') }}"><i class="fa fa-fw fa-sign-out"></i>  Sign Out</a></li>
+							</ul>
+						</li>
+					</ul>
+				</div>
+				{%- endif %}
+			</div>
+		</div>
+
+		<div class="container-fluid">
+			{% for category, message in get_flashed_messages(with_categories=true) %}
+			<div class="alert {{ category }} fade in"> <a data-dismiss="alert" class="close" href="#">×</a> {{ message|safe }} </div>
+			{% endfor %}
+			{% block body %}{% endblock -%}
+		</div>
+		
 	</body>
 </html>

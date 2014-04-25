@@ -121,10 +121,15 @@ def server_status():
 					pass
 					## no error
 				else:
-					row['error'] = "Error contacting agent: Invalid JSON response from server"
+					if 'error' in json_response:
+						row['error'] = "Agent reported an error: " + json_response['error']
+					else:
+						row['error'] = "Agent reported an error: status number " + str(json_response['status'])
+
 					continue
+
 			else:
-				row['error'] = "Error contacting agent: Invalid JSON response from server"
+				row['error'] = "Error contacting agent: Invalid response from server"
 				continue
 				
 		except Exception as e:
@@ -171,10 +176,13 @@ def isotope():
 					pass
 					## no error
 				else:
-					row['error'] = "Error contacting agent: Invalid JSON response from server"
+					if 'error' in json_response:
+						row['error'] = "Agent reported an error: " + json_response['error']
+					else:
+						row['error'] = "Agent reported an error: status number " + str(json_response['status'])
 					continue
 			else:
-				row['error'] = "Error contacting agent: Invalid JSON response from server"
+				row['error'] = "Error contacting agent: Invalid response from server"
 				continue
 				
 		except Exception as e:
@@ -240,7 +248,13 @@ def server_view(server_name):
 						db['size'] = db_sizes[db['name']]
 						
 			else:
-				flash('The MySQL agent returned an error: ' + json_response['error'],'alert-danger')
+				if 'error' in json_response:
+					flash('The MySQL agent returned an error: ' + json_response['error'],'alert-danger')
+				elif 'status' in json_response:
+					flash('The MySQL agent returned an error code: ' + str(json_response['status']),'alert-danger')
+				else:
+					flash('The MySQL agent returned an invalid response','alert-danger')
+
 				server_error = True
 
 		except Exception, e:

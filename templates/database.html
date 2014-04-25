@@ -44,7 +44,7 @@
 </div><!-- /.modal -->
 
 <div class="page-header">
-  <h1><span class="glyphicon glyphicon-book"></span> {{ db.name }}</h1>
+  <h1><i class="fa fa-fw fa-book"></i> {{ db.name }}</h1>
 </div>
 
 <div class="row">
@@ -85,9 +85,9 @@
 			  </div>
 			  <div class="panel-body">
 				<ul class="nav nav-pills nav-stacked">
-				  <li><a href="{{ url_for('database_details',database_id=db.id) }}"><span class="glyphicon glyphicon-eye-open"></span> View connection details</a></li>						
-				  <li><a href="#" data-toggle="modal" data-target="#passwd-confirm"><span class="glyphicon glyphicon-pencil"></span> Set new random password</a></li>				
-				  <li><a href="#" data-toggle="modal" data-target="#delete-confirm"><span class="glyphicon glyphicon-trash"></span> Delete Database</a></li>
+				  <li><a href="{{ url_for('database_details',database_id=db.id) }}"><i class="fa fa-fw fa-eye"></i> View connection details</a></li>						
+				  <li><a href="#" data-toggle="modal" data-target="#passwd-confirm"><i class="fa fa-fw fa-pencil"></i> Set new random password</a></li>				
+				  <li><a href="#" data-toggle="modal" data-target="#delete-confirm"><i class="fa fa-fw fa-trash-o"></i> Delete Database</a></li>
 				</ul>			
 			</div>
 		</div>		

@@ -8,7 +8,7 @@
 		<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/login.css') }}">
 	</head>
 
-	<body style="display: inline-block">
+	<body>
 
 		<script type="text/javascript">
 		window.onload = function()
@@ -20,35 +20,32 @@
 		</script>
 
 		<div class="wrapper-signin">
+			<div class="container container-signin">
+				<form class="form-signin" action="{{ url_for('login') }}" method="POST">
+					<input name="_csrf_token" type="hidden" value="{{ csrf_token() }}"/>
 
-		<div class="container container-signin" style="padding: 0px">
-			<form class="form-signin" action="{{ url_for('login') }}" method="POST">
+					{% if next %}
+					<input name="next" type="hidden" value="{{next}}"/>
+					{% endif %}
 
-				<input name="_csrf_token" type="hidden" value="{{ csrf_token() }}"/>
+					<h1 class="form-signin-heading">MySQL Manager</h2>
+					<input name="username" type="text" class="form-control" placeholder="Username (adm account)" autofocus>
+					<input name="password" type="password" class="form-control" placeholder="Password">
+					<label class="checkbox">
+					  <input type="checkbox" value="sec" id="sec" name="sec"> Remember me
+					</label>
+					<div class="text-center">
+						<button class="btn btn-lg btn-default" type="submit">Login</button>
+					</div>
+				</form>
+				{% for category, message in get_flashed_messages(with_categories=true) %}
+				<div class="alert {{ category }}">
+					<a data-dismiss="alert" class="close" href="#">×</a>
+					{{ message|safe }}
+				</div>
+				{% endfor %}
 
-				{% if next %}
-				<input name="next" type="hidden" value="{{next}}"/>
-				{% endif %}
-
-				<h2 class="form-signin-heading">MySQL Manager</h2>
-				<input name="username" type="text" class="form-control" placeholder="Username (adm account)" autofocus>
-				<input name="password" type="password" class="form-control" placeholder="Password">
-				<label class="checkbox">
-				  <input type="checkbox" value="sec" id="sec" name="sec"> Remember me
-				</label>
-				<button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
-			</form>
-
-			{% for category, message in get_flashed_messages(with_categories=true) %}
-			<div class="alert {{ category }}">
-				<a data-dismiss="alert" class="close" href="#">×</a>
-				{{ message|safe }}
 			</div>
-			{% endfor %}
-
-		</div>
-
 		</div>
   </body>
-
 </html>

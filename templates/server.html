@@ -171,7 +171,7 @@ $(document).ready(function()
 </script>
 
 <div class="page-header">
-  <h1><span class="glyphicon glyphicon-hdd"></span> {{ server.hostname }}</h1>
+  <h1><i class="fa fa-fw fa-hdd-o"></i> {{ server.hostname }}</h1>
 </div>
 
 <div class="row">
@@ -257,16 +257,16 @@ $(document).ready(function()
 				  {% else %}
 				  <li>
 				  {% endif %}
-				    <a href="#" data-toggle="modal" data-target="#create-database"><span class="glyphicon glyphicon-plus"></span> Create Database</a>
+				    <a href="#" data-toggle="modal" data-target="#create-database"><i class="fa fa-fw fa-plus"></i> Create Database</a>
 				  </li>
 				  <li>
-				  	<a href="#" data-toggle="modal" data-target="#edit-server"><span class="glyphicon glyphicon-wrench"></span> Edit Server</a>
+				  	<a href="#" data-toggle="modal" data-target="#edit-server"><i class="fa fa-fw fa-wrench"></i> Edit Server</a>
 				  </li>
 				  <li>
-				  	<a href="#" data-toggle="modal" data-target="#change-agent-password"><span class="glyphicon glyphicon-lock"></span> Change Agent Password</a>
+				  	<a href="#" data-toggle="modal" data-target="#change-agent-password"><i class="fa fa-fw fa-lock"></i> Change Agent Password</a>
 				  </li>
 				  <li>
-					<a href="#" data-toggle="modal" data-target="#remove-server"><span class="glyphicon glyphicon-trash"></span> Remove Server</a>
+					<a href="#" data-toggle="modal" data-target="#remove-server"><i class="fa fa-fw fa-trash-o"></i> Remove Server</a>
 				</li>
 				</ul>
 			</div>
@@ -297,7 +297,7 @@ $(document).ready(function()
 			{% else %}
 				{% for database in databases %}
 					<tr>
-						<td><a href="{{ database.link }}"><button type="button" class="btn btn-primary btn-sm"><span class="glyphicon glyphicon-cog"></span></button></a></td>
+						<td><a href="{{ database.link }}"><button type="button" class="btn btn-primary btn-sm"><i class="fa fa-fw fa-cog"></i></button></a></td>
 						<td>{{ database.name }}</td>
 						<td>{{ database.owner }}</td>
 						<td>{{ database.description }}</td>
@@ -306,7 +306,7 @@ $(document).ready(function()
 							N/A
 							{% else %}
 								{% if database.unsized %}
-								N/A <span class="glyphicon glyphicon-question-sign" data-toggle="tooltip" data-placement="left" title="Size of database not yet calculated by database server - try again later"></span>
+								N/A <i class="fa fa-fw fa-question-sign" data-toggle="tooltip" data-placement="left" title="Size of database not yet calculated by database server - try again later"></span>
 								{% else %}
 								{{ database.size|filesizeformat}}
 								{% endif %}

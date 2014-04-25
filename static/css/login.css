@@ -1,18 +1,26 @@
+@import url(//fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,800,700,600,300);
+
 body 
 {
 	padding-top: 40px;
 	padding-bottom: 40px;
 	background-color: #eee;
-	background-image: url('/adm/static/img/server_room.jpg') !important;
-	background-position: center top !important;
+	background-image: url('/adm/static/img/google.jpg') !important;
+	background-size: cover !important;
 	background-repeat: no-repeat !important;
 }
 
+html, body
+{
+	height: 100%;
+	width: 100%;
+	font-family: 'Open Sans', sans-serif !important;
+}
 
 
 .container-signin 
 {
-	max-width: 350px;
+	max-width: 450px;
 	margin-left: auto;
 	margin-right: auto;
 	margin-bottom: 20px;
@@ -20,29 +28,32 @@ body
 
 .wrapper-signin
 {
-   width: 350px;
+   width: 450px;
    height: 400px;
    position: absolute;
    left: 50%;
    top: 50%;
-   margin-left: -175px;
+   margin-left: -200px;
    margin-top: -200px;
 }
 
 .form-signin 
 {
 	padding: 25px;
-	border: 1px solid #524E4E;
+	border: 1px solid #777777;
 	-webkit-border-radius: 10px;
 	-moz-border-radius: 10px;
 	border-radius: 10px;
-	background: #ffffff;
+	background-color: #ffffff;
+	background: rgba(245, 245, 245, 0.94);
 	margin-bottom: 20px;
 }
 
 .form-signin-heading
 {
 	text-align: center;
+	font-weight: 200;
+	padding-bottom: 20px;
 }
 
 .form-signin .form-signin-heading,
@@ -59,12 +70,16 @@ body
 .form-signin .form-control 
 {
 	position: relative;
-	font-size: 16px;
-	height: auto;
 	padding: 10px;
 	-webkit-box-sizing: border-box;
 	-moz-box-sizing: border-box;
 	box-sizing: border-box;
+
+	height: 2.0em;
+	line-height: 1em;
+	font-size: 1.8em;
+	margin-bottom: 0;
+	color: #666666;
 }
 
 .form-signin .form-control:focus
