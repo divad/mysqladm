@@ -20,7 +20,7 @@ import mysqladm.core
 import mysqladm.errors
 from flask import Flask, request, session, g, redirect, url_for, abort, render_template, flash
 import kerberos
-import pwd
+import pwdfa-archive
 import grp
 import MySQLdb as mysql
 
@@ -109,13 +109,13 @@ def login():
 			## Check password with kerberos
 			kerberos.checkPassword(request.form['username'], request.form['password'], app.config['KRB5_SERVICE'], app.config['KRB5_DOMAIN'])
 		except kerberos.BasicAuthError as e:
-			flash('<strong>Error</strong> - Incorrect username and/or password','alert-danger')
+			flash('Incorrect username and/or password','alert-danger')
 			return redirect(url_for('default'))
 		except kerberos.KrbError as e:
-			flash('<strong>Unexpected Error</strong> - Kerberos Error: ' + e.__str__(),'alert-danger')
+			flash('Kerberos Error: ' + e.__str__(),'alert-danger')
 			return redirect(url_for('default'))
 		except kerberos.GSSError as e:
-			flash('<strong>Unexpected Error</strong> - GSS Error: ' + e.__str__(),'alert-danger')
+			flash('GSS Error: ' + e.__str__(),'alert-danger')
 			return redirect(url_for('default'))
 		except Exception as e:
 			mysqladm.errors.fatal(e)
@@ -123,7 +123,7 @@ def login():
 		## Ensure user is in mysqladm management group
 		group = grp.getgrnam(app.config['ACCESS_GROUP'])
 		if not request.form['username'] in group.gr_mem:
-			flash('<strong>Access Denied</strong> - You must be a member of the Linux group ' + app.config['ACCESS_GROUP'] + ' to use this service','alert-danger')
+			flash('You must be a member of the Linux group ' + app.config['ACCESS_GROUP'] + ' to use this service','alert-danger')
 			return redirect(url_for('default'))
 
 		## Set logged in (if we got this far)
