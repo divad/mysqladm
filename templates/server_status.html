@@ -5,20 +5,10 @@
   <h1>Server Status</h1>
 </div>
 
-<script type="text/javascript">
-$(document).ready(function()
-{
-	$(function()
-	{
-		$("#tsort").tablesorter();
-	});
-});
-</script>
-
 <table id="tsort" class="table table-hover table-striped table-condensed table-responsive">
 	<thead>
 		<tr>
-			<th></th>
+			<th class="tsdisable"></th>
 			<th>Name</th>
 			<th>Databases</th>
 			<th>Load Average</th>
@@ -28,27 +18,27 @@ $(document).ready(function()
 			<th>MySQL Uptime</th>
 		</tr>
 	</thead>
-	<tbody>
+	<tbody class="rowclick-table">
 		{% for row in rows %}
 		{% if row.error %}
-		<tr class="danger">
+		<tr class="rowclick-tr danger" data-url="{{ row.link }}">
 		{% else %}
-		<tr>
+		<tr class="rowclick-tr" data-url="{{ row.link }}">
 		{% endif %}
 		
 			<td><a href="{{ row.link }}"><button type="button" class="btn btn-primary btn-sm"><i class="fa fa-fw fa-hdd-o"></i></button></a></td>
-			<td>{{ row.hostname }}</td>
-			<td>{{ row.databases }}</td>
+			<td class="rowclick-td">{{ row.hostname }}</td>
+			<td class="rowclick-td">{{ row.databases }}</td>
 			
 			{% if row.error %}
-				<td colspan="5">{{ row.error }}</td>
+				<td colspan="5" class="rowclick-td">{{ row.error }}</td>
 			{% else %}
 			
-			<td>{{ row.load }}</td>
-			<td>{{ row.disk_capacity|filesizeformat }}</td>
-			<td>{{ row.disk_usage|filesizeformat }}</td>
-			<td>{{ row.disk_free|filesizeformat }}</td>
-			<td>{{ row.uptime }}</td>
+			<td class="rowclick-td">{{ row.load }}</td>
+			<td class="rowclick-td">{{ row.disk_capacity|filesizeformat }}</td>
+			<td class="rowclick-td">{{ row.disk_usage|filesizeformat }}</td>
+			<td class="rowclick-td">{{ row.disk_free|filesizeformat }}</td>
+			<td class="rowclick-td">{{ row.uptime }}</td>
 			{% endif %}
 		</tr>
 		{% endfor %}

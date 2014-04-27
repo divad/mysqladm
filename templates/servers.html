@@ -5,26 +5,26 @@
   <h1>Servers</h1>
 </div>
 
-<table class="table table-hover table-striped table-condensed table-responsive">
+<table id="tsort" class="table table-hover table-striped table-condensed">
 	<thead>
 		<tr>
-			<th></th>
+			<th class="tsdisable"></th>
 			<th>Name</th>
 			<th>Alias</th>
 			<th>Description</th>
 			<th>Status</th>
-			<th># Databases</th>
+			<th>Databases</th>
 		</tr>
 	</thead>
-	<tbody>
+	<tbody class="rowclick-table">
 		{% for row in rows %}
-		<tr>
+		<tr class="rowclick-tr" data-url="{{ row.link }}">
 			<td><a href="{{ row.link }}"><button type="button" class="btn btn-primary btn-sm"><i class="fa fa-fw fa-hdd-o"></i></button></a></td>
-			<td>{{ row.hostname }}</td>
-			<td>{{ row.alias }}</td>
-			<td>{{ row.desc }}</td>
-			<td>{{ row.state }}</td>
-			<td>{{ row.databases }}</td>
+			<td class="rowclick-td">{{ row.hostname }}</td>
+			<td class="rowclick-td">{{ row.alias }}</td>
+			<td class="rowclick-td">{{ row.desc }}</td>
+			<td class="rowclick-td">{{ row.state }}</td>
+			<td class="rowclick-td">{{ row.databases }}</td>
 		</tr>
 		{% endfor %}
 	</tbody>

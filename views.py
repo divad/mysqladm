@@ -33,7 +33,7 @@ def default():
 		return redirect(url_for('database_list'))
 	else:
 		next = request.args.get('next',default=None)
-		return render_template('default.html', active='default',next=next)
+		return render_template('default.html', next=next)
 
 ################################################################################
 #### ABOUT 
