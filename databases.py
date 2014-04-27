@@ -51,6 +51,64 @@ def get_database_by_id(database_id):
 	cur = g.db.cursor(mysql.cursors.DictCursor)
 	cur.execute("SELECT `databases`.`id` AS 'id', `servers`.`hostname` AS `server`, `databases`.`create_date` AS `create_date`, `databases`.`name` AS 'name', `databases`.`owner` AS 'owner', `databases`.`description` AS 'description' FROM `databases` LEFT JOIN `servers` ON `servers`.`id` = `databases`.`server` WHERE `databases`.`id` = %s",(database_id))
 	return cur.fetchone()
+	
+def insert_database_record(server_id,name,owner,description):
+	"""Insert a record into the database of a database on a mysql server and returns the ID"""
+
+	## Get a cursor
+	cur = g.db.cursor()
+
+	# Create a record of the database in the database
+	cur.execute('INSERT INTO `databases` (`server`, `name`, `owner`, `description`, `create_date`) VALUES (%s, %s, %s, %s, UNIX_TIMESTAMP(NOW()))', (server_id, name, owner, description))
+	
+	# Commit changes to the database
+	g.db.commit()
+
+	## Last insert ID
+	return cur.lastrowid
+	
+def delete_database_record(database_id):
+	"""Delete a record of a database - does not delete from actual server"""
+
+	cur = g.db.cursor()
+	cur.execute('DELETE FROM `databases` WHERE `id` = %s', (database_id))
+	g.db.commit()
+	
+def get_all_databases(cmd_line=False):
+	"""Return a list of databases"""
+
+	## Load the dictionary based cursor
+	cur = g.db.cursor(mysql.cursors.DictCursor)
+
+	## Execute a SQL select
+	cur.execute("""
+		SELECT 
+		
+			`databases`.`id` AS `id`, 
+			`databases`.`create_date` AS `create_date`, 
+			`servers`.`hostname` AS `server`, 
+			`databases`.`name` AS 'name', 
+			`databases`.`owner` AS 'owner', 
+			`databases`.`description` AS 'description' 
+			
+		FROM `databases`
+		
+		LEFT OUTER JOIN 
+			`servers` ON `servers`.`id` = `databases`.`server`
+			
+		ORDER BY `servers`.`hostname` """)
+
+	## Get results
+	rows = cur.fetchall()
+
+	for row in rows:
+		short,sep,after = row['server'].partition('.')
+		row['shortserver'] = short
+		
+		if not cmd_line:
+			row['link'] = url_for('database_view', database_id = row['id'])
+		
+	return rows
 
 ################################################################################
 #### LIST DATABASES
@@ -60,22 +118,78 @@ def get_database_by_id(database_id):
 def database_list():
 	"""View function to return a simple list of databases.
 	"""
+
+	return render_template('databases.html', active='databases', rows=get_all_databases())
 	
-	## Load the dictionary based cursor
-	cur = g.db.cursor(mysql.cursors.DictCursor)
+################################################################################
+#### SYNC DATABASES
 
-	## Execute a SQL select
-	cur.execute("SELECT `databases`.`id` AS `id`, `databases`.`create_date` AS `create_date`, `servers`.`hostname` AS `server`, `databases`.`name` AS 'name', `databases`.`owner` AS 'owner', `databases`.`description` AS 'description' FROM `databases` LEFT JOIN `servers` ON `servers`.`id` = `databases`.`server`")
+@app.route('/databases/sync', methods=['GET','POST'])
+@mysqladm.core.login_required
+def database_sync():
+	"""View function to check the differences between what the server has and what our database records indicate.
+	"""
+	
+	## Load a cursor
+	cur = g.db.cursor()
 
-	## Get results
-	rows = cur.fetchall()
+	## Load servers
+	servers = mysqladm.servers.get_all_servers()
+	
+	## Rows to return
+	rows = []
+	
+	for server in servers:
 
-	for row in rows:
-		short,sep,after = row['server'].partition('.')
-		row['shortserver'] = short
-		row['link'] = url_for('database_view', database_id = row['id'])
+		try:
+			json_response = mysqladm.core.msg_node(server,'list')
 
-	return render_template('databases.html', active='databases', rows=rows)
+			if 'status' not in json_response:
+				flash('Error from agent: Invalid response from ' + server['hostname'], 'alert-warning')
+				continue
+
+			if json_response['status'] != 0:
+				if 'error' in json_response:
+					flash('Error from agent on server ' + server['hostname'] + ': ' + json_response['error'], 'alert-warning')
+					continue
+				else:
+					flash('Error from agent on server ' + server['hostname'] + ' code returned: ' + json_response['code'], 'alert-warning')
+					continue
+
+		except requests.exceptions.RequestException as e:
+			flash('Error contacting agent on server ' + server['hostname'] + ': ' + str(e), 'alert-warning')
+			continue
+		
+		databases = mysqladm.servers.get_server_databases(server['id'])
+		dblist = []
+		for db in databases:
+			dblist.append(db['name'])
+
+		## Check to see if any databases have been created without us knowing about it
+		if 'list' in json_response:
+			for instance in json_response['list']:
+				if instance not in dblist:
+					
+					if request.method == 'GET':
+						rows.append('Database "' + instance + '" exists on server ' + server['hostname'] + ' but is not recorded within MySQL Manager')
+
+					elif request.method == 'POST':
+						## create database record
+						database_id = mysqladm.databases.insert_database_record(server['id'], instance, 'N/A', 'N/A')
+						rows.append('Created record of database "' + instance + '" on server "' + server['hostname']) 
+					
+		## Check to see if any databases appear to have been deleted without us knowing about it
+		for db in databases:
+			if db['name'] not in json_response['list']:
+				if request.method == 'GET':
+					rows.append('Database "' + db['name'] + '" is recorded within MySQL Manager but is no longer present on ' + server['hostname'])
+
+				elif request.method == 'POST':
+					## delete database record
+					mysqladm.databases.delete_database_record(db['id'])
+					rows.append('Database "' + db['name'] + '" was removed from records as it was not found on server ' + server['hostname'])
+					
+	return render_template('sync.html', active='databases', rows=rows)
 
 ################################################################################
 #### VIEW/EDIT DATABASE INSTANCE
@@ -285,9 +399,8 @@ def database_delete(database_id):
 	except requests.exceptions.RequestException as e:
 		return mysqladm.errors.output_error('Unable to change database password','An error occured when communicating with the MySQL node: ' + str(e),'')	
 
-	cur = g.db.cursor(mysql.cursors.DictCursor)
-	cur.execute('DELETE FROM `databases` WHERE `id` = %s', (database_id))
-	g.db.commit()
+	## Delete the database record
+	mysqladm.databases.delete_database_record(database_id)
 		
 	flash('Database instance deleted successfully', 'alert-success')
 	return redirect(url_for('server_view', server_name=database['server']))
@@ -300,9 +413,6 @@ def database_delete(database_id):
 def database_create():
 	"""View function to create a new database instance on a server.
 	"""	
-	
-	# Get a cursor to the database
-	cur = g.db.cursor()
 
 	# Grab the fields
 	if 'server_hostname' in request.form and len(request.form['server_hostname']) > 0:
@@ -369,14 +479,8 @@ def database_create():
 	except requests.exceptions.RequestException as e:
 		return mysqladm.errors.output_error('Unable to create database','An error occured when communicating with the MySQL node: ' + str(e),'')	
 
-	# Create a record of the database in the database
-	cur.execute('INSERT INTO `databases` (`server`, `name`, `owner`, `description`, `create_date`) VALUES (%s, %s, %s, %s, UNIX_TIMESTAMP(NOW()))', (server['id'], name, owner, description))
-	
-	# Commit changes to the database
-	g.db.commit()
-
-	## Last insert ID
-	database_id = cur.lastrowid
+	## create database record
+	database_id = mysqladm.databases.insert_database_record(server['id'], name, owner, description)
 
 	# redirect to database details view
 	session['dbpasswd'] = passwd

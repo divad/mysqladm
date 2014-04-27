@@ -13,23 +13,23 @@ app = WrapFlask(__name__)
 manager = Manager(app,with_default_commands=False)
 
 @manager.command
-@manager.option('-s', '--server', help='What server to sync from, default all',required=False)
-def agentsync(server=''):
+def sync(reconcile=False):
 	"""
-	Compares the list of databases between mysqladm and the mysqlagent and corrects differences
+	Compares the list of databases between mysqladm and the mysqlagent and outputs differences. Use with -r/--reconcile to reconcile differences.
 	"""
+
 	g.db = mysqladm.core.db_connect()
 
 	## Load servers
 	servers = mysqladm.servers.get_all_servers()
 	
 	for server in servers:
-		print(server['hostname'])
+		print('Checking server "' + server['hostname'] + '"')
 		try:
 			json_response = mysqladm.core.msg_node(server,'list')
 
 			if 'status' not in json_response:
-				print('Error: Invalid JSON response from server', file=sys.stderr)
+				print('Error: Invalid response from server', file=sys.stderr)
 				continue
 
 			if json_response['status'] != 0:
@@ -52,20 +52,24 @@ def agentsync(server=''):
 		## Check to see if any databases have been created without us knowing about it
 		if 'list' in json_response:
 			for instance in json_response['list']:
-				if instance not in dblist:
-					print("\t" + 'db: ' + instance + ' not found in records, but was on server')
-					#cur.execute('INSERT INTO `databases` (`server`, `name`, `owner`, `description`) VALUES (%s, %s, %s, %s)', (server_id,instance,'N/A','N/A'))
-					#g.db.commit()
+				if instance not in dblist:					
+					if reconcile:
+						mysqladm.databases.insert_database_record(server['id'], instance, 'N/A', 'N/A')
+						print("\t" + 'Found unknown database "' + instance + '" on server. Added database to records as it exists on the server.')
+					else:
+						print("\t" + 'Found unknown database "' + instance + '" on server')
 					
 		## Check to see if any databases appear to have been deleted without us knowing about it
-		for db in dblist:
-			if db not in json_response['list']:
-				print("\t" + 'db: ' + db + ' found in records, but was NOT on server')
-				# delete record
-				# d.db.commit()
+		for db in databases:
+			if db['name'] not in json_response['list']:
+				if reconcile:
+					mysqladm.databases.delete_database_record(db['id'])
+					print("\t" + 'Could not find database "' + db['name'] + '" on server. Deleted database from records as it no longer exists.')
+				else:
+					print("\t" + 'Could not find database "' + db['name'] + '" on server')
 		
 @manager.command
-def listservers():
+def servers():
 	"""
 	List servers managed by mysqladm
 	"""
@@ -78,11 +82,24 @@ def listservers():
 		print(row['hostname'])
 		
 @manager.command
-def initsetup():
+def databases():
 	"""
-	Runs the initial setup code to create the database and set up mysqladm
+	List databases managed by mysqladm
 	"""
-	print("Function not implemented (yet)")
+	g.db = mysqladm.core.db_connect()
+
+	## Load servers
+	rows = mysqladm.databases.get_all_databases(cmd_line=True)
+	
+	for row in rows:
+		print(row['shortserver'] + '/' + row['name'])
+		
+#@manager.command
+#def initsetup():
+#	"""
+#	Runs the initial setup code to create the database and set up mysqladm
+#	"""
+#	print("Function not implemented (yet)")
     
 if __name__ == "__main__":
 	manager.run()

@@ -1,0 +1,33 @@
+{% extends "layout.html" %}
+{% block body %}
+
+<div class="page-header">
+  <h1><i class="fa fa-fw fa-retweet"></i> Database Sync</h1>
+  <p>This utility compares the list of databases on each server with the MySQL manager records and optionally resolves them.</p>
+</div>
+
+<table id="tsort" class="table table-striped">
+	<tbody>
+{% if rows|length == 0 %}
+		<tr>
+			<td>No issues found!</td>
+		</tr>
+{% else %}
+	{% for row in rows %}
+		<tr>
+			<td><i class="fa fa-fw fa-retweet"></i> {{ row }}</td>
+		</tr>
+	{% endfor %}
+{% endif %}
+	</tbody>
+</table>
+
+<form action="{{ url_for('database_sync') }}" method="POST">
+	<input name="_csrf_token" type="hidden" value="{{ csrf_token() }}"/>
+	<div class="btn-group">
+		<a href="{{ url_for('database_sync')}}" class="btn btn-primary"><i class="fa fa-fw fa-refresh"></i> Refresh List</a>
+		<button class="btn btn-success" type="submit"><i class="fa fa-fw fa-exchange"></i> Synchronise</button>
+	</div>
+</form>
+
+{% endblock %}
