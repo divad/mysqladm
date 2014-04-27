@@ -54,8 +54,11 @@ DB_PORT='3306'
 ## Group logon access restriction
 ACCESS_GROUP='sys'
 
-## Should we verify the SSL certificate presented on the mysqlagent
-AGENT_SSL_VERIFY=True
+## Should we verify the SSL certificate presented on the mysqlagent (by default)
+AGENT_SSL_VERIFY_DEFAULT=True
+
+## Should we pop up an alert if we connect to a server without SSL verification?
+AGENT_SSL_VERIFY_ALERT=False
 
 ################################################################################
 

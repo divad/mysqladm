@@ -32,13 +32,9 @@
 								<li><a href="{{ url_for('server_add') }}"><i class="fa fa-fw fa-plus"></i> Add Server</a></li>
 							</ul>
 						</li>
-						<li class="dropdown{%if active == 'help'%} active{%endif%}">
-							<a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-fw fa-question-circle"></i> Help <b class="caret"></b></a>
-							<ul class="dropdown-menu">
-	            				<li><a href="{{ url_for('about') }}"><i class="fa fa-fw fa-info-circle"></i> About</a></li>
-					            <li><a href="{{ url_for('stats') }}"><i class="fa fa-fw fa-bar-chart-o"></i> Stats</a></li>
-							</ul>
-						</li>
+					
+						<li {% if active == 'stats' %} class="active" {% endif %}><a href="{{ url_for('stats') }}"><i class="fa fa-fw fa-bar-chart-o"></i> Stats</a></li>
+						<li {% if active == 'about' %} class="active" {% endif %}><a href="{{ url_for('about') }}"><i class="fa fa-fw fa-info-circle"></i> About</a></li>
 					</ul>
 					
 					<ul class="nav navbar-nav navbar-right">

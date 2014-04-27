@@ -142,7 +142,7 @@ def server_status():
 		row['disk_free'] = json_response['disk_free']
 		row['uptime'] = json_response['db_uptime']
 
-	return render_template('server_status.html', active='server_status',rows=rows)
+	return render_template('server_status.html', active='servers',rows=rows)
 	
 ################################################################################
 #### SERVER ISOTOPE
@@ -195,7 +195,7 @@ def isotope():
 		row['disk_free'] = json_response['disk_free']
 		row['uptime'] = json_response['db_uptime']
 
-	return render_template('server_isotope.html', active='server_isotope',rows=rows)
+	return render_template('server_isotope.html', active='servers',rows=rows)
 
 ################################################################################
 #### MANAGE SERVER
@@ -388,7 +388,7 @@ def server_add():
 	"""	
 	
 	if request.method == 'GET':
-		return render_template('server_add.html', active='server_add')
+		return render_template('server_add.html', active='servers')
 	elif request.method == 'POST':
 		# Set a flag to determine if we'd had an error
 		had_error = 0

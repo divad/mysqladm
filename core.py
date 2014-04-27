@@ -158,10 +158,11 @@ def msg_node(serverobj, function, **kwargs):
 	if 'sslverify' in serverobj:
 		verify = bool(serverobj['sslverify'])
 	else:
-		verify = bool(app.config['AGENT_SSL_VERIFY'])
+		verify = bool(app.config['AGENT_SSL_VERIFY_DEFAULT'])
 		
 	if verify == False:
-		flash('Warning: Connected to ' + serverobj['hostname'] + ' without SSL verification enabled','alert-warning')
+		if app.config['AGENT_SSL_VERIFY_ALERT']:
+			flash('Warning: Connected to ' + serverobj['hostname'] + ' without SSL verification enabled','alert-warning')
 		
 	app.logger.warn("Messaging " + serverobj['hostname'] + " with ssl verify set to: " + str(verify))
 	r = requests.post('https://' + serverobj['hostname'] + ':1337/', data=payload, verify=verify)
