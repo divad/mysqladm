@@ -20,7 +20,7 @@ import mysqladm.core
 import mysqladm.errors
 from flask import Flask, request, session, g, redirect, url_for, abort, render_template, flash
 import kerberos
-import pwdfa-archive
+import pwd
 import grp
 import MySQLdb as mysql
 
