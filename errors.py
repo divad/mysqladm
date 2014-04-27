@@ -19,7 +19,6 @@ from mysqladm import app
 import mysqladm.core
 from flask import Flask, request, session, g, redirect, url_for, abort, render_template, flash
 import traceback
-import sys
 
 def debug_error(msg):
 	return output_error("Debug Message",msg,"Debug")
@@ -49,9 +48,7 @@ def fatal(ex):
 def db_error_handler(connection, cursor=None, errorclass=None,errorvalue=None):
 	g.fault_title = "Database Error"
 	g.fault_message = "A fault occured whilst communicating with the database: " + str(errorclass)
-	print g.fault_message
-	sys.exit(-1)
-	#abort(500)
+	abort(500)
 
 ################################################################################
 #### Flask error handlers - captures "abort" calls from within flask and our code
