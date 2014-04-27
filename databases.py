@@ -408,81 +408,87 @@ def database_delete(database_id):
 ################################################################################
 #### CREATE DATABASE
 
-@app.route('/databases/create', methods=['POST'])
+@app.route('/databases/create', methods=['GET','POST'])
 @mysqladm.core.login_required
 def database_create():
 	"""View function to create a new database instance on a server.
 	"""	
 
-	# Grab the fields
-	if 'server_hostname' in request.form and len(request.form['server_hostname']) > 0:
-		hostname = request.form['server_hostname']
-	else:
-		return mysqladm.errors.output_error('Unable to create database', 'You must specify a server to create the database on','')
-
-	if 'database_name' in request.form and len(request.form['database_name']) > 0:
-		name = request.form['database_name']
-		if re.search('^[A-Za-z_][A-Za-z0-9_]*$', name) == None:
-			return mysqladm.errors.output_error('Unable to create database', 'Invalid character(s) in database name','')	
-	else:
-		return mysqladm.errors.output_error('Unable to create database', 'You must specify a database name','')
-
-	if 'database_desc' in request.form and len(request.form['database_desc']) > 0:
-		description = request.form['database_desc']
-		if not mysqladm.core.is_valid_desc(description):
-			return mysqladm.errors.output_error('Unable to create database', 'Invalid character(s) in description','')
-	else:
-		return mysqladm.errors.output_error('Unable to create database', 'You must specify a database description','')
-
-	if 'database_owner' in request.form and len(request.form['database_owner']) > 0:
-		owner = request.form['database_owner']
-		if re.search('^[A-Za-z0-9_\s\-\.\@\&]*$', owner) == None:
-			return mysqladm.errors.output_error('Unable to create database', 'Invalid character(s) in owner field','')
-	else:
-		return mysqladm.errors.output_error('Unable to create database', 'You must specify a database owner','')
-
-	genpasswd = False
-
-	if 'database_passwd' in request.form and len(request.form['database_passwd']) > 0:
-		passwd = request.form['database_passwd']
-		## dont validate the password. There really is not point even trying.
-	else:
-		## Generate a password if one was not sent
-		passwd = mysqladm.core.pwgen()
+	if request.method == 'GET':
+		flash('To create a database first choose a server to create the database on. Use the filters and sorting options to choose the right place to put the database','alert-info')
+		return redirect(url_for('isotope'))
 		
-		## Remember we set a password randomly
-		genpasswd = True
+	else:
+
+		# Grab the fields
+		if 'server_hostname' in request.form and len(request.form['server_hostname']) > 0:
+			hostname = request.form['server_hostname']
+		else:
+			return mysqladm.errors.output_error('Unable to create database', 'You must specify a server to create the database on','')
+
+		if 'database_name' in request.form and len(request.form['database_name']) > 0:
+			name = request.form['database_name']
+			if re.search('^[A-Za-z_][A-Za-z0-9_]*$', name) == None:
+				return mysqladm.errors.output_error('Unable to create database', 'Invalid character(s) in database name','')	
+		else:
+			return mysqladm.errors.output_error('Unable to create database', 'You must specify a database name','')
+
+		if 'database_desc' in request.form and len(request.form['database_desc']) > 0:
+			description = request.form['database_desc']
+			if not mysqladm.core.is_valid_desc(description):
+				return mysqladm.errors.output_error('Unable to create database', 'Invalid character(s) in description','')
+		else:
+			return mysqladm.errors.output_error('Unable to create database', 'You must specify a database description','')
+
+		if 'database_owner' in request.form and len(request.form['database_owner']) > 0:
+			owner = request.form['database_owner']
+			if re.search('^[A-Za-z0-9_\s\-\.\@\&]*$', owner) == None:
+				return mysqladm.errors.output_error('Unable to create database', 'Invalid character(s) in owner field','')
+		else:
+			return mysqladm.errors.output_error('Unable to create database', 'You must specify a database owner','')
+
+		genpasswd = False
+
+		if 'database_passwd' in request.form and len(request.form['database_passwd']) > 0:
+			passwd = request.form['database_passwd']
+			## dont validate the password. There really is not point even trying.
+		else:
+			## Generate a password if one was not sent
+			passwd = mysqladm.core.pwgen()
 		
-	## Try to load the server details
-	server = mysqladm.servers.get_server_by_hostname(hostname)
-	if server == None:
-		return mysqladm.errors.output_error('No such server','I could not find the server you were looking for! ','')
+			## Remember we set a password randomly
+			genpasswd = True
+		
+		## Try to load the server details
+		server = mysqladm.servers.get_server_by_hostname(hostname)
+		if server == None:
+			return mysqladm.errors.output_error('No such server','I could not find the server you were looking for! ','')
 
-	## Check to make sure a database instance doesn't already exist on the server according to our database
-	existing_db = get_database(name,server['id'])
-	if not existing_db == None:
-		return mysqladm.errors.output_error('Database already exists','There is already a database of that name residing on the selected server ','get_database returned true') 
+		## Check to make sure a database instance doesn't already exist on the server according to our database
+		existing_db = get_database(name,server['id'])
+		if not existing_db == None:
+			return mysqladm.errors.output_error('Database already exists','There is already a database of that name residing on the selected server ','get_database returned true') 
 
-	## Talk to the server via HTTPS
-	try:
-		json_response = mysqladm.core.msg_node(server,'create',name=name, passwd=passwd)
+		## Talk to the server via HTTPS
+		try:
+			json_response = mysqladm.core.msg_node(server,'create',name=name, passwd=passwd)
 
-		if 'status' not in json_response:
-			return mysqladm.errors.output_error('Unable to create database', 'The mysql server responded with something unexpected: ' + str(json_response), '')
+			if 'status' not in json_response:
+				return mysqladm.errors.output_error('Unable to create database', 'The mysql server responded with something unexpected: ' + str(json_response), '')
 
-		if json_response['status'] != 0:
-			if 'error' in json_response:
-				return mysqladm.errors.output_error('Unable to create database','The mysql server responded with an error: ' + str(json_response['error']),'core.msg_node error')
-			else:
-				return mysqladm.errors.output_error('Unable to create database','The mysql server responded with an error status code: ' + str(json_response['status']),'core.msg_node status no error')
+			if json_response['status'] != 0:
+				if 'error' in json_response:
+					return mysqladm.errors.output_error('Unable to create database','The mysql server responded with an error: ' + str(json_response['error']),'core.msg_node error')
+				else:
+					return mysqladm.errors.output_error('Unable to create database','The mysql server responded with an error status code: ' + str(json_response['status']),'core.msg_node status no error')
 
-	except requests.exceptions.RequestException as e:
-		return mysqladm.errors.output_error('Unable to create database','An error occured when communicating with the MySQL node: ' + str(e),'')	
+		except requests.exceptions.RequestException as e:
+			return mysqladm.errors.output_error('Unable to create database','An error occured when communicating with the MySQL node: ' + str(e),'')	
 
-	## create database record
-	database_id = mysqladm.databases.insert_database_record(server['id'], name, owner, description)
+		## create database record
+		database_id = mysqladm.databases.insert_database_record(server['id'], name, owner, description)
 
-	# redirect to database details view
-	session['dbpasswd'] = passwd
-	flash('Database successfully created', 'alert-success')
-	return redirect(url_for('database_details',database_id=database_id))
+		# redirect to database details view
+		session['dbpasswd'] = passwd
+		flash('Database successfully created', 'alert-success')
+		return redirect(url_for('database_details',database_id=database_id))

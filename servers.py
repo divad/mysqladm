@@ -153,7 +153,7 @@ def server_status():
 ################################################################################
 #### SERVER ISOTOPE
 
-@app.route('/isotope')
+@app.route('/grid')
 @mysqladm.core.login_required
 def isotope():
 	"""View function to list all servers via the isotope grid
