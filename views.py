@@ -96,6 +96,32 @@ def stats():
 	return render_template('stats.html', active='stats', servers=servers_row[0], databases=databases_row[0], loadavg="%.2f" % loadavg, capacity=capacity_size, usage=usage_size)
 
 ################################################################################
+#### STATS
+
+@app.route('/search', methods=['POST'])
+@mysqladm.core.login_required
+def search():
+
+	## Load the dictionary based cursor
+	cur = g.db.cursor(mysql.cursors.DictCursor)
+
+	## Get the search string
+	searchstr = '%' + request.form['searchstr'] + '%'
+
+	## Execute a SQL select
+	cur.execute("""SELECT `databases`.`id` AS `id`, `databases`.`create_date` AS `create_date`, `servers`.`hostname` AS `server`, `databases`.`name` AS 'name', `databases`.`owner` AS 'owner', `databases`.`description` AS 'description' FROM `databases` LEFT OUTER JOIN `servers` ON `servers`.`id` = `databases`.`server` WHERE `databases`.`name` LIKE %s OR `databases`.`owner` LIKE %s OR  `databases`.`description` LIKE %s ORDER BY `servers`.`hostname` """, (searchstr, searchstr, searchstr))
+
+	## Get results
+	rows = cur.fetchall()
+
+	for row in rows:
+		short,sep,after = row['server'].partition('.')
+		row['shortserver'] = short
+		row['link'] = url_for('database_view', database_id = row['id'])
+	
+	return render_template('search.html', active='databases', rows=rows)
+
+################################################################################
 #### LOGIN
 
 @app.route('/login', methods=['GET','POST'])

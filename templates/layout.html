@@ -44,6 +44,14 @@
 						<li {% if active == 'stats' %} class="active" {% endif %}><a href="{{ url_for('stats') }}"><i class="fa fa-fw fa-bar-chart-o"></i> Stats</a></li>
 						<li {% if active == 'about' %} class="active" {% endif %}><a href="{{ url_for('about') }}"><i class="fa fa-fw fa-info-circle"></i> About</a></li>
 					</ul>
+
+					<form class="navbar-form navbar-left" role="search" action="{{ url_for('search') }}" method="POST">
+						<input name="_csrf_token" type="hidden" value="{{ csrf_token() }}"/>
+						<div class="form-group">
+							<input type="text" class="form-control" placeholder="Search for database..." name="searchstr">
+						</div>
+						<button type="submit" class="btn btn-default"><i class="fa fa-fw fa-search"></i></button>
+					</form>
 					
 					<ul class="nav navbar-nav navbar-right">
 						<li class="dropdown{%if active == 'user'%} active{%endif%}">
