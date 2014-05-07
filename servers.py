@@ -147,6 +147,18 @@ def server_status():
 		row['disk_capacity'] = json_response['disk_capacity']
 		row['disk_free'] = json_response['disk_free']
 		row['uptime'] = json_response['db_uptime']
+		row['disk_pc'] = int( ( float(row['disk_usage']) / float(row['disk_capacity']) ) * 100 )
+	
+		row['disk_status'] = 'success'
+		if row['disk_pc'] >= 30:
+			if row['disk_pc'] <= 75:
+				row['disk_status'] = 'info'		
+			elif row['disk_pc'] <= 85:
+				row['disk_status'] = 'warning'
+			else:
+				row['disk_status'] = 'danger'
+				
+		row['disk_pc'] = str(row['disk_pc'])
 
 	return render_template('server_status.html', active='servers',rows=rows)
 	
@@ -234,13 +246,31 @@ def server_view(server_name):
 			
 			# If we have a valid response
 			if 'status' in json_response and json_response['status'] == 0 and 'load_avg_1' in json_response:
+			
+				short,sep,after = server['hostname'].partition('.')
+				server['shortname'] = short
 	
 				## turn date into date string
 				json_response['db_sizes_date'] = mysqladm.core.ut_to_string(json_response['db_sizes_timestamp'])
 	
 				## create a 'usage' total
 				json_response['disk_usage'] = json_response['disk_capacity'] - json_response['disk_free']
+				
+				## create a percentage
+				json_response['disk_pc'] = int( ( float(json_response['disk_usage']) / float(json_response['disk_capacity']) ) * 100 )
 	
+			
+				json_response['disk_status'] = 'success'
+				if json_response['disk_pc'] >= 30:
+					if json_response['disk_pc'] <= 75:
+						json_response['disk_status'] = 'info'		
+					elif json_response['disk_pc'] <= 85:
+						json_response['disk_status'] = 'warning'
+					else:
+						json_response['disk_status'] = 'danger'
+						
+				json_response['disk_pc'] = str(json_response['disk_pc'])
+						
 				## create a databases url for each one
 				db_sizes = json_response['db_sizes']
 				for db in databases:

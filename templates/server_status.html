@@ -15,9 +15,7 @@
 			<th>Name</th>
 			<th>Databases</th>
 			<th>Load Average</th>
-			<th class="sorter-metric" data-metric-name="B|byte">Disk Capacity</th>
-			<th class="sorter-metric" data-metric-name="B|byte">Disk Usage</th>
-			<th class="sorter-metric" data-metric-name="B|byte">Disk Free</th>
+			<th>Disk Usage</th>
 			<th>MySQL Uptime</th>
 		</tr>
 	</thead>
@@ -38,9 +36,13 @@
 			{% else %}
 			
 			<td class="rowclick-td">{{ row.load }}</td>
-			<td class="rowclick-td">{{ row.disk_capacity|filesizeformat }}</td>
-			<td class="rowclick-td">{{ row.disk_usage|filesizeformat }}</td>
-			<td class="rowclick-td">{{ row.disk_free|filesizeformat }}</td>
+			<td class="rowclick-td" width="20%">
+				<div class="progress progress-striped" style="margin-bottom: 0px; height: 30px;">
+					<div class="progress-bar progress-bar-{{row.disk_status}}" role="progressbar" style="width: {{row.disk_pc}}%; line-height: 30px">
+						{{row.disk_pc}}%
+					</div>
+  				</div>
+			</td>
 			<td class="rowclick-td">{{ row.uptime }}</td>
 			{% endif %}
 		</tr>

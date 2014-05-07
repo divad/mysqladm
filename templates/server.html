@@ -171,82 +171,12 @@ $(document).ready(function()
 </script>
 
 <div class="page-header">
-  <h1><i class="fa fa-fw fa-hdd-o"></i> {{ server.hostname }}</h1>
+  <h1><i class="fa fa-fw fa-hdd-o"></i> {{ server.shortname }}</h1>
 </div>
 
 <div class="row">
-	<div class="col-md-5">
-		<div class="panel panel-success panel24k">
-			<div class="panel-heading">
-				<h3 class="panel-title">Server Information</h3>
-			  </div>
-			  <div class="panel-body">
-				<table class="statable">
-					<tbody>
-						<tr>
-							<td><strong>Version:</strong></td>
-							<td>{{stats.db_version}}</td>
-						</tr>
-						<tr>
-							<td><strong>Data Drive:</strong></td>
-							<td>{{stats.disk_mount_point}}</td>
-						</tr>
-						<tr>
-							<td><strong>Alias:</strong></td>
-							<td>{{server.alias}}</td>
-						</tr>
-						<tr>
-							<td><strong>Environment:</strong> </td>
-							<td>{{server.state}}</td>
-						</tr>
-						<tr>
-							<td><strong>Description:</strong> </td>
-							<td>{{server.desc}}</td>
-						</tr>
-					</tbody>
-				</table>
-			</div>
-		</div>
-	</div>
-	<div class="col-md-4">
-		<div class="panel panel-info panel24k">
-			<div class="panel-heading">
-				<h3 class="panel-title">Server Status</h3>
-			  </div>
-			  <div class="panel-body">
-			    {% if server_error %}
-			    <p>Status not available</p>
-			    {% else %}
-				<table class="statable">
-					<tbody>
-						<tr>
-							<td><strong>Server load:</strong></td>
-							<td>{{stats.load_avg_1}} {{stats.load_avg_5}} {{stats.load_avg_15}}</td>
-						</tr>
-						<tr>
-							<td><strong>MySQL uptime:</strong></td>
-							<td>{{stats.db_uptime}}</td>
-						</tr>
-						<tr>
-							<td><strong>Disk Capacity:</strong></td>
-							<td>{{stats.disk_capacity|filesizeformat}}</td>
-						</tr>
-						<tr>
-							<td><strong>Disk Usage:</strong></td>
-							<td>{{stats.disk_usage|filesizeformat}}</td>
-						</tr>
-						<tr>
-							<td><strong>Disk Free:</strong> </td>
-							<td>{{stats.disk_free|filesizeformat}}</td>
-						</tr>
-					</tbody>
-				</table>
-				{% endif %}
-			</div>
-		</div>
-	</div>
 	<div class="col-md-3">
-		<div class="panel panel-danger panel24k">
+		<div class="panel panel-default panel24k">
 			<div class="panel-heading">
 				<h3 class="panel-title">Actions</h3>
 			</div>
@@ -269,6 +199,86 @@ $(document).ready(function()
 					<a href="#" data-toggle="modal" data-target="#remove-server"><i class="fa fa-fw fa-trash-o"></i> Remove Server</a>
 				</li>
 				</ul>
+			</div>
+		</div>
+	</div>
+	<div class="col-md-5">
+		<div class="panel panel-default panel24k">
+			<div class="panel-heading">
+				<h3 class="panel-title">Server Information</h3>
+			  </div>
+			  <div class="panel-body">
+				<table class="statable">
+					<tbody>
+						<tr>
+							<td><strong>Name:</strong></td>
+							<td>{{server.hostname}}</td>
+						</tr>
+						<tr>
+							<td><strong>Alias:</strong></td>
+							<td>{{server.alias}}</td>
+						</tr>
+						<tr>
+							<td><strong>Version:</strong></td>
+							<td>{{stats.db_version}}</td>
+						</tr>
+						<tr>
+							<td><strong>MySQL uptime:</strong></td>
+							<td>{{stats.db_uptime}}</td>
+						</tr>
+						<tr>
+							<td><strong>Environment:</strong> </td>
+							<td>{{server.state}}</td>
+						</tr>
+						<tr>
+							<td><strong>Description:</strong> </td>
+							<td>{{server.desc}}</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+	<div class="col-md-4">
+		<div class="panel panel-default panel24k">
+			<div class="panel-heading">
+				<h3 class="panel-title">Server Status</h3>
+			  </div>
+			  <div class="panel-body">
+			    {% if server_error %}
+			    <p>Status not available</p>
+			    {% else %}
+				<table class="statable">
+					<tbody>
+						<tr>
+							<td><strong>Server load:</strong></td>
+							<td>{{stats.load_avg_1}} {{stats.load_avg_5}} {{stats.load_avg_15}}</td>
+						</tr>
+						<tr>
+							<td><strong>Data Drive:</strong></td>
+							<td>{{stats.disk_mount_point}}</td>
+						</tr>
+						<tr>
+							<td><strong>Disk Capacity:</strong></td>
+							<td>{{stats.disk_capacity|filesizeformat}}</td>
+						</tr>
+						<tr>
+							<td><strong>Disk Usage:</strong></td>
+							<td>{{stats.disk_usage|filesizeformat}}</td>
+						</tr>
+						<tr>
+							<td><strong>Disk Free:</strong> </td>
+							<td>{{stats.disk_free|filesizeformat}}</td>
+						</tr>
+					</tbody>
+				</table>
+				<br/>
+				<div class="progress progress-striped" style="margin-bottom: 0px; height: 30px;">
+					<div class="progress-bar progress-bar-{{stats.disk_status}}" role="progressbar" style="width: {{stats.disk_pc}}%; line-height: 30px;">
+						{{stats.disk_pc}}% in use
+					</div>
+  				</div>
+				{% endif %}
 			</div>
 		</div>
 	</div>
