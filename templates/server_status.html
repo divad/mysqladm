@@ -17,6 +17,7 @@
 			<th>Load Average</th>
 			<th>Disk Usage</th>
 			<th>MySQL Uptime</th>
+			<th>Type</th>
 		</tr>
 	</thead>
 	<tbody class="rowclick-table">
@@ -28,7 +29,7 @@
 		{% endif %}
 		
 			<td><a href="{{ row.link }}"><button type="button" class="btn btn-success btn-sm"><i class="fa fa-fw fa-eye"></i></button></a></td>
-			<td class="rowclick-td">{{ row.shortname }}</td>
+			<td class="rowclick-td">{{ row.name }}</td>
 			<td class="rowclick-td">{{ row.databases }}</td>
 			
 			{% if row.error %}
@@ -44,6 +45,7 @@
   				</div>
 			</td>
 			<td class="rowclick-td">{{ row.uptime }}</td>
+			<td class="rowclick-td">{% if row.type == 0 %} <span class="label label-info">Standalone</span>{% else %}<span class="label label-success">Farm Member</span>{%endif%}</td>
 			{% endif %}
 		</tr>
 		{% endfor %}

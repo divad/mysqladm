@@ -189,7 +189,7 @@ def database_sync():
 					mysqladm.databases.delete_database_record(db['id'])
 					rows.append('Database "' + db['name'] + '" was removed from records as it was not found on server ' + server['hostname'])
 					
-	return render_template('sync.html', active='databases', rows=rows)
+	return render_template('sync.html', active='other', rows=rows)
 
 ################################################################################
 #### VIEW/EDIT DATABASE INSTANCE
@@ -214,17 +214,20 @@ def database_view(database_id):
 	db_size = 0
 	db_size_error = ""
 	if request.method == 'GET':
+		
+		db_size_error = "Unknown"
+			
 		try:
 			json_response = mysqladm.core.msg_node(server, 'stats')
 
 			if 'status' not in json_response:
-				db_size_error = "Invalid JSON response from server"
+				flash('Error from server agent: Invalid response from ' + server['hostname'], 'alert-warning')
 			else:
 				if json_response['status'] != 0:
 					if 'error' in json_response:
-						db_size_error = "Error contacting agent: " +  str(json_response['error'])
+						flash('Error from agent on server ' + server['hostname'] + ': ' + json_response['error'], 'alert-warning')
 					else:
-						db_size_error = "Error contacting agent, code: " + str(json_response['status'])
+						flash('Error code from agent on server ' + server['hostname'] + ': ' + json_response['code'], 'alert-warning')
 				else:
 					db_sizes = json_response['db_sizes']
 					if database['name'] not in db_sizes:
@@ -233,17 +236,14 @@ def database_view(database_id):
 						db_size = db_sizes[database['name']]
 
 		except requests.exceptions.RequestException as e:
-			db_size_error = "Error contacting agent: " +  str(e)
-				
-		except requests.exceptions.RequestException as e:
-			db_size = "Error contacting server"
+			flash('Error contacting agent on server ' + server['hostname'] + ': ' + str(e), 'alert-warning')
 			
 		try:
 			database['create_date'] = mysqladm.core.ut_to_string(database['create_date'])
 		except TypeError:
 			database['create_date'] = 'Unknown'
 	
-		return render_template('database.html', active='databases', db=database, db_size=db_size, db_size_error=db_size_error)
+		return render_template('database.html', active='databases', server=server, db=database, db_size_error=db_size_error, db_size=db_size)
 		
 	elif request.method == 'POST':
 		## Edit the database details
@@ -258,7 +258,7 @@ def database_view(database_id):
 			
 		if 'database_owner' in request.form and len(request.form['database_owner']) > 0:
 			database_owner = request.form['database_owner']
-			if re.search('^[A-Za-z0-9_\s\-\.\@\&]*$', database_owner) == None:
+			if re.search(r'^[A-Za-z0-9_\s\-\.\@\&\\/]*$', database_owner) == None:
 				return mysqladm.errors.output_error('Unable to save detabase details', 'Invalid character(s) in owner','')
 		else:
 			flash('Database description must not be empty', 'alert-danger')
@@ -442,7 +442,7 @@ def database_create():
 
 		if 'database_owner' in request.form and len(request.form['database_owner']) > 0:
 			owner = request.form['database_owner']
-			if re.search('^[A-Za-z0-9_\s\-\.\@\&]*$', owner) == None:
+			if re.search(r'^[A-Za-z0-9_\s\-\.\@\&\\/]*$', owner) == None:
 				return mysqladm.errors.output_error('Unable to create database', 'Invalid character(s) in owner field','')
 		else:
 			return mysqladm.errors.output_error('Unable to create database', 'You must specify a database owner','')

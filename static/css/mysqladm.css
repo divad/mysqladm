@@ -143,6 +143,11 @@ tr.tsdisable td
 	padding-bottom: 10px;
 }	
 
+.form-static .form-group
+{
+	margin-bottom: 5px;
+}
+
 .item
 {
 padding: 15px;

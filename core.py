@@ -139,15 +139,12 @@ def poperr_clear():
 ################################################################################
 
 def msg_node(serverobj, function, **kwargs):
-	"""This function communicates via HTTP(S) to a mysqlagent
+	"""This function communicates via HTTPS to a mysqlagent
 	running on a mysql server. Serverobj is a hash containing hostname,
 	password and optionally an sslverify boolean.
 	"""
 	
-	## Server object is a hash with hostname/agent_password/etc.
-	
-	
-	## create a payload
+	## create a payload to send to the server
 	payload = {'function': function, 'agent_password': serverobj['password']}
 
 	## Put the keyword arguments into the payload
@@ -164,8 +161,17 @@ def msg_node(serverobj, function, **kwargs):
 		if app.config['AGENT_SSL_VERIFY_ALERT']:
 			flash('Warning: Connected to ' + serverobj['hostname'] + ' without SSL verification enabled','alert-warning')
 		
-	app.logger.warn("Messaging " + serverobj['hostname'] + " with ssl verify set to: " + str(verify))
+	app.logger.debug("Messaging " + serverobj['hostname'] + " with ssl verify set to: " + str(verify))
+
+
+	## Use SSL certificate authority bundle file from config file
+	if verify:
+		verify = app.config['AGENT_SSL_VERIFY_CA_FILE']
+	
+	## Send request
 	r = requests.post('https://' + serverobj['hostname'] + ':1337/', data=payload, verify=verify)
+	
+	## Deal with the response
 	if r.status_code == requests.codes.ok:
 		return json.loads(r.text)
 	else:
@@ -195,7 +201,7 @@ def is_valid_hostname(hostname):
 	return all(allowed.match(x) for x in hostname.split("."))
     
 def is_valid_desc(desc):
-	if re.search('^[A-Za-z0-9_\s\-\.\&\@]*$', desc) == None:
+	if re.search(r'^[A-Za-z0-9_\s\-\.\&\@\\/]*$', desc) == None:
 		return False
 	return True
 	

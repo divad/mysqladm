@@ -43,61 +43,15 @@
 	</div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
 
-<div class="page-header">
-  <h1><i class="fa fa-fw fa-archive"></i> {{ db.name }}</h1>
-</div>
-
-<div class="row">
-	<div class="col-md-4">
-		<div class="panel panel-default panel2k">
-			<div class="panel-heading">
-				<h3 class="panel-title">Information</h3>
-			  </div>
-			  <div class="panel-body">
-				<table class="statable">
-					<tbody>
-						<tr>
-							<td><strong>Server:</strong></td>
-							<td><a href="{{ url_for('server_view', server_name=db.server) }}">{{ db.server }}</a></td>
-						</tr>
-						<tr>
-							<td><strong>Size:</strong></td>
-							<td>
-							{% if db_size_error %}
-							{{ db_size_error }}
-							{% else %}
-							{{db_size|filesizeformat}}
-							{% endif %}
-								
-							</td>
-						</tr>
-						<tr>
-							<td><strong>Create Date:</strong></td>
-							<td>{{db.create_date}}</td>
-						</tr>
-					</tbody>
-				</table>
+<!-- modal to edit database -->
+<div class="modal fade" id="edit-database">
+	<div class="modal-dialog modal-lg">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+				<h4 class="modal-title">Edit Database</h4>
 			</div>
-		</div>
-		<div class="panel panel-default panel2k">
-			<div class="panel-heading">
-				<h3 class="panel-title">Actions</h3>
-			  </div>
-			  <div class="panel-body">
-				<ul class="nav nav-pills nav-stacked">
-				  <li><a href="{{ url_for('database_details',database_id=db.id) }}"><i class="fa fa-fw fa-eye"></i> View connection details</a></li>						
-				  <li><a href="#" data-toggle="modal" data-target="#passwd-confirm"><i class="fa fa-fw fa-pencil"></i> Set new random password</a></li>				
-				  <li><a href="#" data-toggle="modal" data-target="#delete-confirm"><i class="fa fa-fw fa-trash-o"></i> Delete Database</a></li>
-				</ul>			
-			</div>
-		</div>		
-	</div>
-	<div class="col-md-8">
-		<div class="panel panel-default panel42k">
-			<div class="panel-heading">
-				<h3 class="panel-title">Edit Details</h3>
-			  </div>
-			  <div class="panel-body">
+			<div class="modal-body">
 				<form class="form-horizontal" role="form" method="POST">
 					<input type="hidden" name="_csrf_token" value="{{ csrf_token() }}" />
 					<div class="form-group">
@@ -127,6 +81,85 @@
 							<button type="submit" class="btn btn-default">Save Changes</button>
 						</div>
 					</div>
+				</form>
+			</div>
+		</div><!-- /.modal-content -->
+	</div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<div class="page-header">
+  <h1><i class="fa fa-fw fa-archive"></i> {{ db.name }}</h1>
+</div>
+
+<div class="row">
+	<div class="col-md-3">
+		<div class="panel panel-default" style="min-height: 300px">
+			<div class="panel-heading">
+				<h3 class="panel-title">Actions</h3>
+			  </div>
+			  <div class="panel-body">
+				<ul class="nav nav-pills nav-stacked">
+				  <li><a href="#" data-toggle="modal" data-target="#edit-database"><i class="fa fa-fw fa-trash-o"></i> Edit Database</a></li>
+				  <li><a href="{{ url_for('server_view', server_name=server.hostname) }}"><i class="fa fa-fw fa-hdd-o"></i> View server details</a></li>
+
+				  {% if server.type == 1 %}					
+				  <li><a href="{{ url_for('database_details',database_id=db.id) }}"><i class="fa fa-fw fa-eye"></i> View connection details</a></li>						
+				  <li><a href="#" data-toggle="modal" data-target="#passwd-confirm"><i class="fa fa-fw fa-pencil"></i> Set new random password</a></li>				
+				  <li><a href="#" data-toggle="modal" data-target="#delete-confirm"><i class="fa fa-fw fa-trash-o"></i> Delete Database</a></li>
+				  {% endif %}
+				</ul>			
+			</div>
+		</div>		
+	</div>
+	<div class="col-md-9">
+		<div class="panel panel-default" style="min-height: 300px">
+			<div class="panel-heading">
+				<h3 class="panel-title">Database Information</h3>
+			</div>
+			<div class="panel-body">
+				<form class="form-horizontal form-static">
+					<div class="form-group">
+						<label class="col-sm-2 control-label"><strong>Owner:</strong></label>
+						<div class="col-sm-10">
+							<p class="form-control-static">{{db.owner}}</p>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-2 control-label"><strong>Description:</strong></label>
+						<div class="col-sm-10">
+							<p class="form-control-static">{{db.description}}</p>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-2 control-label"><strong>Size:</strong></label>
+						<div class="col-sm-10">
+							<p class="form-control-static">
+							{% if db_size_error %}
+							{{ db_size_error }}
+							{% else %}
+							{{db_size|filesizeformat}}
+							{% endif %}
+							</p>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-2 control-label"><strong>Create Date:</strong></label>
+						<div class="col-sm-10">
+							<p class="form-control-static">{{db.create_date}}</p>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-2 control-label"><strong>Server:</strong></label>
+						<div class="col-sm-10">
+							<p class="form-control-static">{{server.name}}</p>
+						</div>
+					</div>
+					<div class="form-group">
+						<label class="col-sm-2 control-label"><strong>Server Type:</strong></label>
+						<div class="col-sm-10">
+							<p class="form-control-static">{% if server.type == 1 %} MySQL Farm{% else %} Standalone{%endif%}</p>
+						</div>
+					</div>					
 				</form>
 			</div>
 		</div>

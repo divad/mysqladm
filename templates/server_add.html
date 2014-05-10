@@ -13,6 +13,14 @@
 <form class="form-horizontal" role="form" method="POST">
 	<input type="hidden" name="_csrf_token" value="{{ csrf_token() }}" />
 	<div class="form-group">
+		<label for="inputName" class="col-lg-2 control-label">Name</label>
+			<div class="col-lg-10">
+				<input type="text" class="form-control" id="inputName" name="server_name" {% if name %}value="{{ name }}" {% endif %}/>
+				<span class="help-block">A short name used to represent the server, usually the hostname without the domain name</span>
+			</div>
+	</div>
+
+	<div class="form-group">
 		<label for="inputHostname" class="col-lg-2 control-label">Hostname</label>
 			<div class="col-lg-10">
 				<input type="text" class="form-control" id="inputHostname" name="server_hostname" {% if hostname %}value="{{ hostname }}" {% endif %}/>
@@ -24,7 +32,7 @@
 		<label for="inputAlias" class="col-lg-2 control-label">Alias</label>
 			<div class="col-lg-10">
 				<input type="text" class="form-control" id="inputAlias" name="server_alias" {% if alias %}value="{{ alias }}" {% endif %}>
-				<span class="help-block">An alias customers will use, should be mysqlNNN.soton.ac.uk, where NNN is the same number as the SRV server number above.
+				<span class="help-block">An optional alias customers will use, should be mysqlNNN.soton.ac.uk, where NNN is the same number as the SRV server number above.
 				</span>
 			</div>
 	</div>
@@ -62,13 +70,26 @@
 			</span>
 		</div>
 	</div>
+
+	<div class="form-group">
+		<label for="inputType" class="col-lg-2 control-label">Server Type</label>
+			<div class="col-lg-10">
+				<select name="server_type" class="form-control" id="inputType">
+					<option value="1"{% if server_type == 1 %} selected="selected"{% endif %}>MySQL Farm Member</option>
+					<option value="0"{% if server_type == 0 %} selected="selected"{% endif %}>MySQL Standalone</option>	
+				</select>
+
+				<span class="help-block">Is this server part of the MySQL Farm or a standalone MySQL instance?
+				</span>
+			</div>
+	</div>
 	
 	<div class="form-group">
 		<label for="inputSsl" class="col-lg-2 control-label">Security Mode</label>
-			<div class="col-lg-5">
+			<div class="col-lg-10">
 				<select name="server_sslverify" class="form-control" id="inputSsl">
-					<option value="1"{% if server and server.sslverify == "1" %} selected="selected"{% endif %}>Require a valid SSL certificate</option>
-					<option value="0"{% if server and server.sslverify == "0" %} selected="selected"{% endif %}>Don't validate the SSL certificate</option>
+					<option value="1"{% if sslverify == "1" %} selected="selected"{% endif %}>Require a valid SSL certificate</option>
+					<option value="0"{% if sslverify == "0" %} selected="selected"{% endif %}>Don't validate the SSL certificate</option>
 				</select>
 
 				<span class="help-block">Should we validate the SSL certificate of the server?

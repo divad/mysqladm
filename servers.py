@@ -36,7 +36,7 @@ def get_server_by_hostname(hostname):
 	cur = g.db.cursor(mysql.cursors.DictCursor)
 
 	## Execute a SQL select
-	cur.execute("SELECT `id`, `hostname`, `alias`, `desc`, `state`, `password`, `sslverify` FROM `servers` WHERE `hostname` = %s", (hostname))
+	cur.execute("SELECT `id`, `name`, `hostname`, `alias`, `desc`, `state`, `password`, `sslverify`, `type` FROM `servers` WHERE `hostname` = %s", (hostname))
 
 	## Get results
 	return cur.fetchone()
@@ -49,12 +49,43 @@ def get_all_servers():
 	cur = g.db.cursor(mysql.cursors.DictCursor)
 
 	## Execute a SQL select
-	cur.execute("SELECT `servers`.`id` AS `id`, `servers`.`hostname` AS `hostname`, `servers`.`sslverify` AS `sslverify`, `servers`.`alias` AS `alias`, `servers`.`desc` AS `desc`, `servers`.`state` AS `state`, `servers`.`password` AS `password`, COUNT(`databases`.`id`) AS `databases` FROM `servers` LEFT JOIN `databases` ON databases.server = servers.id GROUP BY `servers`.`id`;");
+	cur.execute("SELECT `servers`.`id` AS `id`, `servers`.`name` AS `name`, `servers`.`hostname` AS `hostname`, `servers`.`sslverify` AS `sslverify`, `servers`.`type` as `type`, `servers`.`alias` AS `alias`, `servers`.`desc` AS `desc`, `servers`.`state` AS `state`, `servers`.`password` AS `password`, COUNT(`databases`.`id`) AS `databases` FROM `servers` LEFT JOIN `databases` ON databases.server = servers.id GROUP BY `servers`.`id`;");
 
 	## Get results
 	rows = cur.fetchall()
 	
 	return rows
+
+def get_farm_servers():
+	"""Utility funtion to return all farm server objects.
+	"""	
+	
+	## Load the dictionary based cursor
+	cur = g.db.cursor(mysql.cursors.DictCursor)
+
+	## Execute a SQL select
+	cur.execute("SELECT `servers`.`id` AS `id`, `servers`.`name` AS `name`, `servers`.`hostname` AS `hostname`, `servers`.`sslverify` AS `sslverify`, `servers`.`type` as `type`, `servers`.`alias` AS `alias`, `servers`.`desc` AS `desc`, `servers`.`state` AS `state`, `servers`.`password` AS `password`, COUNT(`databases`.`id`) AS `databases` FROM `servers` LEFT JOIN `databases` ON databases.server = servers.id WHERE servers.type = '1' GROUP BY `servers`.`id`;");
+
+	## Get results
+	rows = cur.fetchall()
+	
+	return rows
+
+def get_standalone_servers():
+	"""Utility funtion to return all standalone server objects.
+	"""	
+	
+	## Load the dictionary based cursor
+	cur = g.db.cursor(mysql.cursors.DictCursor)
+
+	## Execute a SQL select
+	cur.execute("SELECT `servers`.`id` AS `id`, `servers`.`name` AS `name`, `servers`.`hostname` AS `hostname`, `servers`.`sslverify` AS `sslverify`, `servers`.`type` as `type`, `servers`.`alias` AS `alias`, `servers`.`desc` AS `desc`, `servers`.`state` AS `state`, `servers`.`password` AS `password`, COUNT(`databases`.`id`) AS `databases` FROM `servers` LEFT JOIN `databases` ON databases.server = servers.id WHERE servers.type = '0' GROUP BY `servers`.`id`;");
+
+	## Get results
+	rows = cur.fetchall()
+	
+	return rows
+	
 	
 def get_server_databases(server_id):
 	"""Utility funtion to return all databases from a particular server
@@ -89,10 +120,26 @@ def server_list():
 	## Create link for each server 
 	for row in rows:
 		row['link'] = url_for('server_view', server_name=row['hostname'])
-		short,sep,after = row['hostname'].partition('.')
-		row['shortname'] = short
 
 	return render_template('servers.html', active='servers',rows=rows)
+
+################################################################################
+#### LIST SERVERS
+
+@app.route('/standalone')
+@mysqladm.core.login_required
+def server_list_standalone():
+	"""View function to list all servers in a basic table (standalone only)
+	"""		
+	
+	## Load servers
+	rows = get_standalone_servers()
+	
+	## Create link for each server 
+	for row in rows:
+		row['link'] = url_for('server_view', server_name=row['hostname'])
+
+	return render_template('servers_standalone.html', active='servers',rows=rows)
 	
 	
 ################################################################################
@@ -114,10 +161,6 @@ def server_status():
 
 		## Add the link to the server
 		row['link'] = url_for('server_view', server_name=row['hostname'])
-		
-		## Add the short form of the database hostname
-		short,sep,after = row['hostname'].partition('.')
-		row['shortname'] = short
 		
 		try:
 			json_response = mysqladm.core.msg_node(row, 'stats')
@@ -172,7 +215,7 @@ def isotope():
 	"""		
 	
 	## Load servers
-	rows = get_all_servers()
+	rows = get_farm_servers()
 
 	## Iterate through each database and get the statistics
 	for row in rows:
@@ -181,10 +224,6 @@ def isotope():
 		
 		## Add the link to the server
 		row['link'] = url_for('server_view', server_name=row['hostname'])
-		
-		## Add the short form of the database hostname
-		short,sep,after = row['hostname'].partition('.')
-		row['shortname'] = short
 		
 		try:
 			json_response = mysqladm.core.msg_node(row, 'stats')
@@ -247,9 +286,6 @@ def server_view(server_name):
 			# If we have a valid response
 			if 'status' in json_response and json_response['status'] == 0 and 'load_avg_1' in json_response:
 			
-				short,sep,after = server['hostname'].partition('.')
-				server['shortname'] = short
-	
 				## turn date into date string
 				json_response['db_sizes_date'] = mysqladm.core.ut_to_string(json_response['db_sizes_timestamp'])
 	
@@ -363,14 +399,22 @@ def server_view(server_name):
 			## error tracking variable
 			had_error = 0
 
+			if 'server_name' in request.form and len(request.form['server_name']) > 0:
+				name = request.form['server_name']
+				if not mysqladm.core.is_valid_hostname(name):
+					return mysqladm.errors.output_error('Invalid name','That server name is invalid. ','')
+			else:
+				had_error = 1
+				alias = ''
+				flash("You must specify a valid server name", 'alert-danger')
+
 			if 'server_alias' in request.form and len(request.form['server_alias']) > 0:
 				alias = request.form['server_alias']
 				if not mysqladm.core.is_valid_hostname(alias):
 					return mysqladm.errors.output_error('Invalid alias','That server alias is invalid. ','')
 			else:
-				had_error = 1
-				alias = ''
-				flash("You must specify a fully qualified server alias", 'alert-danger')
+				# alias is optional
+				alias = 'N/A'
 
 			if 'server_desc' in request.form and len(request.form['server_desc']) > 0:
 				description = request.form['server_desc']
@@ -399,11 +443,20 @@ def server_view(server_name):
 				state = ''
 				flash("You must specify a ssl verify flag", 'alert-danger')
 
+			if 'server_type' in request.form:
+				server_type = int(request.form['server_type'])
+				if server_type < 0 or server_type > 1:
+					return mysqladm.errors.output_error('Invalid server type','That server type is invalid','')
+			else:
+				had_error = 1
+				state = ''
+				flash("You must specify a server type flag", 'alert-danger')
+
 			if had_error == 1:
 				return redirect(url_for('server_view', server_name=server['hostname']))
 
 			# Update details
-			cur.execute('UPDATE `servers` SET `alias` = %s, `desc` = %s, `state` = %s, `sslverify` = %s WHERE `hostname` = %s', (alias, description, state, sslverify, server_name,))
+			cur.execute('UPDATE `servers` SET `name` = %s, `alias` = %s, `desc` = %s, `state` = %s, `sslverify` = %s, `type` = %s WHERE `hostname` = %s', (name, alias, description, state, sslverify, server_type,server_name))
 
 			# Commit changes to the database
 			g.db.commit()
@@ -439,14 +492,22 @@ def server_add():
 			hostname = ''
 			flash("You must specify a fully qualified hostname", 'alert-danger')
 
+		if 'server_name' in request.form and len(request.form['server_name']) > 0:
+			name = request.form['server_name']
+			if not mysqladm.core.is_valid_hostname(name):
+				return mysqladm.errors.output_error('Invalid name','That server name is invalid. ','')
+		else:
+			had_error = 1
+			alias = ''
+			flash("You must specify a valid server name", 'alert-danger')
+
 		if 'server_alias' in request.form and len(request.form['server_alias']) > 0:
 			alias = request.form['server_alias']
 			if not mysqladm.core.is_valid_hostname(alias):
 				return mysqladm.errors.output_error('Invalid alias','That server alias is invalid.','')
 		else:
-			had_error = 1
-			alias = ''
-			flash("You must specify a fully qualified server alias", 'alert-danger')
+			# alias is optional
+			alias = 'N/A'
 
 		if 'server_desc' in request.form and len(request.form['server_desc']) > 0:
 			description = request.form['server_desc']
@@ -482,9 +543,18 @@ def server_add():
 			state = ''
 			flash("You must specify a ssl verify flag", 'alert-danger')
 
+		if 'server_type' in request.form:
+			server_type = int(request.form['server_type'])
+			if server_type < 0 or server_type > 1:
+				return mysqladm.errors.output_error('Invalid server type','That server type is invalid','')
+		else:
+			had_error = 1
+			state = ''
+			flash("You must specify a server type flag", 'alert-danger')
+
 		# If we had an error, just render the server_add page with whatever fields filled in
 		if had_error == 1:
-			return render_template('server_add.html', active='servers', hostname=hostname, alias=alias, description=description, state=state, sslverify=sslverify)
+			return render_template('server_add.html', active='servers', hostname=hostname, alias=alias, description=description, state=state, sslverify=sslverify, server_type=server_type, name=name)
  
 		## Talk to the server via HTTPS
 		try:
@@ -492,7 +562,7 @@ def server_add():
 			json_response = mysqladm.core.msg_node(serverobj,'list')
 
 			if 'status' not in json_response:
-				return mysqladm.errors.output_error('Unable to add server', 'The given MySQL node responded with something unexpected: ' + str(json_response), '')
+				return mysqladm.errors.output_error('Unable to add server', 'The given MySQL agent responded with something unexpected: ' + str(json_response), '')
 
 			if json_response['status'] != 0:
 				if 'error' in json_response:
@@ -503,7 +573,7 @@ def server_add():
 				return render_template('server_add.html', active='servers', hostname=hostname, alias=alias, description=description, state=state, sslverify=sslverify)
 				
 		except requests.exceptions.RequestException as e:
-			return mysqladm.errors.output_error('Unable to add server','An error occured when communicating with the MySQL node: ' + str(e),'')	
+			return mysqladm.errors.output_error('Unable to add server','An error occured when communicating with the MySQL agent: ' + str(e),'')	
 
 		# Get a cursor to the database
 		cur = g.db.cursor()
@@ -515,7 +585,7 @@ def server_add():
 			return render_template('server_add.html', active='servers', hostname=hostname, alias=alias, description=description, state=state, sslverify=sslverify)
 			
 		# Insert the server into the database
-		cur.execute('INSERT INTO `servers` (`hostname`, `alias`, `desc`, `state`, `password`, `sslverify`) VALUES (%s, %s, %s, %s, %s, %s)', (hostname, alias, description, state, password, sslverify))
+		cur.execute('INSERT INTO `servers` (`name`, `hostname`, `alias`, `desc`, `state`, `password`, `sslverify`, `type`) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)', (name, hostname, alias, description, state, password, sslverify, server_type))
 
 		# Commit changes to the database
 		g.db.commit()

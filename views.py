@@ -41,7 +41,7 @@ def default():
 @app.route('/about')
 @mysqladm.core.login_required
 def about():
-	return render_template('about.html', active='about')
+	return render_template('about.html', active='other')
 
 ################################################################################
 #### STATS
@@ -93,7 +93,7 @@ def stats():
 	else:
 		loadavg = 0
 
-	return render_template('stats.html', active='stats', servers=servers_row[0], databases=databases_row[0], loadavg="%.2f" % loadavg, capacity=capacity_size, usage=usage_size)
+	return render_template('stats.html', active='other', servers=servers_row[0], databases=databases_row[0], loadavg="%.2f" % loadavg, capacity=capacity_size, usage=usage_size)
 
 ################################################################################
 #### STATS

@@ -60,6 +60,14 @@
 				<div class="modal-body">
 					<input type="hidden" name="_csrf_token" value="{{ csrf_token() }}" />
 					<input type="hidden" name="server_hostname" value="{{ server.hostname }}" />
+
+					<div class="form-group">
+						<label for="inputName" class="col-lg-2 control-label">Name</label>
+							<div class="col-lg-10">
+								<input type="text" class="form-control" id="inputName" name="server_name" {% if server.name %}value="{{ server.name }}" {% endif %}/>
+							</div>
+					</div>
+
 					<div class="form-group">
 						<label for="inputAlias" class="col-lg-2 control-label">Alias</label>
 						<div class="col-lg-10">
@@ -74,7 +82,7 @@
 					</div>
 					<div class="form-group">
 						<label for="inputStatus" class="col-lg-2 control-label">Status</label>
-						<div class="col-lg-5">
+						<div class="col-lg-10">
 							<select name="server_state" class="form-control" id="inputStatus">
 								<option value="Production"{% if server.state and server.state == "Production" %} selected="selected"{% endif %}>Production</option>
 								<option value="Pre-Production"{% if server.state and server.state == "Pre-production" %} selected="selected"{% endif %}>Pre-Production</option>	
@@ -85,17 +93,25 @@
 						</div>
 					</div>
 					<div class="form-group">
+						<label for="inputType" class="col-lg-2 control-label">Server Type</label>
+							<div class="col-lg-10">
+								<select name="server_type" class="form-control" id="inputType">
+									<option value="1"{% if server.type == 1 %} selected="selected"{% endif %}>MySQL Farm Member</option>
+									<option value="0"{% if server.type == 0 %} selected="selected"{% endif %}>MySQL Standalone</option>	
+								</select>
+								</span>
+							</div>
+					</div>
+					<div class="form-group">
 						<label for="inputSsl" class="col-lg-2 control-label">Security Mode</label>
-							<div class="col-lg-5">
+							<div class="col-lg-10">
 								<select name="server_sslverify" class="form-control" id="inputSsl">
 									<option value="1"{% if server.sslverify == 1 %} selected="selected"{% endif %}>Require a valid SSL certificate</option>
 									<option value="0"{% if server.sslverify == 0 %} selected="selected"{% endif %}>Don't validate the SSL certificate</option>	
 								</select>
-				
-								<span class="help-block">Should we validate the SSL certificate of the server?
 								</span>
 							</div>
-					</div>					
+					</div>	
 				</div><!-- /.modal-body -->
 				<div class="modal-footer">
 					<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
@@ -171,60 +187,33 @@ $(document).ready(function()
 </script>
 
 <div class="page-header">
-  <h1><i class="fa fa-fw fa-hdd-o"></i> {{ server.shortname }}</h1>
+	<h1><i class="fa fa-fw fa-hdd-o"></i> {{ server.name }}</h1>
 </div>
 
 <div class="row">
-	<div class="col-md-3">
+	<div class="col-lg-4">
 		<div class="panel panel-default panel24k">
 			<div class="panel-heading">
-				<h3 class="panel-title">Actions</h3>
-			</div>
-			<div class="panel-body">
-				<ul class="nav nav-pills nav-stacked">
-				  {% if server_error %}
-				  <li class="disabled">
-				  {% else %}
-				  <li>
-				  {% endif %}
-				    <a href="#" data-toggle="modal" data-target="#create-database"><i class="fa fa-fw fa-plus"></i> Create Database</a>
-				  </li>
-				  <li>
-				  	<a href="#" data-toggle="modal" data-target="#edit-server"><i class="fa fa-fw fa-wrench"></i> Edit Server</a>
-				  </li>
-				  <li>
-				  	<a href="#" data-toggle="modal" data-target="#change-agent-password"><i class="fa fa-fw fa-lock"></i> Change Agent Password</a>
-				  </li>
-				  <li>
-					<a href="#" data-toggle="modal" data-target="#remove-server"><i class="fa fa-fw fa-trash-o"></i> Remove Server</a>
-				</li>
-				</ul>
-			</div>
-		</div>
-	</div>
-	<div class="col-md-5">
-		<div class="panel panel-default panel24k">
-			<div class="panel-heading">
-				<h3 class="panel-title">Server Information</h3>
+				<h3 class="panel-title">Server Metadata</h3>
 			  </div>
 			  <div class="panel-body">
 				<table class="statable">
 					<tbody>
 						<tr>
+							<td><strong>Type:</strong></td>
+							<td>{% if server.type == 1 %} Farm Member{% else %} Standalone Server{%endif%}</td>
+						</tr>
+						<tr>
 							<td><strong>Name:</strong></td>
+							<td>{{server.name}}</td>
+						</tr>
+						<tr>
+							<td><strong>Hostname:</strong></td>
 							<td>{{server.hostname}}</td>
 						</tr>
 						<tr>
 							<td><strong>Alias:</strong></td>
 							<td>{{server.alias}}</td>
-						</tr>
-						<tr>
-							<td><strong>Version:</strong></td>
-							<td>{{stats.db_version}}</td>
-						</tr>
-						<tr>
-							<td><strong>MySQL uptime:</strong></td>
-							<td>{{stats.db_uptime}}</td>
 						</tr>
 						<tr>
 							<td><strong>Environment:</strong> </td>
@@ -239,7 +228,51 @@ $(document).ready(function()
 			</div>
 		</div>
 	</div>
-	<div class="col-md-4">
+
+	<div class="col-lg-4">
+		<div class="panel panel-default panel24k">
+			<div class="panel-heading">
+				<h3 class="panel-title">Server Information</h3>
+			  </div>
+			  <div class="panel-body">
+				<table class="statable">
+					<tbody>
+						<tr>
+							<td><strong>Comment:</strong></td>
+							<td>{% if stats.db_comment %} {{stats.db_comment}} {% else %} N/A {%endif%}</td>
+						</tr>
+						<tr>
+							<td><strong>Version:</strong></td>
+							<td>{{stats.db_version}}</td>
+						</tr>
+						<tr>
+							<td><strong>Daemon uptime:</strong></td>
+							<td>{{stats.db_uptime}}</td>
+						</tr>
+						<tr>
+							<td><strong>OS Name:</strong></td>
+							<td>{{stats.os_name}}</td>
+						</tr>
+						<tr>
+							<td><strong>OS Version:</strong></td>
+							<td>{{stats.os_version}}</td>
+						</tr>
+						<tr>
+							<td><strong>Agent SSL:</strong></td>
+							<td>
+								{% if server.sslverify == 1 %}
+								Connection validated via SSL <i class="fa fa-fw fa-check-square text-success"></i>
+								{% else %}
+								Connection verification disabled <i class="fa fa-fw fa-exclamation-triangle text-danger"></i>
+								{% endif %}
+							</td>
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+
+	<div class="col-lg-4">
 		<div class="panel panel-default panel24k">
 			<div class="panel-heading">
 				<h3 class="panel-title">Server Status</h3>
@@ -275,7 +308,7 @@ $(document).ready(function()
 				<br/>
 				<div class="progress progress-striped" style="margin-bottom: 0px; height: 30px;">
 					<div class="progress-bar progress-bar-{{stats.disk_status}}" role="progressbar" style="width: {{stats.disk_pc}}%; line-height: 30px;">
-						{{stats.disk_pc}}% in use
+						{{stats.disk_pc}}%
 					</div>
   				</div>
 				{% endif %}
@@ -284,7 +317,37 @@ $(document).ready(function()
 	</div>
 </div>
 
-		<div class="panel panel-default">
+
+<div class="row">
+	<div class="col-lg-3">
+		<div class="panel panel-default panel24k">
+			<div class="panel-heading">
+				<h3 class="panel-title">Actions</h3>
+			</div>
+			<div class="panel-body">
+				<ul class="nav nav-pills nav-stacked">
+				  {% if server_error or server.type == 0 %}
+				  <li class="disabled">
+				  {% else %}
+				  <li>
+				  {% endif %}
+				    <a href="#" data-toggle="modal" data-target="#create-database"><i class="fa fa-fw fa-plus"></i> Create Database</a>
+				  </li>
+				  <li>
+				  	<a href="#" data-toggle="modal" data-target="#edit-server"><i class="fa fa-fw fa-wrench"></i> Edit Server</a>
+				  </li>
+				  <li>
+				  	<a href="#" data-toggle="modal" data-target="#change-agent-password"><i class="fa fa-fw fa-lock"></i> Change Password</a>
+				  </li>
+				  <li>
+					<a href="#" data-toggle="modal" data-target="#remove-server"><i class="fa fa-fw fa-trash-o"></i> Remove Server</a>
+				</li>
+				</ul>
+			</div>
+		</div>
+	</div>
+	<div class="col-lg-9">
+		<div class="panel panel-default panel24k">
 			<div class="panel-heading">
 				<h3 class="panel-title">Databases</h3>
 			  </div>
@@ -299,19 +362,19 @@ $(document).ready(function()
 						<th class="sorter-metric" data-metric-name="B|byte">Size</th>
 					</tr>
 				</thead>
-				<tbody>
+				<tbody class="rowclick-table">
 			{% if databases|length == 0 %}
 					<tr>
 						<td colspan='5'>There are no databases on this server (yet!)</td>
 					</tr>
 			{% else %}
 				{% for database in databases %}
-					<tr>
+					<tr class="rowclick-tr" data-url="{{ database.link }}"> 
 						<td><a href="{{ database.link }}"><button type="button" class="btn btn-primary btn-sm"><i class="fa fa-fw fa-cog"></i></button></a></td>
-						<td>{{ database.name }}</td>
-						<td>{{ database.owner }}</td>
-						<td>{{ database.description }}</td>
-						<td>
+						<td class="rowclick-td">{{ database.name }}</td>
+						<td class="rowclick-td">{{ database.owner }}</td>
+						<td class="rowclick-td">{{ database.description }}</td>
+						<td class="rowclick-td">
 							{% if server_error %}
 							N/A
 							{% else %}
@@ -328,6 +391,8 @@ $(document).ready(function()
 				</tbody>
 			</table>
 		</div>
+	</div>
+</div>
 		
 {% if not server_error %}
 <small>Database size data last updated at {{stats.db_sizes_date}}</small>

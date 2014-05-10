@@ -60,6 +60,8 @@ AGENT_SSL_VERIFY_DEFAULT=True
 ## Should we pop up an alert if we connect to a server without SSL verification?
 AGENT_SSL_VERIFY_ALERT=False
 
+AGENT_SSL_VERIFY_CA_FILE='/var/lib/puppet/ssl/certs/ca.pem'
+
 ################################################################################
 
 

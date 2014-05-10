@@ -5,7 +5,7 @@
   <div class="pull-right">
   	<a href="{{ url_for('server_add') }}" class="btn btn-info" rel="tooltip" data-toggle="tooltip" data-placement="left" title="Add new server"><i class="fa fa-fw fa-plus"></i></a>
   </div>
-  <h1><i class="fa fa-fw fa-th"></i> Server Grid View</h1>
+  <h1><i class="fa fa-fw fa-th"></i> MySQL Farm Manager</h1>
 </div>
 
 <script type="text/javascript">
@@ -75,14 +75,14 @@ $( document ).ready(function()
 	{% for row in rows %}
 		{% if row.error %}
 		<div class="item {{row.state}}">
-			<a href="{{ row.link }}"><h4 class="name">{{ row.shortname }}</h4></a>
+			<a href="{{ row.link }}"><h4 class="name">{{ row.name }}</h4></a>
 			<p><span class="number">{{ row.databases }}</span> databases</p>
 			<p class="state">{{ row.state }}</p>
 			<p class="text-danger">Communication Error</p>
 		</div>
 		{% else %}
 		<div class="item {{row.state}}">
-			<a href="{{ row.link }}"><h4 class="name">{{ row.shortname }}</h4></a>
+			<a href="{{ row.link }}"><h4 class="name">{{ row.name }}</h4></a>
 			<p><span class="number">{{ row.databases }}</span> databases</p>
 			<p class="state">{{ row.state }}</p>
 			<p>{{ row.disk_free|filesizeformat }} free</p>
