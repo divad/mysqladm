@@ -7,7 +7,7 @@
 
 <pre>
 Database Name: {{db.name}}
-Database Server: {{server.alias}}
+{% if server.alias == "N/A" %}Database Server: {{server.hostname}}  {% else %}Database Server: {{server.alias}}  {% endif %}
 Database Port: 3306
 
 Username: {{db.name}}
