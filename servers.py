@@ -405,13 +405,14 @@ def server_view(server_name):
 					return mysqladm.errors.output_error('Invalid name','That server name is invalid. ','')
 			else:
 				had_error = 1
-				alias = ''
+				name = ''
 				flash("You must specify a valid server name", 'alert-danger')
-
+ 
 			if 'server_alias' in request.form and len(request.form['server_alias']) > 0:
 				alias = request.form['server_alias']
-				if not mysqladm.core.is_valid_hostname(alias):
-					return mysqladm.errors.output_error('Invalid alias','That server alias is invalid. ','')
+				if not alias == 'N/A':
+					if not mysqladm.core.is_valid_hostname(alias):
+						return mysqladm.errors.output_error('Invalid alias','That server alias is invalid. ','')
 			else:
 				# alias is optional
 				alias = 'N/A'
@@ -498,7 +499,7 @@ def server_add():
 				return mysqladm.errors.output_error('Invalid name','That server name is invalid. ','')
 		else:
 			had_error = 1
-			alias = ''
+			name = ''
 			flash("You must specify a valid server name", 'alert-danger')
 
 		if 'server_alias' in request.form and len(request.form['server_alias']) > 0:
