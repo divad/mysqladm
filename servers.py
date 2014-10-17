@@ -33,26 +33,26 @@ def get_server_by_hostname(hostname):
 		abort(400)
 	
 	## Load the dictionary based cursor
-	cur = g.db.cursor(mysql.cursors.DictCursor)
+	curd = g.db.cursor(mysql.cursors.DictCursor)
 
 	## Execute a SQL select
-	cur.execute("SELECT `id`, `name`, `hostname`, `alias`, `desc`, `state`, `password`, `sslverify`, `type` FROM `servers` WHERE `hostname` = %s", (hostname))
+	curd.execute("SELECT `id`, `name`, `hostname`, `alias`, `desc`, `state`, `password`, `sslverify`, `type` FROM `servers` WHERE `hostname` = %s", (hostname))
 
 	## Get results
-	return cur.fetchone()
+	return curd.fetchone()
 	
 def get_all_servers():
 	"""Utility funtion to return all server objects.
 	"""	
 	
 	## Load the dictionary based cursor
-	cur = g.db.cursor(mysql.cursors.DictCursor)
+	curd = g.db.cursor(mysql.cursors.DictCursor)
 
 	## Execute a SQL select
-	cur.execute("SELECT `servers`.`id` AS `id`, `servers`.`name` AS `name`, `servers`.`hostname` AS `hostname`, `servers`.`sslverify` AS `sslverify`, `servers`.`type` as `type`, `servers`.`alias` AS `alias`, `servers`.`desc` AS `desc`, `servers`.`state` AS `state`, `servers`.`password` AS `password`, COUNT(`databases`.`id`) AS `databases` FROM `servers` LEFT JOIN `databases` ON databases.server = servers.id GROUP BY `servers`.`id`;");
+	curd.execute("SELECT `servers`.`id` AS `id`, `servers`.`name` AS `name`, `servers`.`hostname` AS `hostname`, `servers`.`sslverify` AS `sslverify`, `servers`.`type` as `type`, `servers`.`alias` AS `alias`, `servers`.`desc` AS `desc`, `servers`.`state` AS `state`, `servers`.`password` AS `password`, COUNT(`databases`.`id`) AS `databases` FROM `servers` LEFT JOIN `databases` ON databases.server = servers.id GROUP BY `servers`.`id`;");
 
 	## Get results
-	rows = cur.fetchall()
+	rows = curd.fetchall()
 	
 	return rows
 
@@ -61,13 +61,13 @@ def get_farm_servers():
 	"""	
 	
 	## Load the dictionary based cursor
-	cur = g.db.cursor(mysql.cursors.DictCursor)
+	curd = g.db.cursor(mysql.cursors.DictCursor)
 
 	## Execute a SQL select
-	cur.execute("SELECT `servers`.`id` AS `id`, `servers`.`name` AS `name`, `servers`.`hostname` AS `hostname`, `servers`.`sslverify` AS `sslverify`, `servers`.`type` as `type`, `servers`.`alias` AS `alias`, `servers`.`desc` AS `desc`, `servers`.`state` AS `state`, `servers`.`password` AS `password`, COUNT(`databases`.`id`) AS `databases` FROM `servers` LEFT JOIN `databases` ON databases.server = servers.id WHERE servers.type = '1' GROUP BY `servers`.`id`;");
+	curd.execute("SELECT `servers`.`id` AS `id`, `servers`.`name` AS `name`, `servers`.`hostname` AS `hostname`, `servers`.`sslverify` AS `sslverify`, `servers`.`type` as `type`, `servers`.`alias` AS `alias`, `servers`.`desc` AS `desc`, `servers`.`state` AS `state`, `servers`.`password` AS `password`, COUNT(`databases`.`id`) AS `databases` FROM `servers` LEFT JOIN `databases` ON databases.server = servers.id WHERE servers.type = '1' GROUP BY `servers`.`id`;");
 
 	## Get results
-	rows = cur.fetchall()
+	rows = curd.fetchall()
 	
 	return rows
 
@@ -76,13 +76,13 @@ def get_standalone_servers():
 	"""	
 	
 	## Load the dictionary based cursor
-	cur = g.db.cursor(mysql.cursors.DictCursor)
+	curd = g.db.cursor(mysql.cursors.DictCursor)
 
 	## Execute a SQL select
-	cur.execute("SELECT `servers`.`id` AS `id`, `servers`.`name` AS `name`, `servers`.`hostname` AS `hostname`, `servers`.`sslverify` AS `sslverify`, `servers`.`type` as `type`, `servers`.`alias` AS `alias`, `servers`.`desc` AS `desc`, `servers`.`state` AS `state`, `servers`.`password` AS `password`, COUNT(`databases`.`id`) AS `databases` FROM `servers` LEFT JOIN `databases` ON databases.server = servers.id WHERE servers.type = '0' GROUP BY `servers`.`id`;");
+	curd.execute("SELECT `servers`.`id` AS `id`, `servers`.`name` AS `name`, `servers`.`hostname` AS `hostname`, `servers`.`sslverify` AS `sslverify`, `servers`.`type` as `type`, `servers`.`alias` AS `alias`, `servers`.`desc` AS `desc`, `servers`.`state` AS `state`, `servers`.`password` AS `password`, COUNT(`databases`.`id`) AS `databases` FROM `servers` LEFT JOIN `databases` ON databases.server = servers.id WHERE servers.type = '0' GROUP BY `servers`.`id`;");
 
 	## Get results
-	rows = cur.fetchall()
+	rows = curd.fetchall()
 	
 	return rows
 	
@@ -97,13 +97,29 @@ def get_server_databases(server_id):
 		abort(400)
 	
 	## Load the dictionary based cursor
-	cur = g.db.cursor(mysql.cursors.DictCursor)
+	curd = g.db.cursor(mysql.cursors.DictCursor)
 	
 	## Get the list of databases
-	cur.execute("SELECT `id` AS 'id', `name`, `owner`, `description` FROM `databases` WHERE `server` = %s",(server_id))
+	curd.execute("SELECT `id` AS 'id', `name`, `owner`, `description` FROM `databases` WHERE `server` = %s",(server_id))
 
 	## Get result
-	return cur.fetchall()
+	return curd.fetchall()
+	
+def get_server_permissions(server_id):
+
+	try:
+		server_id = int(server_id)
+	except ValueError:
+		abort(400)
+	
+	## Load the dictionary based cursor
+	curd = g.db.cursor(mysql.cursors.DictCursor)
+	
+	## Get the list of permissions
+	curd.execute("SELECT `name` FROM `permissions` WHERE `server` = %s",(server_id))
+
+	## Get result
+	return curd.fetchall()
 
 ################################################################################
 #### LIST SERVERS
@@ -124,10 +140,11 @@ def server_list():
 	return render_template('servers.html', active='servers',rows=rows)
 
 ################################################################################
-#### LIST SERVERS
+#### LIST STANDALONE SERVERS
 
 @app.route('/standalone')
 @mysqladm.core.login_required
+@mysqladm.core.admin_required
 def server_list_standalone():
 	"""View function to list all servers in a basic table (standalone only)
 	"""		
@@ -210,6 +227,7 @@ def server_status():
 
 @app.route('/grid')
 @mysqladm.core.login_required
+@mysqladm.core.admin_required
 def isotope():
 	"""View function to list all servers via the isotope grid
 	"""		
@@ -467,12 +485,72 @@ def server_view(server_name):
 
 			# redirect to server view
 			return redirect(url_for('server_view', server_name=server['hostname']))
+			
+################################################################################
+#### SERVER DELEGATE PERMISSIONS
+
+@app.route('/serverperms/<server_name>', methods=['GET','POST'])
+@mysqladm.core.login_required
+@mysqladm.core.admin_required
+def server_permissions(server_name):
+	"""Function to manage server delegate permissions
+	"""		
+	
+	## Load the server
+	server = get_server_by_hostname(server_name)
+
+	if server == None:
+		return mysqladm.errors.output_error('No such server','I could not find the server you were looking for! ','')
+
+	if request.method == 'GET':
+		## Load permissions
+		rows = get_server_permissions(server['id'])
+
+		return render_template('permissions.html', active='servers',rows=rows,server=server)
+		
+	elif request.method == 'POST':
+	
+		if 'action' in request.form:
+		
+			if 'name' in request.form and len(request.form['name']) > 0:
+				name = request.form['name']
+				if not mysqladm.core.is_valid_username(name):
+					flash('That username is invalid','alert-danger')
+					return(redirect(url_for('server_permissions',server_name=server['hostname'])))
+			else:
+				flash("You must specify a valid username", 'alert-danger')			
+				return(redirect(url_for('server_permissions',server_name=server['hostname'])))
+		
+			if request.form['action'] == 'add':
+					
+				# Insert the server into the database
+				cur = g.db.cursor()
+				cur.execute('INSERT INTO `permissions` (`name`, `server`) VALUES (%s, %s)', (name, server['id']))
+				g.db.commit()
+				flash("Permissions added successfully", 'alert-success')
+				return(redirect(url_for('server_permissions',server_name=server['hostname'])))
+
+			elif request.form['action'] == 'delete':
+
+				# Delete
+				cur = g.db.cursor()
+				cur.execute('DELETE FROM `permissions` WHERE `name` = %s AND `server` = %s', (name, server['id']))
+				g.db.commit()
+				flash("Permissions removed successfully", 'alert-success')	
+				return(redirect(url_for('server_permissions',server_name=server['hostname'])))		
+				
+			else:
+				abort(400)
+		else:
+			abort(400)
+		
 
 ################################################################################
 #### ADD SERVER
 
 @app.route('/servers/add', methods=['GET','POST'])
 @mysqladm.core.login_required
+@mysqladm.core.admin_required
 def server_add():
 	"""View function to add a new server
 	"""	

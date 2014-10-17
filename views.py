@@ -96,7 +96,7 @@ def stats():
 	return render_template('stats.html', active='other', servers=servers_row[0], databases=databases_row[0], loadavg="%.2f" % loadavg, capacity=capacity_size, usage=usage_size)
 
 ################################################################################
-#### STATS
+#### Search
 
 @app.route('/search', methods=['POST'])
 @mysqladm.core.login_required
@@ -146,15 +146,16 @@ def login():
 		except Exception as e:
 			mysqladm.errors.fatal(e)
 
-		## Ensure user is in mysqladm management group
-		group = grp.getgrnam(app.config['ACCESS_GROUP'])
-		if not request.form['username'] in group.gr_mem:
-			flash('You must be a member of the Linux group ' + app.config['ACCESS_GROUP'] + ' to use this service','alert-danger')
-			return redirect(url_for('default'))
-
-		## Set logged in (if we got this far)
+		## Set logged in
 		session['logged_in'] = True
 		session['username'] = request.form['username']
+		
+		## is user in mysqladm management group
+		group = grp.getgrnam(app.config['ACCESS_GROUP'])
+		if request.form['username'] in group.gr_mem:
+			session['admin'] = True
+		else:
+			session['admin'] = False
 
 		## Check if the user selected "Log me out when I close the browser"
 		permanent = request.form.get('sec',default="")
@@ -189,6 +190,7 @@ def logout():
 
 	session.pop('logged_in', None)
 	session.pop('username', None)
+	session.pop('admin', None)
 
 	flash('You have been logged out. Goodbye.','alert-success')
 

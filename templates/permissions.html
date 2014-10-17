@@ -1,0 +1,77 @@
+{% extends "layout.html" %}
+{% block body %}
+
+<!-- modal to add a user -->
+<div class="modal fade" id="add">
+	<div class="modal-dialog modal-lg">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+				<h4 class="modal-title">Add delegate permission</h4>
+			</div>
+			<form class="form-horizontal" role="form" method="POST">
+				<div class="modal-body">
+					<input type="hidden" name="_csrf_token" value="{{ csrf_token() }}" />
+					<input type="hidden" name="server_name" value="{{ server.hostname }}" />
+					<input type="hidden" name="action" value="add" />
+					<div class="form-group">
+						<label for="inputName" class="col-lg-2 control-label">Name</label>
+							<div class="col-lg-10">
+								<input type="text" class="form-control" id="inputName" name="name">
+							<span class="help-block">University username of the person who should be granted delegate permissions on this server</span>
+
+							</div>
+						</div>
+				</div><!-- /.modal-body -->
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+					<button type="submit" class="btn btn-primary">Add permission</button>
+				</div><!-- /.modal-footer -->
+			</form><!-- /.form -->
+		</div><!-- /.modal-content -->
+	</div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<div class="page-header">
+  <div class="pull-right">
+  	<a href="{{ url_for('server_view',server_name=server.hostname)}}" class="btn btn-default" rel="tooltip" data-toggle="tooltip" data-placement="left" title="Back to server overview"><i class="fa fa-fw fa-arrow-circle-left"></i></a>
+  <a href="#" data-toggle="modal" data-target="#add" class="btn btn-info" rel="tooltip" data-toggle="tooltip" data-placement="left" title="Add user"><i class="fa fa-fw fa-plus"></i></a>
+  </div>
+  <h1><i class="fa fa-fw fa-group"></i> {{server.name}}</h1>
+   <h4>Server Delegate Permissions</h4>
+</div>
+
+<table id="tsort" class="table table-hover table-striped table-condensed">
+	<thead>
+		<tr>
+			<th class="tsdisable"></th>
+			<th>Username</th>
+		</tr>
+	</thead>
+	<tbody>
+{% if rows|length == 0 %}
+		<tr>
+			<td colspan='2'>This server has no delegate permissions.</td>
+		</tr>
+{% else %}
+
+		{% for row in rows %}
+		<tr>
+			<td width="1%">
+
+			<form class="form-horizontal" role="form" method="POST">
+					<input type="hidden" name="_csrf_token" value="{{ csrf_token() }}" />
+					<input type="hidden" name="server_name" value="{{ server.hostname }}" />
+					<input type="hidden" name="name" value="{{row.name}}" />
+					<input type="hidden" name="action" value="delete" />
+			<button type="submit" class="btn btn-success btn-sm" title="Remove user"><i class="fa fa-fw fa-trash-o"></i></button>
+			</form>
+			</td>
+			<td>{{ row.name }}</td>
+		</tr>
+		{% endfor %}
+{% endif %}
+	</tbody>
+</table>
+
+{% endblock %}

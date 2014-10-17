@@ -29,6 +29,7 @@ import MySQLdb as mysql
 import requests
 import datetime
 import re
+import pwd
 
 ################################################################################
 
@@ -51,6 +52,20 @@ def login_required(f):
 			flash('You must be logged in to do that!','alert-danger')
 			args = url_encode(request.args)
 			return redirect(url_for('default', next=request.script_root + request.path + "?" + args))
+		return f(*args, **kwargs)
+	return decorated_function
+	
+################################################################################
+
+def admin_required(f):
+	"""This is a decorator function that when called ensures the user is an admin.
+	Usage is as such: @bargate.core.admin_required
+	"""
+	@wraps(f)
+	def decorated_function(*args, **kwargs):
+		if session.get('admin',False) is False:
+			flash('You must be an administrator to do that!','alert-danger')
+			return redirect(url_for('database_list'))
 		return f(*args, **kwargs)
 	return decorated_function
 
@@ -219,3 +234,14 @@ def is_valid_env(str):
 		return True
 
 	return False
+
+def is_valid_username(username):
+	"""Validated a string as a username
+	"""
+	
+	try:
+		pwd.getpwnam(username)
+	except KeyError as ex:
+		return False
+		
+	return True
