@@ -229,11 +229,11 @@ def database_view(database_id):
 		if not mysqladm.servers.user_is_delegate(server['id']):
 			abort(403)
 		
-	db_size = 0
-	db_size_error = ""
+
 	if request.method == 'GET':
 		
-		db_size_error = "Unknown"
+		db_size = "Unknown"
+		db_size_available = False
 			
 		try:
 			json_response = mysqladm.core.msg_node(server, 'stats')
@@ -249,9 +249,10 @@ def database_view(database_id):
 				else:
 					db_sizes = json_response['db_sizes']
 					if database['name'] not in db_sizes:
-						db_size_error = "Size not yet calculated"
+						db_size = "Size not yet calculated"
 					else:
 						db_size = db_sizes[database['name']]
+						db_size_available = True
 
 		except requests.exceptions.RequestException as e:
 			flash('Error contacting agent on server ' + server['hostname'] + ': ' + str(e), 'alert-warning')
@@ -261,7 +262,7 @@ def database_view(database_id):
 		except TypeError:
 			database['create_date'] = 'Unknown'
 	
-		return render_template('database.html', active='databases', server=server, db=database, db_size_error=db_size_error, db_size=db_size)
+		return render_template('database.html', active='databases', server=server, db=database, db_size=db_size,db_size_available=db_size_available)
 		
 	elif request.method == 'POST':
 		## Edit the database details
