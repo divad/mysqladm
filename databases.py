@@ -87,6 +87,7 @@ def get_all_databases(cmd_line=False):
 			`databases`.`id` AS `id`, 
 			`databases`.`create_date` AS `create_date`, 
 			`servers`.`hostname` AS `server`, 
+			`servers`.`id` AS `server_id`,
 			`databases`.`name` AS 'name', 
 			`databases`.`owner` AS 'owner', 
 			`databases`.`description` AS 'description' 
@@ -118,14 +119,26 @@ def get_all_databases(cmd_line=False):
 def database_list():
 	"""View function to return a simple list of databases.
 	"""
+	
+	rows = get_all_databases()
 
-	return render_template('databases.html', active='databases', rows=get_all_databases())
+	if not session['admin']:
+		databases = []
+		
+		for db in rows:
+			if mysqladm.servers.user_is_delegate(db['server_id']):
+				databases.append(db)
+	else:
+		databases = rows
+
+	return render_template('databases.html', active='databases', rows=databases)
 	
 ################################################################################
 #### SYNC DATABASES
 
 @app.route('/databases/sync', methods=['GET','POST'])
 @mysqladm.core.login_required
+@mysqladm.core.admin_required
 def database_sync():
 	"""View function to check the differences between what the server has and what our database records indicate.
 	"""
