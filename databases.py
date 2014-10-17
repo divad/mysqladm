@@ -224,6 +224,11 @@ def database_view(database_id):
 	if server == None:
 		return mysqladm.errors.output_error('No such server','I could not find the server the database resides on!','')
 
+	## Check permissions to the server
+	if not session['admin']:
+		if not mysqladm.servers.user_is_delegate(server['id']):
+			abort(403)
+		
 	db_size = 0
 	db_size_error = ""
 	if request.method == 'GET':
@@ -329,7 +334,12 @@ def database_details(database_id):
 	server = mysqladm.servers.get_server_by_hostname(database['server'])
 	if server == None:
 		return mysqladm.errors.output_error('No such server','I could not find the server the database resides on! ','')	
-	
+
+	## Check permissions to the server
+	if not session['admin']:
+		if not mysqladm.servers.user_is_delegate(server['id']):
+			abort(403)
+			
 	dbpasswd = 'N/A - Only available when setting or changing password'
 	if 'dbpasswd' in session:
 		if len(session['dbpasswd']) > 0:
@@ -355,7 +365,12 @@ def database_passwd_rng(database_id):
 	server = mysqladm.servers.get_server_by_hostname(database['server'])
 	if server == None:
 		return mysqladm.errors.output_error('No such server','I could not find the server the database resides on! ','')
-	
+
+	## Check permissions to the server
+	if not session['admin']:
+		if not mysqladm.servers.user_is_delegate(server['id']):
+			abort(403)		
+
 	## Now try to change password
 	new_passwd = mysqladm.core.pwgen()
 	
@@ -396,6 +411,11 @@ def database_delete(database_id):
 	server = mysqladm.servers.get_server_by_hostname(database['server'])
 	if server == None:
 		return mysqladm.errors.output_error('No such server','I could not find the server the database resides on! ','')
+
+	## Check permissions to the server
+	if not session['admin']:
+		if not mysqladm.servers.user_is_delegate(server['id']):
+			abort(403)		
 
 	try:
 		json_response = mysqladm.core.msg_node(server,'drop',name=database['name'])
@@ -477,6 +497,11 @@ def database_create():
 		if server == None:
 			return mysqladm.errors.output_error('No such server','I could not find the server you were looking for! ','')
 
+		## Check permissions to the server
+		if not session['admin']:
+			if not mysqladm.servers.user_is_delegate(server['id']):
+				abort(403)
+			
 		## Check to make sure a database instance doesn't already exist on the server according to our database
 		existing_db = get_database(name,server['id'])
 		if not existing_db == None:
