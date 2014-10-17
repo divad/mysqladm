@@ -333,10 +333,10 @@ $(document).ready(function()
 				  {% endif %}
 				    <a href="#" data-toggle="modal" data-target="#create-database"><i class="fa fa-fw fa-plus"></i> Create Database</a>
 				  </li>
+				{% if session.admin %}
 				  <li>
 				  	<a href="#" data-toggle="modal" data-target="#edit-server"><i class="fa fa-fw fa-wrench"></i> Edit Server</a>
 				  </li>
-				{% if session.admin %}
 				  <li>
 				  	<a href="#" data-toggle="modal" data-target="#change-agent-password"><i class="fa fa-fw fa-lock"></i> Change Password</a>
 				  </li>

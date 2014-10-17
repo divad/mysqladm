@@ -120,7 +120,22 @@ def get_server_permissions(server_id):
 
 	## Get result
 	return curd.fetchall()
+	
+def user_is_delegate(server_id):
+	## Load the dictionary based cursor
+	curd = g.db.cursor(mysql.cursors.DictCursor)
 
+	## Execute a SQL select
+	curd.execute("SELECT * FROM `permissions` WHERE `name` = %s AND `server` = %s", (session['username'],server_id))
+
+	## Get results
+	result = curd.fetchone()
+	
+	if result != None:
+		return True
+	else:
+		return False
+	
 ################################################################################
 #### LIST SERVERS
 
@@ -136,8 +151,19 @@ def server_list():
 	## Create link for each server 
 	for row in rows:
 		row['link'] = url_for('server_view', server_name=row['hostname'])
+		
+	if not session['admin']:
+	## rows is a tuple, so we'll create a list to replace it
+		servers = []
+	
+		## Check the user has permission to the server
+		for row in rows:
+			if user_is_delegate(row['id']):
+				servers.append(row)
+	else:
+		servers = rows
 
-	return render_template('servers.html', active='servers',rows=rows)
+	return render_template('servers.html', active='servers',rows=servers)
 
 ################################################################################
 #### LIST STANDALONE SERVERS
@@ -170,11 +196,24 @@ def server_status():
 	
 	## Load servers
 	rows = get_all_servers()
+	
+	## A list to put them in
+	servers = []
 
 	## Iterate through each database and get the statistics
 	for row in rows:
 		server_error = False
 		serror = ''
+		
+		if not session['admin']:
+		
+		## Check the user has permission to the server
+			if user_is_delegate(row['id']):
+				servers.append(row)
+			else:
+				continue
+		else:
+			servers.append(row)
 
 		## Add the link to the server
 		row['link'] = url_for('server_view', server_name=row['hostname'])
@@ -220,7 +259,7 @@ def server_status():
 				
 		row['disk_pc'] = str(row['disk_pc'])
 
-	return render_template('server_status.html', active='servers',rows=rows)
+	return render_template('server_status.html', active='servers',rows=servers)
 	
 ################################################################################
 #### SERVER ISOTOPE
@@ -279,16 +318,23 @@ def isotope():
 @mysqladm.core.login_required
 def server_view(server_name):
 	"""View function to view a servers details
-	"""		
+	"""
+
+	## Load the dictionary based cursor
+	cur = g.db.cursor(mysql.cursors.DictCursor)
+
+	## Load the server
+	server = get_server_by_hostname(server_name)
+	
+	if server == None:
+		return mysqladm.errors.output_error('No such server','I could not find the server you were looking for! ','')
+		
+	## Check permissions to the server
+	if not session['admin']:
+		if not user_is_delegate(server['id']):
+			abort(403)
 	
 	if request.method == 'GET':
-		## Load the dictionary based cursor
-		cur = g.db.cursor(mysql.cursors.DictCursor)
-
-		## Load the server
-		server = get_server_by_hostname(server_name)
-		if server == None:
-			return mysqladm.errors.output_error('No such server','I could not find the server you were looking for! ','')
 
 		## Get list of databases for the server
 		databases = get_server_databases(server['id'])
@@ -364,16 +410,12 @@ def server_view(server_name):
 		return render_template('server.html', active='servers', stats=json_response, server=server, databases=databases, server_error = server_error)
 
 	elif request.method == 'POST':
+	
+		## You must be an admin to do these functions, even if you're a delegate
+		if not session['admin']:
+			abort(403)
+	
 		## Used to EDIT and DELETE/REMOVE
-
-		## Load the dictionary based cursor
-		cur = g.db.cursor(mysql.cursors.DictCursor)
-
-		## Load the server
-		server = get_server_by_hostname(server_name)
-		
-		if server == None:
-			return mysqladm.errors.output_error('No such server','I could not find the server you were looking for! ','')
 
 		if 'delete' in request.form and request.form['delete'] == 'yes':
 			## DELETE
