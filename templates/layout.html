@@ -50,6 +50,8 @@
 								<li><a href="{{ url_for('stats') }}"><i class="fa fa-fw fa-bar-chart-o"></i> Stats</a></li>
 								{%- if session.admin %}
 								<li><a href="{{ url_for('database_sync') }}"><i class="fa fa-fw fa-retweet"></i> Server Sync</a></li>
+								<li><a href="{{ url_for('server_delegates') }}"><i class="fa fa-fw fa-group"></i> Server Delegates</a></li>
+
 								{%- endif %}
 								<li><a href="{{ url_for('about') }}"><i class="fa fa-fw fa-info-circle"></i> About</a></li>
 

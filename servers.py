@@ -725,3 +725,31 @@ def server_add():
 
 		# redirect to server list
 		return redirect(url_for('server_view',server_name=hostname))
+
+################################################################################
+#### LIST SERVER DELEGATES IN ONE VIEW
+
+@app.route('/delegates')
+@mysqladm.core.login_required
+@mysqladm.core.admin_required
+def server_delegates():
+	"""View function to list all servers and their delegates
+	"""		
+	
+	## Load servers
+	rows = get_all_servers()
+	
+	## Get the dict cursor
+	curd = g.db.cursor(mysql.cursors.DictCursor)
+	
+	## Create link for each server 
+	for row in rows:
+		row['link'] = url_for('server_view', server_name=row['hostname'])
+		
+		## Execute a SQL select
+		curd.execute("SELECT * FROM `permissions` WHERE `server` = %s", (row['id']))
+
+		## Get results
+		row['perms'] = curd.fetchall()
+
+	return render_template('delegates.html', active='other',rows=rows)

@@ -155,6 +155,26 @@ def login():
 		if request.form['username'] in group.gr_mem:
 			session['admin'] = True
 		else:
+			
+			## Make sure the user is in the permissions table
+			## if they are not...then they should not be able to logon
+			
+			## Load the dictionary based cursor
+			cur = g.db.cursor()
+
+			## Execute a SQL select
+			cur.execute("SELECT COUNT(*) FROM `permissions` WHERE `name` = %s", (session['username']))
+
+			## Get results
+			num = cur.fetchone()
+			
+			if not int(num[0]) > 0:
+				session.pop('logged_in', None)
+				session.pop('username', None)
+				flash('You do not have permission to use this system','alert-danger')
+				return redirect(url_for('default'))
+				
+			## Set admin flag off
 			session['admin'] = False
 
 		## Check if the user selected "Log me out when I close the browser"
