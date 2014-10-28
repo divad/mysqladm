@@ -1,0 +1,21 @@
+{% extends "layout.html" %}
+{% block body %}
+
+<div class="page-header">
+  <h1><i class="fa fa-fw fa-group"></i>Server Delegates</h1>
+</div>
+
+<ul>
+		{% for row in rows %}
+		<li>
+			<a href="{{ row.link }}">{{row.name}}</a>
+			<ul>
+			{% for name in row.perms %}
+				<li>{{ name.name }}</li>
+			{% endfor %}
+			</ul>
+		</li>
+		{% endfor %}
+</ul>
+
+{% endblock %}

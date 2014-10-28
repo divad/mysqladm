@@ -5,7 +5,8 @@
   <div class="pull-right">
   	<a href="{{ url_for('server_add') }}" class="btn btn-info" rel="tooltip" data-toggle="tooltip" data-placement="left" title="Add new server"><i class="fa fa-fw fa-plus"></i></a>
   </div>
-  <h1><i class="fa fa-fw fa-list-alt"></i>All Servers</h1>
+  <h1><i class="fa fa-fw fa-info"></i>Unmanaged Servers</h1>
+  <p>Unmanaged servers are servers which are only present on this system for visibility. Databases and users are not managed by this tool</p>
 </div>
 
 <table id="tsort" class="table table-hover table-striped table-condensed">
@@ -16,7 +17,6 @@
 			<th>Address</th>
 			<th>Description</th>
 			<th>Environment</th>
-			<th>Type</th>
 			<th>Databases</th>
 		</tr>
 	</thead>
@@ -28,7 +28,6 @@
 			<td class="rowclick-td">{{ row.hostname }}</td>
 			<td class="rowclick-td">{{ row.desc }}</td>
 			<td class="rowclick-td">{{ row.state }}</td>
-			<td class="rowclick-td">{% if row.type == 0 %} <span class="label label-default">Unmanaged</span>{% elif row.type == 1 %}<span class="label label-success">Farm Member</span>{% elif row.type == 2 %}<span class="label label-info">Managed</span>{%endif%}</td>
 			<td class="rowclick-td">{{ row.databases }}</td>
 		</tr>
 		{% endfor %}
