@@ -21,7 +21,7 @@ def sync(reconcile=False):
 	g.db = mysqladm.core.db_connect()
 
 	## Load servers
-	servers = mysqladm.servers.get_all_servers()
+	servers = mysqladm.servers.get_servers()
 	
 	for server in servers:
 		print('Checking server "' + server['hostname'] + '"')
@@ -76,7 +76,7 @@ def servers():
 	g.db = mysqladm.core.db_connect()
 
 	## Load servers
-	rows = mysqladm.servers.get_all_servers()
+	rows = mysqladm.servers.get_servers()
 	
 	for row in rows:
 		print(row['hostname'])

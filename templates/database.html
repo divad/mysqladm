@@ -102,7 +102,7 @@
 				  <li><a href="#" data-toggle="modal" data-target="#edit-database"><i class="fa fa-fw fa-trash-o"></i> Edit Database</a></li>
 				  <li><a href="{{ url_for('server_view', server_name=server.hostname) }}"><i class="fa fa-fw fa-hdd-o"></i> View server details</a></li>
 
-				  {% if server.type == 1 %}					
+				  {% if server.type == 1 or server.type == 2 %}					
 				  <li><a href="{{ url_for('database_details',database_id=db.id) }}"><i class="fa fa-fw fa-eye"></i> View connection details</a></li>						
 				  <li><a href="#" data-toggle="modal" data-target="#passwd-confirm"><i class="fa fa-fw fa-pencil"></i> Set new random password</a></li>				
 				  <li><a href="#" data-toggle="modal" data-target="#delete-confirm"><i class="fa fa-fw fa-trash-o"></i> Delete Database</a></li>

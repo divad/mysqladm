@@ -147,7 +147,7 @@ def database_sync():
 	cur = g.db.cursor()
 
 	## Load servers
-	servers = mysqladm.servers.get_all_servers()
+	servers = mysqladm.servers.get_servers()
 	
 	## Rows to return
 	rows = []

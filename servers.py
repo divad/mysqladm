@@ -22,6 +22,11 @@ from flask import Flask, request, session, g, redirect, url_for, abort, render_t
 import MySQLdb as mysql
 import requests
 
+T_UNMANAGED=0
+T_FARM=1
+T_MANAGED=2
+
+
 ################################################################################
 #### UTILITY FUNCTIONS
 
@@ -41,46 +46,17 @@ def get_server_by_hostname(hostname):
 	## Get results
 	return curd.fetchone()
 	
-def get_all_servers():
-	"""Utility funtion to return all server objects.
-	"""	
 	
+def get_servers(type=None):
 	## Load the dictionary based cursor
 	curd = g.db.cursor(mysql.cursors.DictCursor)
-
-	## Execute a SQL select
-	curd.execute("SELECT `servers`.`id` AS `id`, `servers`.`name` AS `name`, `servers`.`hostname` AS `hostname`, `servers`.`sslverify` AS `sslverify`, `servers`.`type` as `type`, `servers`.`alias` AS `alias`, `servers`.`desc` AS `desc`, `servers`.`state` AS `state`, `servers`.`password` AS `password`, COUNT(`databases`.`id`) AS `databases` FROM `servers` LEFT JOIN `databases` ON databases.server = servers.id GROUP BY `servers`.`id`;");
-
-	## Get results
-	rows = curd.fetchall()
 	
-	return rows
-
-def get_farm_servers():
-	"""Utility funtion to return all farm server objects.
-	"""	
-	
-	## Load the dictionary based cursor
-	curd = g.db.cursor(mysql.cursors.DictCursor)
-
-	## Execute a SQL select
-	curd.execute("SELECT `servers`.`id` AS `id`, `servers`.`name` AS `name`, `servers`.`hostname` AS `hostname`, `servers`.`sslverify` AS `sslverify`, `servers`.`type` as `type`, `servers`.`alias` AS `alias`, `servers`.`desc` AS `desc`, `servers`.`state` AS `state`, `servers`.`password` AS `password`, COUNT(`databases`.`id`) AS `databases` FROM `servers` LEFT JOIN `databases` ON databases.server = servers.id WHERE servers.type = '1' GROUP BY `servers`.`id`;");
-
-	## Get results
-	rows = curd.fetchall()
-	
-	return rows
-
-def get_standalone_servers():
-	"""Utility funtion to return all standalone server objects.
-	"""	
-	
-	## Load the dictionary based cursor
-	curd = g.db.cursor(mysql.cursors.DictCursor)
-
-	## Execute a SQL select
-	curd.execute("SELECT `servers`.`id` AS `id`, `servers`.`name` AS `name`, `servers`.`hostname` AS `hostname`, `servers`.`sslverify` AS `sslverify`, `servers`.`type` as `type`, `servers`.`alias` AS `alias`, `servers`.`desc` AS `desc`, `servers`.`state` AS `state`, `servers`.`password` AS `password`, COUNT(`databases`.`id`) AS `databases` FROM `servers` LEFT JOIN `databases` ON databases.server = servers.id WHERE servers.type = '0' GROUP BY `servers`.`id`;");
-
+	if type == None:
+		## Execute a SQL select
+		curd.execute("SELECT `servers`.`id` AS `id`, `servers`.`name` AS `name`, `servers`.`hostname` AS `hostname`, `servers`.`sslverify` AS `sslverify`, `servers`.`type` as `type`, `servers`.`alias` AS `alias`, `servers`.`desc` AS `desc`, `servers`.`state` AS `state`, `servers`.`password` AS `password`, COUNT(`databases`.`id`) AS `databases` FROM `servers` LEFT JOIN `databases` ON databases.server = servers.id GROUP BY `servers`.`id`;");
+	else:
+		curd.execute("SELECT `servers`.`id` AS `id`, `servers`.`name` AS `name`, `servers`.`hostname` AS `hostname`, `servers`.`sslverify` AS `sslverify`, `servers`.`type` as `type`, `servers`.`alias` AS `alias`, `servers`.`desc` AS `desc`, `servers`.`state` AS `state`, `servers`.`password` AS `password`, COUNT(`databases`.`id`) AS `databases` FROM `servers` LEFT JOIN `databases` ON databases.server = servers.id WHERE servers.type = %s GROUP BY `servers`.`id`;",(type));
+		
 	## Get results
 	rows = curd.fetchall()
 	
@@ -146,7 +122,7 @@ def server_list():
 	"""		
 	
 	## Load servers
-	rows = get_all_servers()
+	rows = get_servers()
 	
 	## Create link for each server 
 	for row in rows:
@@ -166,23 +142,34 @@ def server_list():
 	return render_template('servers.html', active='servers',rows=servers)
 
 ################################################################################
-#### LIST STANDALONE SERVERS
 
-@app.route('/standalone')
+@app.route('/managed')
 @mysqladm.core.login_required
 @mysqladm.core.admin_required
-def server_list_standalone():
-	"""View function to list all servers in a basic table (standalone only)
-	"""		
-	
+def server_list_managed():
 	## Load servers
-	rows = get_standalone_servers()
+	rows = get_servers(T_MANAGED)
 	
 	## Create link for each server 
 	for row in rows:
 		row['link'] = url_for('server_view', server_name=row['hostname'])
 
-	return render_template('servers_standalone.html', active='servers',rows=rows)
+	return render_template('servers_managed.html', active='servers',rows=rows)
+	
+################################################################################
+
+@app.route('/unmanaged')
+@mysqladm.core.login_required
+@mysqladm.core.admin_required
+def server_list_unmanaged():
+	## Load servers
+	rows = get_servers(T_UNMANAGED)
+	
+	## Create link for each server 
+	for row in rows:
+		row['link'] = url_for('server_view', server_name=row['hostname'])
+
+	return render_template('servers_unmanaged.html', active='servers',rows=rows)
 	
 	
 ################################################################################
@@ -195,7 +182,7 @@ def server_status():
 	"""		
 	
 	## Load servers
-	rows = get_all_servers()
+	rows = get_servers()
 	
 	## A list to put them in
 	servers = []
@@ -272,7 +259,7 @@ def isotope():
 	"""		
 	
 	## Load servers
-	rows = get_farm_servers()
+	rows = get_servers(T_FARM)
 
 	## Iterate through each database and get the statistics
 	for row in rows:
@@ -506,7 +493,7 @@ def server_view(server_name):
 
 			if 'server_type' in request.form:
 				server_type = int(request.form['server_type'])
-				if server_type < 0 or server_type > 1:
+				if server_type < 0 or server_type > 2:
 					return mysqladm.errors.output_error('Invalid server type','That server type is invalid','')
 			else:
 				had_error = 1
@@ -666,7 +653,7 @@ def server_add():
 
 		if 'server_type' in request.form:
 			server_type = int(request.form['server_type'])
-			if server_type < 0 or server_type > 1:
+			if server_type < 0 or server_type > 2:
 				return mysqladm.errors.output_error('Invalid server type','That server type is invalid','')
 		else:
 			had_error = 1
@@ -737,7 +724,7 @@ def server_delegates():
 	"""		
 	
 	## Load servers
-	rows = get_all_servers()
+	rows = get_servers()
 	
 	## Get the dict cursor
 	curd = g.db.cursor(mysql.cursors.DictCursor)

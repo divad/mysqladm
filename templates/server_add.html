@@ -75,8 +75,9 @@
 		<label for="inputType" class="col-lg-2 control-label">Server Type</label>
 			<div class="col-lg-10">
 				<select name="server_type" class="form-control" id="inputType">
-					<option value="1"{% if server_type == 1 %} selected="selected"{% endif %}>MySQL Farm Member</option>
-					<option value="0"{% if server_type == 0 %} selected="selected"{% endif %}>MySQL Standalone</option>	
+					<option value="1"{% if server_type == 1 %} selected="selected"{% endif %}>Farm Member</option>
+					<option value="2"{% if server_type == 2 %} selected="selected"{% endif %}>Managed</option>	
+					<option value="0"{% if server_type == 0 %} selected="selected"{% endif %}>Unmanaged</option>	
 				</select>
 
 				<span class="help-block">Is this server part of the MySQL Farm or a standalone MySQL instance?

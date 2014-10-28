@@ -96,8 +96,10 @@
 						<label for="inputType" class="col-lg-2 control-label">Server Type</label>
 							<div class="col-lg-10">
 								<select name="server_type" class="form-control" id="inputType">
-									<option value="1"{% if server.type == 1 %} selected="selected"{% endif %}>MySQL Farm Member</option>
-									<option value="0"{% if server.type == 0 %} selected="selected"{% endif %}>MySQL Standalone</option>	
+									<option value="1"{% if server.type == 1 %} selected="selected"{% endif %}>Farm Member</option>
+									<option value="2"{% if server.type == 2 %} selected="selected"{% endif %}>Managed</option>	
+									<option value="0"{% if server.type == 0 %} selected="selected"{% endif %}>Unmanaged</option>	
+
 								</select>
 								</span>
 							</div>
@@ -201,7 +203,7 @@ $(document).ready(function()
 					<tbody>
 						<tr>
 							<td><strong>Type:</strong></td>
-							<td>{% if server.type == 1 %} Farm Member{% else %} Standalone Server{%endif%}</td>
+							<td>{% if server.type == 1 %} Farm Member{% elif server.type == 2 %} Managed Server{% elif server.type == 0 %} Unmanaged Server{%endif%}</td>
 						</tr>
 						<tr>
 							<td><strong>Name:</strong></td>
@@ -328,11 +330,13 @@ $(document).ready(function()
 				<ul class="nav nav-pills nav-stacked">
 				  {% if server_error or server.type == 0 %}
 				  <li class="disabled">
+					<a href="#"><i class="fa fa-fw fa-plus"></i> Create Database</a>
+				  </li>
 				  {% else %}
 				  <li>
-				  {% endif %}
 				    <a href="#" data-toggle="modal" data-target="#create-database"><i class="fa fa-fw fa-plus"></i> Create Database</a>
 				  </li>
+				  {% endif %}
 				{% if session.admin %}
 				  <li>
 				  	<a href="#" data-toggle="modal" data-target="#edit-server"><i class="fa fa-fw fa-wrench"></i> Edit Server</a>
