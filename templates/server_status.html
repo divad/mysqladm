@@ -45,7 +45,7 @@
   				</div>
 			</td>
 			<td class="rowclick-td">{{ row.uptime }}</td>
-			<td class="rowclick-td">{% if row.type == 0 %} <span class="label label-info">Standalone</span>{% else %}<span class="label label-success">Farm Member</span>{%endif%}</td>
+			<td class="rowclick-td">{% if row.type == 0 %} <span class="label label-default">Unmanaged</span>{% elif row.type == 1 %}<span class="label label-success">Farm Member</span>{% elif row.type == 2 %}<span class="label label-info">Managed</span>{%endif%}</td>
 			{% endif %}
 		</tr>
 		{% endfor %}
