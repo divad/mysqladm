@@ -157,7 +157,7 @@
 					<div class="form-group">
 						<label class="col-sm-2 control-label"><strong>Server Type:</strong></label>
 						<div class="col-sm-10">
-							<p class="form-control-static">{% if server.type == 1 %} MySQL Farm{% else %} Standalone{%endif%}</p>
+							<p class="form-control-static">{% if server.type == 1 %} Farm Member{% elif server.type == 2 %} Managed Server{% elif server.type == 0 %} Unmanaged Server{%endif%}</p>
 						</div>
 					</div>					
 				</form>
