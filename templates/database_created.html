@@ -10,8 +10,8 @@ Database Name: {{db.name}}
 {% if server.alias == "N/A" or server.alias == "" %}Database Server: {{server.hostname}}  {% else %}Database Server: {{server.alias}}  {% endif %}
 Database Port: 3306
 
-Username: {{db.name}}
-Password: {{passwd}}
+Database Username: {{db.name}}
+Database Password: {{passwd}}
 </pre>
 
 <a href="{{ url_for('database_view',database_id=db.id) }}">View database</a>
