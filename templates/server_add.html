@@ -10,6 +10,8 @@
 	Before adding a server to the MySQL Management Console you must first install the mysqladm agent and open the firewall on port 1337.
 </p>
 
+<br/>
+
 <form class="form-horizontal" role="form" method="POST">
 	<input type="hidden" name="_csrf_token" value="{{ csrf_token() }}" />
 	<div class="form-group">
@@ -29,10 +31,10 @@
 	</div>
 
 	<div class="form-group">
-		<label for="inputAlias" class="col-lg-2 control-label">Alias</label>
+		<label for="inputAlias" class="col-lg-2 control-label">Farm Alias</label>
 			<div class="col-lg-10">
 				<input type="text" class="form-control" id="inputAlias" name="server_alias" {% if alias %}value="{{ alias }}" {% endif %}>
-				<span class="help-block">An optional alias customers will use, should be mysqlNNN.soton.ac.uk, where NNN is the same number as the SRV server number above.
+				<span class="help-block">Farm Servers only: An optional alias customers will use, should be mysqlNNN.soton.ac.uk, where NNN is the same number as the SRV server number above.
 				</span>
 			</div>
 	</div>
@@ -66,7 +68,7 @@
 		<label for="inputPassword" class="col-lg-2 control-label">Password</label>
 		<div class="col-lg-10">
 			<input type="password" class="form-control" id="inputPassword" name="server_password" />
-			<span class="help-block">The mysqladm agent password - this is not the root or mysql root password on the server.
+			<span class="help-block">The mysqladm agent password - this is not the root or mysql root password on the server. It can be found in /opt/mysqlagent/mysql.conf
 			</span>
 		</div>
 	</div>
@@ -77,10 +79,10 @@
 				<select name="server_type" class="form-control" id="inputType">
 					<option value="1"{% if server_type == 1 %} selected="selected"{% endif %}>Farm Member</option>
 					<option value="2"{% if server_type == 2 %} selected="selected"{% endif %}>Managed</option>	
-					<option value="0"{% if server_type == 0 %} selected="selected"{% endif %}>Unmanaged</option>	
+					<option value="0"{% if server_type == 0 %} selected="selected"{% endif %}>Unmanaged</option>
 				</select>
 
-				<span class="help-block">Is this server part of the MySQL Farm or a standalone MySQL instance?
+				<span class="help-block">The type of server being added. Farm Members are servers that are multi-purpose servers for any database. Managed servers are servers for specific purposes such as WordPress or Puppet, but where we still manage databases via this GUI. Unmanaged servers are servers added to this system purely for observation where database management is handled elsewhere - such as Drupal/Aegir.
 				</span>
 			</div>
 	</div>
@@ -93,7 +95,7 @@
 					<option value="0"{% if sslverify == "0" %} selected="selected"{% endif %}>Don't validate the SSL certificate</option>
 				</select>
 
-				<span class="help-block">Should we validate the SSL certificate of the server?
+				<span class="help-block">Should we validate the SSL certificate of the server? If you don't know what you're doing leave this as default please.
 				</span>
 			</div>
 	</div>
