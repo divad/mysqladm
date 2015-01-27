@@ -7,14 +7,16 @@
 
 <ul>
 		{% for row in rows %}
+		{% if row.perms|length > 0 %}
 		<li>
-			<a href="{{ row.link }}">{{row.name}}</a>
+			<a href="{{ row.link }}">{{row.name}}</a> ({{row.desc}})
 			<ul>
 			{% for name in row.perms %}
-				<li>{{ name.name }}</li>
+				<li>{{ name.name }} - {{ name.fullname }}</li>
 			{% endfor %}
 			</ul>
 		</li>
+		{% endif %}
 		{% endfor %}
 </ul>
 

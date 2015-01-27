@@ -46,12 +46,14 @@
 		<tr>
 			<th class="tsdisable"></th>
 			<th>Username</th>
+			<th>Full name</th>
+			<th>Department</th>
 		</tr>
 	</thead>
 	<tbody>
 {% if rows|length == 0 %}
 		<tr>
-			<td colspan='2'>This server has no delegate permissions.</td>
+			<td colspan='4'>This server has no delegate permissions.</td>
 		</tr>
 {% else %}
 
@@ -68,6 +70,8 @@
 			</form>
 			</td>
 			<td>{{ row.name }}</td>
+			<td>{{ row.fullname }}</td>
+			<td>{{ row.group }}</td>
 		</tr>
 		{% endfor %}
 {% endif %}

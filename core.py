@@ -30,6 +30,7 @@ import requests
 import datetime
 import re
 import pwd
+import grp
 
 ################################################################################
 
@@ -236,7 +237,7 @@ def is_valid_env(str):
 	return False
 
 def is_valid_username(username):
-	"""Validated a string as a username
+	"""Validate a string as a username
 	"""
 	
 	try:
@@ -245,3 +246,18 @@ def is_valid_username(username):
 		return False
 		
 	return True
+
+def get_user_details(username):
+	
+	try:
+		return pwd.getpwnam(username)
+	except KeyError as ex:
+		return None
+
+def get_group_name(gid):
+	
+	try:
+		group = grp.getgrgid(gid)	
+		return group.gr_name
+	except KeyError as ex:
+		return "Unknown - GID not found"

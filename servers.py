@@ -92,10 +92,21 @@ def get_server_permissions(server_id):
 	curd = g.db.cursor(mysql.cursors.DictCursor)
 	
 	## Get the list of permissions
-	curd.execute("SELECT `name` FROM `permissions` WHERE `server` = %s",(server_id))
+	curd.execute("SELECT * FROM `permissions` WHERE `server` = %s",(server_id))
+
+	users = curd.fetchall()
+
+	for user in users:
+		userinfo = mysqladm.core.get_user_details(user['name'])
+		if not userinfo == None:
+			user['fullname'] = userinfo.pw_gecos
+			user['group']    = mysqladm.core.get_group_name(userinfo.pw_gid)
+		else:
+			user['fullname'] = "User not found"
+			user['group']    = "User not found"
 
 	## Get result
-	return curd.fetchall()
+	return users
 	
 def user_is_delegate(server_id):
 	## Load the dictionary based cursor
@@ -732,11 +743,6 @@ def server_delegates():
 	## Create link for each server 
 	for row in rows:
 		row['link'] = url_for('server_view', server_name=row['hostname'])
-		
-		## Execute a SQL select
-		curd.execute("SELECT * FROM `permissions` WHERE `server` = %s", (row['id']))
-
-		## Get results
-		row['perms'] = curd.fetchall()
+		row['perms'] = get_server_permissions(row['id'])
 
 	return render_template('delegates.html', active='other',rows=rows)
