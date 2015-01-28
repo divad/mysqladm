@@ -28,14 +28,16 @@
 					<input name="next" type="hidden" value="{{next}}"/>
 					{% endif %}
 
-					<h1 class="form-signin-heading">MySQL Manager</h2>
+					<h1 class="form-signin-heading"><i class="fa fa-fw fa-database faa-tada animated"></i> MySQL Manager</h2>
 					<input name="username" type="text" class="form-control" placeholder="Username (adm account)" autofocus>
 					<input name="password" type="password" class="form-control" placeholder="Password">
-					<label class="checkbox">
+					<div class="checkbox">
+					<label>
 					  <input type="checkbox" value="sec" id="sec" name="sec"> Remember me
 					</label>
+					</div>
 					<div class="text-center">
-						<button class="btn btn-lg btn-default" type="submit">Login</button>
+						<button class="btn btn btn-default" type="submit">Login</button>
 					</div>
 				</form>
 				{% for category, message in get_flashed_messages(with_categories=true) %}
