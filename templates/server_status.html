@@ -16,6 +16,9 @@
 			<th>Databases</th>
 			<th>Load Average</th>
 			<th>Disk Usage</th>
+			<th>Disk Space Used</th>
+			<th>Disk Capacity</th>
+			<th>Disk Free</th>
 			<th>MySQL Uptime</th>
 			<th>Type</th>
 		</tr>
@@ -33,7 +36,7 @@
 			<td class="rowclick-td">{{ row.databases }}</td>
 			
 			{% if row.error %}
-				<td colspan="5" class="rowclick-td">{{ row.error }}</td>
+				<td colspan="8" class="rowclick-td">{{ row.error }}</td>
 			{% else %}
 			
 			<td class="rowclick-td">{{ row.load }}</td>
@@ -44,6 +47,9 @@
 					</div>
   				</div>
 			</td>
+			<td class="rowclick-td">{{ row.disk_usage|filesizeformat(binary=True) }}</td>
+			<td class="rowclick-td">{{ row.disk_capacity|filesizeformat(binary=True) }}</td>
+			<td class="rowclick-td">{{ row.disk_free|filesizeformat(binary=True) }}</td>
 			<td class="rowclick-td">{{ row.uptime }}</td>
 			<td class="rowclick-td">{% if row.type == 0 %} <span class="label label-default">Unmanaged</span>{% elif row.type == 1 %}<span class="label label-success">Farm Member</span>{% elif row.type == 2 %}<span class="label label-info">Managed</span>{%endif%}</td>
 			{% endif %}
