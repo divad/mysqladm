@@ -217,7 +217,7 @@ def is_valid_hostname(hostname):
 	return all(allowed.match(x) for x in hostname.split("."))
     
 def is_valid_desc(desc):
-	if re.search(r'^[A-Za-z0-9_\s\-\.\&\@\\/]*$', desc) == None:
+	if re.search(r'^[A-Za-z0-9_\s\-\.\&\@\\/\:]*$', desc) == None:
 		return False
 	return True
 	
