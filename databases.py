@@ -277,7 +277,7 @@ def database_view(database_id):
 			
 		if 'database_owner' in request.form and len(request.form['database_owner']) > 0:
 			database_owner = request.form['database_owner']
-			if re.search(r'^[A-Za-z0-9_\s\-\.\@\&\\/]*$', database_owner) == None:
+			if re.search(r'^[A-Za-z0-9_\s\-\.\@\&\\/\(\)\[\]]*$', database_owner) == None:
 				return mysqladm.errors.output_error('Unable to save detabase details', 'Invalid character(s) in owner','')
 		else:
 			flash('Database description must not be empty', 'alert-danger')
@@ -476,7 +476,7 @@ def database_create():
 
 		if 'database_owner' in request.form and len(request.form['database_owner']) > 0:
 			owner = request.form['database_owner']
-			if re.search(r'^[A-Za-z0-9_\s\-\.\@\&\\/]*$', owner) == None:
+			if re.search(r'^[A-Za-z0-9_\s\-\.\@\&\\/\(\)\[\]]*$', owner) == None:
 				return mysqladm.errors.output_error('Unable to create database', 'Invalid character(s) in owner field','')
 		else:
 			return mysqladm.errors.output_error('Unable to create database', 'You must specify a database owner','')
@@ -531,3 +531,4 @@ def database_create():
 		session['dbpasswd'] = passwd
 		flash('Database successfully created', 'alert-success')
 		return redirect(url_for('database_details',database_id=database_id))
+
